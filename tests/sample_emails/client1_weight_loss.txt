@@ -1,0 +1,16 @@
+Novy klient z weboveho formulara:
+
+Meno: Jan Novak
+Email: jan.novak@example.com
+Vek: 32
+Pohlavie: muz
+Vaha: 92 kg
+Vyska: 178 cm
+Ciel: Chcem schudnut 10-15 kg a zlepsit celkovu kondíciu. Uz dlhsie sa necitim dobre vo vlastnom tele.
+Aktivita: Sedave zamestnanie v kancelarii, celý den za počítačom
+Skusenosti: zaciatocnik - nikdy som pravidelne necvicil
+Obmedzenia: ziadne potravinove alergie
+Zdravotne problemy: obcasne bolesti chrbta od sedenia
+Motivacia: Chcem sa citit lepsie, mat viac energie a byt zdravsi pre svoju rodinu.
+
+Poznamky: Nemam vela casu, pracujem 8-17. Viem cvicit max 3x do tyzdna. Mam pristup do fitness centra.

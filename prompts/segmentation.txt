@@ -1,0 +1,47 @@
+You are a professional fitness consultant analyzing a client profile.
+
+CLIENT PROFILE:
+- Name: {name}
+- Age: {age}, Gender: {gender}
+- Weight: {weight}kg, Height: {height}cm
+- Goal: {goal}
+- Activity: {activity_level}
+- Experience: {experience_level}
+- Restrictions: {dietary_restrictions}
+- Health conditions: {health_conditions}
+
+TASK: Analyze and return JSON with:
+{{
+  "segment": "category_goal_gender",
+  "calorie_target": calculated_daily_calories,
+  "protein_grams": calculated_protein,
+  "carbs_grams": calculated_carbs,
+  "fat_grams": calculated_fat,
+  "macro_ratio": {{"protein": 30, "carbs": 40, "fat": 30}},
+  "training_frequency": "3x_per_week",
+  "reasoning": "brief explanation in Slovak"
+}}
+
+CALCULATION GUIDE:
+- BMR (Mifflin-St Jeor):
+  Men: 10 x weight + 6.25 x height - 5 x age + 5
+  Women: 10 x weight + 6.25 x height - 5 x age - 161
+- TDEE: BMR x activity_factor
+  - sedentary = 1.2
+  - light = 1.375
+  - moderate = 1.55
+  - active = 1.725
+  - very_active = 1.9
+- Goal adjustment:
+  - weight_loss = -500 kcal
+  - aggressive_loss = -750 kcal
+  - muscle_gain = +300 kcal
+  - lean_bulk = +200 kcal
+  - maintenance = +0 kcal
+
+MACRO GUIDELINES:
+- Protein: 1.6-2.2g per kg bodyweight (higher for muscle gain, moderate for weight loss)
+- Fat: minimum 0.8g per kg bodyweight
+- Carbs: remaining calories
+
+Return ONLY valid JSON, no markdown formatting or code blocks.

@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="sk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 0;
+            background: #f5f5f5;
+        }
+        .wrapper {
+            background: #ffffff;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin: 20px;
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px 30px;
+            text-align: center;
+        }
+        .header h1 {
+            margin: 0 0 10px 0;
+            font-size: 28px;
+            font-weight: 700;
+        }
+        .header p {
+            margin: 0;
+            opacity: 0.9;
+            font-size: 16px;
+        }
+        .content {
+            padding: 30px;
+        }
+        .greeting {
+            font-size: 18px;
+            margin-bottom: 20px;
+        }
+        .highlight-box {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e8ed 100%);
+            border-left: 4px solid #667eea;
+            padding: 20px;
+            margin: 25px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        .highlight-box h3 {
+            margin-top: 0;
+            color: #667eea;
+        }
+        .attachment-list {
+            list-style: none;
+            padding: 0;
+        }
+        .attachment-list li {
+            padding: 12px 15px;
+            background: #fff;
+            margin: 10px 0;
+            border-radius: 8px;
+            border: 1px solid #e0e0e0;
+            display: flex;
+            align-items: center;
+        }
+        .attachment-list li:before {
+            content: "📎";
+            margin-right: 10px;
+            font-size: 20px;
+        }
+        .steps {
+            background: #fff;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .steps h3 {
+            color: #667eea;
+            margin-top: 0;
+        }
+        .steps ol {
+            padding-left: 20px;
+        }
+        .steps li {
+            margin-bottom: 12px;
+            padding-left: 5px;
+        }
+        .tips {
+            background: #e8f5e9;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .tips h3 {
+            color: #2e7d32;
+            margin-top: 0;
+        }
+        .tips ul {
+            padding-left: 20px;
+        }
+        .tips li {
+            margin-bottom: 10px;
+        }
+        .signature {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+        .signature p {
+            margin: 5px 0;
+        }
+        .footer {
+            background: #f8f9fa;
+            padding: 20px;
+            text-align: center;
+            font-size: 12px;
+            color: #888;
+        }
+        .footer a {
+            color: #667eea;
+            text-decoration: none;
+        }
+        .emoji {
+            font-size: 24px;
+            vertical-align: middle;
+        }
+    </style>
+</head>
+<body>
+    <div class="wrapper">
+        <div class="header">
+            <h1>Vitaj, {client_name}!</h1>
+            <p>Tvoja cesta k lepsej forme zacina teraz</p>
+        </div>
+
+        <div class="content">
+            <p class="greeting">Ahoj <strong>{client_name}</strong>,</p>
+
+            <p>Dakujem ti za doveru! Na zaklade tvojich informacii som pre teba pripravil
+            <strong>osobny fitness plan</strong>, ktory ti pomoze dosiahnut tvoje ciele
+            efektivne a bezpecne.</p>
+
+            <div class="highlight-box">
+                <h3>V prilohe najdes:</h3>
+                <ul class="attachment-list">
+                    <li>
+                        <div>
+                            <strong>Jedalnicky (PDF)</strong><br>
+                            <small>7-dnovy plan stravovania s presnym rozpisom jedal, kaloriami a nakupnym zoznamom</small>
+                        </div>
+                    </li>
+                    <li>
+                        <div>
+                            <strong>Treningovy plan (PDF)</strong><br>
+                            <small>Detailny program treningov s popisom cvikov, seriami a technikou</small>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="steps">
+                <h3>Ako zacat? <span class="emoji"></span></h3>
+                <ol>
+                    <li><strong>Prezri si plany</strong> - Oboznam sa s jedalnicky a treningovym planom</li>
+                    <li><strong>Priprav nakup</strong> - Pouzi priloženy nakupny zoznam</li>
+                    <li><strong>Nastav si pripomienku</strong> - Zaciatok je vzdy v pondelok!</li>
+                    <li><strong>Sleduj pokrok</strong> - Vaz sa 1x tyzdenne, rano, nalacno</li>
+                    <li><strong>Komunikuj</strong> - Ak mas otazky, napis mi</li>
+                </ol>
+            </div>
+
+            <div class="tips">
+                <h3>Dolezite tipy pre uspech</h3>
+                <ul>
+                    <li><strong>Pitny rezim:</strong> Minimalne 2-3 litre vody denne</li>
+                    <li><strong>Spanok:</strong> Cielom je 7-9 hodin kvalitneho spanku</li>
+                    <li><strong>Konzistentnost:</strong> Lepsia je 80% dodrzany plan ako 100% 2 dni</li>
+                    <li><strong>Trpezlivost:</strong> Vysledky prichadzaju postupne - daj tomu cas</li>
+                    <li><strong>Flexibilita:</strong> Ak nestihas jedlo, nevadi - pokracuj dalej</li>
+                </ul>
+            </div>
+
+            <p>Ak budes mat akekolvek otazky, potrebovat upravit plan, alebo len zdielat
+            svoje pokroky - nevaraj sa ma kontaktovat. Som tu pre teba!</p>
+
+            <p>Drzim palce a tesim sa na tvoje vysledky!</p>
+
+            <div class="signature">
+                <p>S pozdravom,</p>
+                <p><strong>{trainer_name}</strong></p>
+                <p>Tvoj osobny trener</p>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>Tento email bol automaticky vygenerovany systemom FIT CRM.</p>
+            <p>Datum: {date}</p>
+        </div>
+    </div>
+</body>
+</html>

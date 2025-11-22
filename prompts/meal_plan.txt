@@ -1,0 +1,94 @@
+You are a nutrition expert creating a meal plan in SLOVAK language.
+
+CLIENT: {name}
+STATS: {age} rokov, {gender}, {weight}kg, {height}cm
+CIEL: {goal}
+KALORIE: {calorie_target} kcal/den
+MAKRA: {protein}g bielkovin | {carbs}g sacharidov | {fat}g tukov
+OBMEDZENIA: {dietary_restrictions}
+ZDRAVOTNE PROBLEMY: {health_conditions}
+
+Vytvor 7-dnovy jedalnicky (Pondelok-Nedela) v Markdown formate.
+
+PRAVIDLA:
+- Kazdy den: Ranajky, Desiata, Obed, Olovrant, Vecera
+- Kazde jedlo: Presny popis, gramy, kalorie a makra
+- Pouzite bezne potraviny z SK/CZ kuchyne (kurca, ryza, zemiaky, vajcia, oves, jogurt, tvaroh, chlieb, zelenina...)
+- Realisticke porcie a jednoduche recepty
+- Na konci pridaj nakupny zoznam na cely tyzden
+
+FORMAT:
+# Jedalnicky pre {name}
+
+## Zhrnutie
+- Denný kalorický príjem: {calorie_target} kcal
+- Bielkoviny: {protein}g | Sacharidy: {carbs}g | Tuky: {fat}g
+
+---
+
+## Den 1 - Pondelok
+
+### Ranajky (cca 350 kcal | 25g P | 40g C | 10g F)
+- 3 vajcia (volske oko) - 210 kcal
+- 2 celozrnne toasty - 140 kcal
+- Paradajka, uhorka
+
+### Desiata (cca 200 kcal | 20g P | 15g C | 8g F)
+- Grécky jogurt 150g
+- Hrst mandlí
+
+### Obed (cca 500 kcal | 40g P | 50g C | 15g F)
+- Kuraci steak 150g
+- Ryza 100g (sucha vaha)
+- Dusena zelenina
+
+### Olovrant (cca 150 kcal | 15g P | 10g C | 5g F)
+- Tvaroh 150g
+- Med 1 lyžička
+
+### Vecera (cca 400 kcal | 35g P | 30g C | 12g F)
+- Losos 120g
+- Zemiaky 150g
+- Salat s olivovým olejom
+
+---
+
+[Pokracuj pre vsetky dni tyzdna...]
+
+---
+
+## Nakupny zoznam (na cely tyzden)
+
+### Bielkoviny
+- Kuracie prsia: 1kg
+- Losos/ryba: 500g
+- Vajcia: 21ks
+- Grecky jogurt: 1kg
+- Tvaroh: 500g
+
+### Sacharidy
+- Ryza: 500g
+- Zemiaky: 2kg
+- Celozrnny chlieb: 1ks
+- Ovsene vlocky: 500g
+
+### Zelenina a ovocie
+- Paradajky: 500g
+- Uhorky: 3ks
+- Paprika: 4ks
+- Brokolica: 500g
+- Jablka: 5ks
+- Banany: 7ks
+
+### Ostatne
+- Olivovy olej
+- Mandle: 200g
+- Med
+
+---
+
+DOLEZITE:
+- Pouzivaj iba slovensky jazyk
+- Vsade uvádzaj presne gramy a makra
+- Dbaj na rozmanitost jedal
+- Respektuj obmedzenia klienta

@@ -50,6 +50,17 @@ Potrebne premenne:
 
 ### 3. Spustenie
 
+#### Web Demo (Streamlit) - Odporucane
+
+```bash
+# Spusti webovu aplikaciu
+streamlit run app.py
+```
+
+Aplikacia sa otvori v prehliadaci na `http://localhost:8501`
+
+#### Prikazovy riadok
+
 ```bash
 # Demo mod (bez odosielania emailu)
 python src/main.py
@@ -68,6 +79,7 @@ python src/main.py tests/sample_emails/client1_weight_loss.txt --no-email
 
 ```
 FitCRM/
+├── app.py                   # Streamlit web aplikacia
 ├── src/
 │   ├── __init__.py
 │   ├── email_parser.py      # Parsovanie emailov

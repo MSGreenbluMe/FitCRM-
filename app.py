@@ -74,6 +74,18 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 
+def get_api_key():
+    """Get API key from secrets or environment"""
+    # Try Streamlit secrets first (for cloud deployment)
+    try:
+        return st.secrets["gemini"]["api_key"]
+    except (KeyError, FileNotFoundError):
+        pass
+
+    # Fall back to environment variable
+    return os.getenv('GEMINI_API_KEY', '')
+
+
 def init_session_state():
     """Initialize session state variables"""
     if 'profile' not in st.session_state:
@@ -85,7 +97,7 @@ def init_session_state():
     if 'training_plan' not in st.session_state:
         st.session_state.training_plan = None
     if 'api_key' not in st.session_state:
-        st.session_state.api_key = os.getenv('GEMINI_API_KEY', '')
+        st.session_state.api_key = get_api_key()
 
 
 def get_pdf_download_link(pdf_content: bytes, filename: str, text: str) -> str:
@@ -99,20 +111,32 @@ def render_sidebar():
     with st.sidebar:
         st.markdown("## ⚙️ Nastavenia")
 
-        # API Key input
-        api_key = st.text_input(
-            "Gemini API Key",
-            value=st.session_state.api_key,
-            type="password",
-            help="Ziskaj API kluc z: https://makersuite.google.com/app/apikey"
-        )
-        st.session_state.api_key = api_key
+        # Check if API key is from secrets
+        has_secrets_key = False
+        try:
+            if st.secrets["gemini"]["api_key"]:
+                has_secrets_key = True
+        except (KeyError, FileNotFoundError):
+            pass
 
-        if api_key:
-            st.success("✅ API kluc nastaveny")
+        if has_secrets_key:
+            st.success("✅ API kluc nakonfigurovany")
+            st.caption("(z Streamlit secrets)")
         else:
-            st.warning("⚠️ Zadaj Gemini API kluc")
-            st.markdown("[Ziskat API kluc →](https://makersuite.google.com/app/apikey)")
+            # API Key input
+            api_key = st.text_input(
+                "Gemini API Key",
+                value=st.session_state.api_key,
+                type="password",
+                help="Ziskaj API kluc z: https://makersuite.google.com/app/apikey"
+            )
+            st.session_state.api_key = api_key
+
+            if api_key:
+                st.success("✅ API kluc nastaveny")
+            else:
+                st.warning("⚠️ Zadaj Gemini API kluc")
+                st.markdown("[Ziskat API kluc →](https://makersuite.google.com/app/apikey)")
 
         st.markdown("---")
 

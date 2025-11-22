@@ -8,7 +8,6 @@ import os
 from pathlib import Path
 from datetime import datetime
 import tempfile
-import base64
 
 # Add parent directory to path
 sys.path.insert(0, str(Path(__file__).parent))
@@ -43,27 +42,6 @@ st.markdown("""
         text-align: center;
         margin-bottom: 2rem;
     }
-    .success-box {
-        background-color: #d5f5e3;
-        border-left: 5px solid #27ae60;
-        padding: 1rem;
-        border-radius: 5px;
-        margin: 1rem 0;
-    }
-    .info-box {
-        background-color: #d6eaf8;
-        border-left: 5px solid #3498db;
-        padding: 1rem;
-        border-radius: 5px;
-        margin: 1rem 0;
-    }
-    .metric-card {
-        background-color: #f8f9fa;
-        padding: 1rem;
-        border-radius: 10px;
-        text-align: center;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    }
     .stTabs [data-baseweb="tab-list"] {
         gap: 24px;
     }
@@ -78,7 +56,9 @@ def get_api_key():
     """Get API key from secrets or environment"""
     # Try Streamlit secrets first (for cloud deployment)
     try:
-        return st.secrets["gemini"]["api_key"]
+        key = st.secrets["gemini"]["api_key"]
+        if key:
+            return key
     except (KeyError, FileNotFoundError):
         pass
 
@@ -96,68 +76,57 @@ def init_session_state():
         st.session_state.meal_plan = None
     if 'training_plan' not in st.session_state:
         st.session_state.training_plan = None
-    if 'api_key' not in st.session_state:
-        st.session_state.api_key = get_api_key()
-
-
-def get_pdf_download_link(pdf_content: bytes, filename: str, text: str) -> str:
-    """Generate a download link for PDF"""
-    b64 = base64.b64encode(pdf_content).decode()
-    return f'<a href="data:application/pdf;base64,{b64}" download="{filename}" class="download-btn">{text}</a>'
+    if 'email_text' not in st.session_state:
+        st.session_state.email_text = ''
 
 
 def render_sidebar():
-    """Render sidebar with API configuration"""
+    """Render sidebar with sample data loader"""
     with st.sidebar:
-        st.markdown("## ⚙️ Nastavenia")
+        st.markdown("## ⚙️ Stav systemu")
 
-        # Check if API key is from secrets
-        has_secrets_key = False
-        try:
-            if st.secrets["gemini"]["api_key"]:
-                has_secrets_key = True
-        except (KeyError, FileNotFoundError):
-            pass
-
-        if has_secrets_key:
-            st.success("✅ API kluc nakonfigurovany")
-            st.caption("(z Streamlit secrets)")
+        # Check API key
+        api_key = get_api_key()
+        if api_key:
+            st.success("✅ Gemini API pripojene")
+            st.caption("Model: gemini-2.5-pro")
         else:
-            # API Key input
-            api_key = st.text_input(
-                "Gemini API Key",
-                value=st.session_state.api_key,
-                type="password",
-                help="Ziskaj API kluc z: https://makersuite.google.com/app/apikey"
-            )
-            st.session_state.api_key = api_key
-
-            if api_key:
-                st.success("✅ API kluc nastaveny")
-            else:
-                st.warning("⚠️ Zadaj Gemini API kluc")
-                st.markdown("[Ziskat API kluc →](https://makersuite.google.com/app/apikey)")
+            st.error("❌ Gemini API kluc chyba")
+            st.caption("Nastav GEMINI_API_KEY v environment alebo Streamlit secrets")
+            return
 
         st.markdown("---")
 
         # Sample data loader
-        st.markdown("## 📧 Vzorove data")
+        st.markdown("## 📧 Vzorove emaily")
         sample_dir = Path(__file__).parent / "tests" / "sample_emails"
 
         if sample_dir.exists():
             sample_files = list(sample_dir.glob("*.txt"))
             if sample_files:
                 selected_sample = st.selectbox(
-                    "Nacitaj vzorovy email",
+                    "Vyber vzorovy email",
                     options=["-- Vyber --"] + [f.stem for f in sample_files],
-                    help="Nacitaj vzorovy email pre testovanie"
+                    help="Nacitaj a automaticky parsuj vzorovy email"
                 )
 
                 if selected_sample != "-- Vyber --":
                     sample_path = sample_dir / f"{selected_sample}.txt"
-                    if st.button("📥 Nacitat", use_container_width=True):
-                        st.session_state.sample_email = sample_path.read_text(encoding="utf-8")
-                        st.rerun()
+                    if st.button("📥 Nacitat a parsovat", use_container_width=True):
+                        try:
+                            email_content = sample_path.read_text(encoding="utf-8")
+                            st.session_state.email_text = email_content
+                            parser = EmailParser()
+                            profile = parser.parse_email(email_content)
+                            st.session_state.profile = profile
+                            # Reset generated plans
+                            st.session_state.segment = None
+                            st.session_state.meal_plan = None
+                            st.session_state.training_plan = None
+                            st.success(f"✅ Parsovane: {profile.name}")
+                            st.rerun()
+                        except Exception as e:
+                            st.error(f"❌ Chyba: {e}")
 
         st.markdown("---")
         st.markdown("### 📊 O aplikacii")
@@ -175,124 +144,158 @@ def render_sidebar():
 
 def render_client_form():
     """Render client input form"""
+    profile = st.session_state.profile
+
     st.markdown("### 📝 Udaje klienta")
 
-    # Check for sample email in session state
-    sample_email = st.session_state.get('sample_email', '')
+    # If profile is already parsed, show it
+    if profile:
+        st.success(f"✅ Klient: **{profile.name}** ({profile.email})")
 
-    col1, col2 = st.columns(2)
+        col1, col2, col3, col4 = st.columns(4)
+        with col1:
+            st.metric("Vek", f"{profile.age} rokov")
+        with col2:
+            st.metric("Pohlavie", "Muz" if profile.gender == "male" else "Zena")
+        with col3:
+            st.metric("Vaha", f"{profile.weight} kg")
+        with col4:
+            st.metric("Vyska", f"{profile.height} cm")
 
-    with col1:
-        st.markdown("#### Zakladne udaje")
-        name = st.text_input("Meno a priezvisko*", value="")
-        email = st.text_input("Email*", value="")
+        st.info(f"**Ciel:** {profile.goal}")
 
-        col_age_gender = st.columns(2)
-        with col_age_gender[0]:
-            age = st.number_input("Vek*", min_value=15, max_value=100, value=30)
-        with col_age_gender[1]:
-            gender = st.selectbox("Pohlavie*", options=["Muz", "Zena"])
+        col1, col2 = st.columns(2)
+        with col1:
+            st.write(f"**Aktivita:** {profile.activity_level}")
+            st.write(f"**Skusenosti:** {profile.experience_level}")
+        with col2:
+            if profile.dietary_restrictions:
+                st.write(f"**Obmedzenia:** {', '.join(profile.dietary_restrictions)}")
+            if profile.health_conditions:
+                st.write(f"**Zdravie:** {', '.join(profile.health_conditions)}")
 
-        col_weight_height = st.columns(2)
-        with col_weight_height[0]:
-            weight = st.number_input("Vaha (kg)*", min_value=30.0, max_value=250.0, value=80.0, step=0.5)
-        with col_weight_height[1]:
-            height = st.number_input("Vyska (cm)*", min_value=100.0, max_value=250.0, value=175.0, step=1.0)
+        st.markdown("---")
 
-    with col2:
-        st.markdown("#### Ciele a skusenosti")
-        goal = st.text_area(
-            "Ciel*",
-            value="",
-            height=80,
-            help="Napr: Chcem schudnut 10 kg, nabrat svaly, zlepsit kondiciu..."
-        )
+        col1, col2 = st.columns(2)
+        with col1:
+            if st.button("🚀 Generovat plany", type="primary", use_container_width=True):
+                api_key = get_api_key()
+                if not api_key:
+                    st.error("❌ Gemini API kluc nie je nastaveny")
+                    return
+                generate_plans(profile, api_key)
 
-        activity_level = st.selectbox(
-            "Uroven aktivity",
-            options=["Sedava (kancelaria)", "Mierna (obcasny pohyb)", "Aktivna (pravidelny sport)", "Velmi aktivna (denne cvicenie)"],
-            index=0
-        )
-
-        experience = st.selectbox(
-            "Skusenosti s cvicenim",
-            options=["Zaciatocnik", "Mierne pokrocily", "Pokrocily"],
-            index=0
-        )
-
-        restrictions = st.text_input(
-            "Potravinove obmedzenia",
-            value="",
-            help="Napr: bezlepkova dieta, laktozova intolerancia, vegetarian..."
-        )
-
-    # Alternative: paste email
-    with st.expander("📧 Alebo vloz email od klienta"):
-        email_text = st.text_area(
-            "Email text",
-            value=sample_email,
-            height=200,
-            help="Vloz cely text emailu od klienta"
-        )
-
-        if email_text and st.button("📋 Parsovat email", use_container_width=True):
-            try:
-                parser = EmailParser()
-                profile = parser.parse_email(email_text)
-                st.session_state.profile = profile
-                st.success(f"✅ Email uspesne parsovany pre: {profile.name}")
+        with col2:
+            if st.button("🔄 Novy klient", use_container_width=True):
+                st.session_state.profile = None
+                st.session_state.segment = None
+                st.session_state.meal_plan = None
+                st.session_state.training_plan = None
+                st.session_state.email_text = ''
                 st.rerun()
-            except Exception as e:
-                st.error(f"❌ Chyba pri parsovani: {e}")
 
-    # Clear sample email after use
-    if 'sample_email' in st.session_state:
-        del st.session_state.sample_email
+    else:
+        # Show form for manual input or email paste
+        tab1, tab2 = st.tabs(["📧 Vlozit email", "✍️ Manualne zadanie"])
 
-    st.markdown("---")
+        with tab1:
+            st.markdown("Vloz email od klienta a klikni na parsovat:")
+            email_text = st.text_area(
+                "Email text",
+                value=st.session_state.email_text,
+                height=300,
+                help="Vloz cely text emailu od klienta",
+                placeholder="""Priklad:
+Meno: Jan Novak
+Email: jan@example.com
+Vek: 30
+Pohlavie: muz
+Vaha: 85 kg
+Vyska: 180 cm
+Ciel: Chcem schudnut
+Aktivita: sedave zamestnanie
+Skusenosti: zaciatocnik"""
+            )
 
-    # Submit button
-    if st.button("🚀 Generovat plany", type="primary", use_container_width=True):
-        if not st.session_state.api_key:
-            st.error("❌ Najprv zadaj Gemini API kluc v bocznom paneli")
-            return
+            if st.button("📋 Parsovat email", use_container_width=True, type="primary"):
+                if not email_text.strip():
+                    st.error("❌ Vloz text emailu")
+                else:
+                    try:
+                        parser = EmailParser()
+                        profile = parser.parse_email(email_text)
+                        st.session_state.profile = profile
+                        st.session_state.email_text = email_text
+                        st.success(f"✅ Parsovane: {profile.name}")
+                        st.rerun()
+                    except Exception as e:
+                        st.error(f"❌ Chyba pri parsovani: {e}")
 
-        if not name or not email or not goal:
-            st.error("❌ Vyplz vsetky povinne polia oznacene *")
-            return
+        with tab2:
+            col1, col2 = st.columns(2)
 
-        # Create profile from form
-        activity_map = {
-            "Sedava (kancelaria)": "sedentary",
-            "Mierna (obcasny pohyb)": "light",
-            "Aktivna (pravidelny sport)": "active",
-            "Velmi aktivna (denne cvicenie)": "very_active"
-        }
+            with col1:
+                name = st.text_input("Meno a priezvisko*")
+                email = st.text_input("Email*")
 
-        experience_map = {
-            "Zaciatocnik": "beginner",
-            "Mierne pokrocily": "intermediate",
-            "Pokrocily": "advanced"
-        }
+                col_age_gender = st.columns(2)
+                with col_age_gender[0]:
+                    age = st.number_input("Vek*", min_value=15, max_value=100, value=30)
+                with col_age_gender[1]:
+                    gender = st.selectbox("Pohlavie*", options=["Muz", "Zena"])
 
-        profile = ClientProfile(
-            name=name,
-            email=email,
-            age=age,
-            gender="male" if gender == "Muz" else "female",
-            weight=weight,
-            height=height,
-            goal=goal,
-            activity_level=activity_map.get(activity_level, "moderate"),
-            experience_level=experience_map.get(experience, "beginner"),
-            dietary_restrictions=[r.strip() for r in restrictions.split(",") if r.strip()] if restrictions else []
-        )
+                col_weight_height = st.columns(2)
+                with col_weight_height[0]:
+                    weight = st.number_input("Vaha (kg)*", min_value=30.0, max_value=250.0, value=80.0, step=0.5)
+                with col_weight_height[1]:
+                    height = st.number_input("Vyska (cm)*", min_value=100.0, max_value=250.0, value=175.0, step=1.0)
 
-        st.session_state.profile = profile
-        generate_plans(profile)
+            with col2:
+                goal = st.text_area("Ciel*", height=80, help="Napr: Chcem schudnut 10 kg")
+                activity_level = st.selectbox(
+                    "Uroven aktivity",
+                    options=["Sedava (kancelaria)", "Mierna (obcasny pohyb)", "Aktivna (pravidelny sport)", "Velmi aktivna (denne cvicenie)"]
+                )
+                experience = st.selectbox(
+                    "Skusenosti s cvicenim",
+                    options=["Zaciatocnik", "Mierne pokrocily", "Pokrocily"]
+                )
+                restrictions = st.text_input("Potravinove obmedzenia", help="Napr: bezlepkova dieta")
+
+            if st.button("💾 Ulozit udaje", type="primary", use_container_width=True):
+                if not name or not email or not goal:
+                    st.error("❌ Vyplz vsetky povinne polia oznacene *")
+                else:
+                    activity_map = {
+                        "Sedava (kancelaria)": "sedentary",
+                        "Mierna (obcasny pohyb)": "light",
+                        "Aktivna (pravidelny sport)": "active",
+                        "Velmi aktivna (denne cvicenie)": "very_active"
+                    }
+                    experience_map = {
+                        "Zaciatocnik": "beginner",
+                        "Mierne pokrocily": "intermediate",
+                        "Pokrocily": "advanced"
+                    }
+
+                    profile = ClientProfile(
+                        name=name,
+                        email=email,
+                        age=age,
+                        gender="male" if gender == "Muz" else "female",
+                        weight=weight,
+                        height=height,
+                        goal=goal,
+                        activity_level=activity_map.get(activity_level, "moderate"),
+                        experience_level=experience_map.get(experience, "beginner"),
+                        dietary_restrictions=[r.strip() for r in restrictions.split(",") if r.strip()] if restrictions else []
+                    )
+                    st.session_state.profile = profile
+                    st.success(f"✅ Ulozene: {profile.name}")
+                    st.rerun()
 
 
-def generate_plans(profile: ClientProfile):
+def generate_plans(profile: ClientProfile, api_key: str):
     """Generate meal and training plans"""
 
     progress_bar = st.progress(0)
@@ -300,10 +303,10 @@ def generate_plans(profile: ClientProfile):
 
     try:
         # Initialize AI generator
-        status_text.text("🔄 Inicializujem AI...")
+        status_text.text("🔄 Pripajam sa k Gemini 2.5 Pro...")
         progress_bar.progress(10)
 
-        ai = FitAIGenerator(api_key=st.session_state.api_key)
+        ai = FitAIGenerator(api_key=api_key)
 
         # Segment client
         status_text.text("📊 Analyzujem profil klienta...")
@@ -313,14 +316,14 @@ def generate_plans(profile: ClientProfile):
         st.session_state.segment = segment
 
         # Generate meal plan
-        status_text.text("🍽️ Generujem jedalnicky (moze trvat 30-60 sekund)...")
+        status_text.text("🍽️ Generujem jedalnicky (30-60 sekund)...")
         progress_bar.progress(45)
 
         meal_plan = ai.generate_meal_plan(profile, segment)
         st.session_state.meal_plan = meal_plan
 
         # Generate training plan
-        status_text.text("💪 Generujem treningovy plan (moze trvat 30-60 sekund)...")
+        status_text.text("💪 Generujem treningovy plan (30-60 sekund)...")
         progress_bar.progress(75)
 
         training_plan = ai.generate_training_plan(profile, segment)
@@ -330,7 +333,7 @@ def generate_plans(profile: ClientProfile):
         progress_bar.progress(100)
         status_text.text("✅ Hotovo!")
 
-        st.success("🎉 Plany boli uspesne vygenerovane!")
+        st.balloons()
         st.rerun()
 
     except Exception as e:
@@ -346,24 +349,8 @@ def render_results():
     meal_plan = st.session_state.meal_plan
     training_plan = st.session_state.training_plan
 
-    if not all([profile, segment, meal_plan, training_plan]):
-        return
-
     st.markdown("---")
-    st.markdown("## 📋 Vygenerovane plany")
-
-    # Client summary
-    st.markdown("### 👤 Klient")
-    col1, col2, col3, col4 = st.columns(4)
-
-    with col1:
-        st.metric("Meno", profile.name)
-    with col2:
-        st.metric("Vek", f"{profile.age} rokov")
-    with col3:
-        st.metric("Vaha", f"{profile.weight} kg")
-    with col4:
-        st.metric("Vyska", f"{profile.height} cm")
+    st.markdown("## 📋 Vygenerovane plany pre " + profile.name)
 
     # Nutrition targets
     st.markdown("### 🎯 Nutricne ciele")
@@ -378,7 +365,8 @@ def render_results():
     with col4:
         st.metric("Tuky", f"{segment.fat_grams}g")
 
-    st.info(f"**Zdovodnenie:** {segment.reasoning}")
+    if segment.reasoning:
+        st.info(f"**Zdovodnenie:** {segment.reasoning}")
 
     # Plans in tabs
     tab1, tab2 = st.tabs(["🍽️ Jedalnicky", "💪 Treningovy plan"])
@@ -387,45 +375,43 @@ def render_results():
         st.markdown(meal_plan)
 
         # PDF download
-        if st.button("📥 Stiahnut jedalnicky ako PDF", key="meal_pdf"):
-            with st.spinner("Generujem PDF..."):
-                try:
-                    pdf_gen = PDFGenerator()
-                    with tempfile.NamedTemporaryFile(suffix=".pdf", delete=False) as tmp:
-                        pdf_gen.generate_pdf(meal_plan, tmp.name, f"Jedalnicky - {profile.name}")
-                        with open(tmp.name, "rb") as f:
-                            pdf_bytes = f.read()
+        try:
+            pdf_gen = PDFGenerator()
+            with tempfile.NamedTemporaryFile(suffix=".pdf", delete=False) as tmp:
+                pdf_gen.generate_pdf(meal_plan, tmp.name, f"Jedalnicky - {profile.name}")
+                with open(tmp.name, "rb") as f:
+                    pdf_bytes = f.read()
 
-                        st.download_button(
-                            label="💾 Stiahnut PDF",
-                            data=pdf_bytes,
-                            file_name=f"jedalnicky_{profile.name.replace(' ', '_')}.pdf",
-                            mime="application/pdf"
-                        )
-                except Exception as e:
-                    st.error(f"Chyba pri generovani PDF: {e}")
+                st.download_button(
+                    label="📥 Stiahnut jedalnicky (PDF)",
+                    data=pdf_bytes,
+                    file_name=f"jedalnicky_{profile.name.replace(' ', '_')}.pdf",
+                    mime="application/pdf",
+                    use_container_width=True
+                )
+        except Exception as e:
+            st.warning(f"PDF generovanie nedostupne: {e}")
 
     with tab2:
         st.markdown(training_plan)
 
         # PDF download
-        if st.button("📥 Stiahnut treningovy plan ako PDF", key="training_pdf"):
-            with st.spinner("Generujem PDF..."):
-                try:
-                    pdf_gen = PDFGenerator()
-                    with tempfile.NamedTemporaryFile(suffix=".pdf", delete=False) as tmp:
-                        pdf_gen.generate_pdf(training_plan, tmp.name, f"Treningovy Plan - {profile.name}")
-                        with open(tmp.name, "rb") as f:
-                            pdf_bytes = f.read()
+        try:
+            pdf_gen = PDFGenerator()
+            with tempfile.NamedTemporaryFile(suffix=".pdf", delete=False) as tmp:
+                pdf_gen.generate_pdf(training_plan, tmp.name, f"Treningovy Plan - {profile.name}")
+                with open(tmp.name, "rb") as f:
+                    pdf_bytes = f.read()
 
-                        st.download_button(
-                            label="💾 Stiahnut PDF",
-                            data=pdf_bytes,
-                            file_name=f"treningovy_plan_{profile.name.replace(' ', '_')}.pdf",
-                            mime="application/pdf"
-                        )
-                except Exception as e:
-                    st.error(f"Chyba pri generovani PDF: {e}")
+                st.download_button(
+                    label="📥 Stiahnut treningovy plan (PDF)",
+                    data=pdf_bytes,
+                    file_name=f"treningovy_plan_{profile.name.replace(' ', '_')}.pdf",
+                    mime="application/pdf",
+                    use_container_width=True
+                )
+        except Exception as e:
+            st.warning(f"PDF generovanie nedostupne: {e}")
 
     # Reset button
     st.markdown("---")
@@ -434,6 +420,7 @@ def render_results():
         st.session_state.segment = None
         st.session_state.meal_plan = None
         st.session_state.training_plan = None
+        st.session_state.email_text = ''
         st.rerun()
 
 

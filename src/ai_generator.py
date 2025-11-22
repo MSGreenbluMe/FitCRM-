@@ -43,13 +43,13 @@ class ClientSegment:
 class FitAIGenerator:
     """Generate fitness plans using Google Gemini AI"""
 
-    def __init__(self, api_key: str, model_name: str = "gemini-1.5-flash"):
+    def __init__(self, api_key: str, model_name: str = "gemini-2.5-pro"):
         """
         Initialize the AI generator.
 
         Args:
             api_key: Google Gemini API key
-            model_name: Model to use (default: gemini-1.5-flash)
+            model_name: Model to use (default: gemini-2.5-pro)
         """
         if not api_key:
             raise ValueError("Gemini API key is required")

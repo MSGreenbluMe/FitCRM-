@@ -127,7 +127,58 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Custom CSS - Clean Professional Light Mode Design
+def get_theme_css(dark_mode: bool) -> str:
+    """Generate CSS based on theme mode"""
+    if dark_mode:
+        return """
+        /* Dark Mode Colors */
+        :root {
+            --bg-primary: #0f172a;
+            --bg-secondary: #1e293b;
+            --bg-card: #1e293b;
+            --border-color: #334155;
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+        }
+        .stApp { background: #0f172a !important; }
+        .bento-card { background: #1e293b !important; border-color: #334155 !important; }
+        .bento-card:hover { border-color: #475569 !important; }
+        .hero-title { color: #f1f5f9 !important; }
+        .hero-subtitle { color: #94a3b8 !important; }
+        .stat-value { color: #f1f5f9 !important; }
+        .stat-label { color: #94a3b8 !important; }
+        .section-title { color: #f1f5f9 !important; }
+        .activity-name { color: #f1f5f9 !important; }
+        .activity-meta { color: #94a3b8 !important; }
+        .alert-text { color: #e2e8f0 !important; }
+        .alert-text strong { color: #f1f5f9 !important; }
+        .avatar-card { background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%) !important; border-color: #334155 !important; }
+        .avatar-placeholder { background: linear-gradient(135deg, #334155 0%, #1e293b 100%) !important; border-color: #475569 !important; }
+        .ticket-card { background: #1e293b !important; border-color: #334155 !important; }
+        .ticket-card:hover { background: #334155 !important; }
+        .ticket-card .ticket-subject { color: #f1f5f9 !important; }
+        .ticket-card .ticket-meta { color: #94a3b8 !important; }
+        [data-testid="stSidebar"] { background: #1e293b !important; border-color: #334155 !important; }
+        [data-testid="stMetricValue"] { color: #f1f5f9 !important; }
+        [data-testid="stMetricLabel"] { color: #94a3b8 !important; }
+        .stMarkdown, .stMarkdown p { color: #e2e8f0 !important; }
+        h1, h2, h3, h4, h5, h6 { color: #f1f5f9 !important; }
+        .main-header { color: #f1f5f9 !important; }
+        .stTextInput input, .stTextArea textarea { background: #1e293b !important; border-color: #334155 !important; color: #f1f5f9 !important; }
+        .stSelectbox > div > div { background: #1e293b !important; border-color: #334155 !important; }
+        .stTabs [data-baseweb="tab-list"] { background: #1e293b !important; }
+        .stTabs [data-baseweb="tab"] { color: #94a3b8 !important; }
+        .stTabs [aria-selected="true"] { background: #334155 !important; color: #f1f5f9 !important; }
+        .plan-section { background: #1e293b !important; border-color: #334155 !important; }
+        .plan-header { color: #f1f5f9 !important; border-color: #334155 !important; }
+        .nutrition-card { background: #1e293b !important; border-color: #334155 !important; }
+        .nutrition-value { color: #f1f5f9 !important; }
+        .nutrition-label { color: #94a3b8 !important; }
+        """
+    return ""
+
+# Custom CSS - Clean Professional Design
 st.markdown("""
 <style>
     /* ===== CLEAN PROFESSIONAL FOUNDATION ===== */
@@ -749,23 +800,35 @@ def init_session_state():
         st.session_state.editable_meal_plan = None
     if 'editable_training_plan' not in st.session_state:
         st.session_state.editable_training_plan = None
+    # Dark mode
+    if 'dark_mode' not in st.session_state:
+        st.session_state.dark_mode = False
 
 
 def render_sidebar():
-    """Render clean light navigation sidebar"""
+    """Render navigation sidebar with dark mode toggle"""
+    dm = st.session_state.dark_mode
     with st.sidebar:
         # Logo / Brand
-        st.markdown("""
+        st.markdown(f"""
         <div style="padding: 1rem 0 1.5rem 0;">
             <span style="font-size: 1.5rem; font-weight: 700; color: #2563eb;">FIT</span>
-            <span style="font-size: 1.5rem; font-weight: 400; color: #64748b;">CRM</span>
+            <span style="font-size: 1.5rem; font-weight: 400; color: {'#94a3b8' if dm else '#64748b'};">CRM</span>
         </div>
         """, unsafe_allow_html=True)
 
-        # Navigation
-        st.markdown('<p style="color: #64748b; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.5rem;">Menu</p>', unsafe_allow_html=True)
+        # Dark mode toggle
+        dark_mode = st.toggle("🌙 Tmavý režim", value=st.session_state.dark_mode, key="dark_toggle")
+        if dark_mode != st.session_state.dark_mode:
+            st.session_state.dark_mode = dark_mode
+            st.rerun()
 
-        if st.button("📊  Dashboard", use_container_width=True,
+        st.markdown("<br>", unsafe_allow_html=True)
+
+        # Navigation
+        st.markdown(f'<p style="color: {"#94a3b8" if dm else "#64748b"}; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.5rem;">Nabídka</p>', unsafe_allow_html=True)
+
+        if st.button("📊  Přehled", use_container_width=True,
                      type="primary" if st.session_state.page == 'dashboard' else "secondary"):
             st.session_state.page = 'dashboard'
             st.session_state.selected_client = None
@@ -786,7 +849,7 @@ def render_sidebar():
 
         # Email Feed / Tickets
         new_tickets = [t for t in st.session_state.email_tickets if t['status'] == 'new']
-        st.markdown(f'<p style="color: #64748b; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.5rem;">Inbox <span style="color: #2563eb; font-weight: 600;">({len(new_tickets)})</span></p>', unsafe_allow_html=True)
+        st.markdown(f'<p style="color: {"#94a3b8" if dm else "#64748b"}; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.5rem;">Příchozí <span style="color: #2563eb; font-weight: 600;">({len(new_tickets)})</span></p>', unsafe_allow_html=True)
 
         for ticket in st.session_state.email_tickets[:3]:
             priority_class = f"priority-{ticket['priority']}"
@@ -804,7 +867,7 @@ def render_sidebar():
             </div>
             """, unsafe_allow_html=True)
 
-            if st.button("Priradiť →", key=f"assign_{ticket['id']}", use_container_width=True):
+            if st.button("Přiřadit →", key=f"assign_{ticket['id']}", use_container_width=True):
                 for t in st.session_state.email_tickets:
                     if t['id'] == ticket['id']:
                         t['status'] = 'assigned'
@@ -819,7 +882,7 @@ def render_sidebar():
         st.markdown("<br>", unsafe_allow_html=True)
 
         # API Status
-        st.markdown('<p style="color: #64748b; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.5rem;">Status</p>', unsafe_allow_html=True)
+        st.markdown(f'<p style="color: {"#94a3b8" if dm else "#64748b"}; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.5rem;">Stav</p>', unsafe_allow_html=True)
 
         api_key = get_api_key()
         nutrition_key = get_nutrition_api_key()
@@ -834,14 +897,14 @@ def render_sidebar():
             <span style="background: {'#eff6ff' if nutrition_key else '#f1f5f9'};
                          color: {'#2563eb' if nutrition_key else '#64748b'};
                          padding: 0.25rem 0.5rem; border-radius: 6px; font-size: 0.7rem; font-weight: 500;">
-                {'✓' if nutrition_key else '○'} Nutrition
+                {'✓' if nutrition_key else '○'} Výživa
             </span>
         </div>
         """
         st.markdown(status_html, unsafe_allow_html=True)
 
         st.markdown("<br><br>", unsafe_allow_html=True)
-        st.markdown('<p style="color: #94a3b8; font-size: 0.65rem;">FIT CRM v3.0 · Professional</p>', unsafe_allow_html=True)
+        st.markdown(f'<p style="color: #94a3b8; font-size: 0.65rem;">FIT CRM v3.0 · {"Tmavý" if dm else "Světlý"}</p>', unsafe_allow_html=True)
 
 
 def render_dashboard():
@@ -850,11 +913,16 @@ def render_dashboard():
     stats = get_dashboard_stats(clients)
     today = datetime.now()
 
+    # Czech day/month names
+    cz_days = ['Pondělí', 'Úterý', 'Středa', 'Čtvrtek', 'Pátek', 'Sobota', 'Neděle']
+    cz_months = ['ledna', 'února', 'března', 'dubna', 'května', 'června', 'července', 'srpna', 'září', 'října', 'listopadu', 'prosince']
+    date_str = f"{cz_days[today.weekday()]}, {today.day}. {cz_months[today.month-1]} {today.year}"
+
     # Hero Header
     st.markdown(f"""
     <div style="margin-bottom: 1.5rem;">
-        <h1 class="hero-title">Vitaj späť</h1>
-        <p class="hero-subtitle">{today.strftime('%A, %d. %B %Y')}</p>
+        <h1 class="hero-title">Vítejte zpět</h1>
+        <p class="hero-subtitle">{date_str}</p>
     </div>
     """, unsafe_allow_html=True)
 
@@ -864,20 +932,20 @@ def render_dashboard():
         <div class="bento-card bento-sm">
             <div class="stat-label">Klienti</div>
             <div class="stat-value blue">{stats["active_clients"]}</div>
-            <div class="stat-trend trend-up">↑ +{stats['new_this_week']} tento týždeň</div>
+            <div class="stat-trend trend-up">↑ +{stats['new_this_week']} tento týden</div>
         </div>
         <div class="bento-card bento-sm">
-            <div class="stat-label">Retencia</div>
+            <div class="stat-label">Retence</div>
             <div class="stat-value emerald">{stats['retention_percent']}%</div>
-            <div class="stat-trend trend-neutral">→ stabilná</div>
+            <div class="stat-trend trend-neutral">→ stabilní</div>
         </div>
         <div class="bento-card bento-sm">
-            <div class="stat-label">Adherencia</div>
+            <div class="stat-label">Adherence</div>
             <div class="stat-value slate">{stats['avg_adherence']:.0f}%</div>
-            <div class="stat-trend {'trend-up' if stats['avg_adherence'] > 75 else 'trend-down'}">{'↑ výborná' if stats['avg_adherence'] > 75 else '↓ zlepšiť'}</div>
+            <div class="stat-trend {'trend-up' if stats['avg_adherence'] > 75 else 'trend-down'}">{'↑ výborná' if stats['avg_adherence'] > 75 else '↓ zlepšit'}</div>
         </div>
         <div class="bento-card bento-sm">
-            <div class="stat-label">Príjem / mesiac</div>
+            <div class="stat-label">Příjem / měsíc</div>
             <div class="stat-value amber">€{stats['mrr_eur']}</div>
             <div class="stat-trend trend-up">↑ +12%</div>
         </div>
@@ -896,18 +964,18 @@ def render_dashboard():
             <div class="bento-card" style="margin-bottom: 1rem;">
                 <div class="section-header">
                     <div class="section-icon emerald">📈</div>
-                    <span class="section-title">Progres klientov</span>
+                    <span class="section-title">Progres klientů</span>
                 </div>
             """, unsafe_allow_html=True)
 
             # Light mode donut chart
             fig = go.Figure(data=[go.Pie(
-                labels=['Progres', 'Stagnácia', 'Regres'],
+                labels=['Progres', 'Stagnace', 'Regres'],
                 values=[stats['progressing'], stats['stagnating'], stats['regressing']],
                 hole=.7,
                 marker_colors=['#059669', '#d97706', '#dc2626'],
                 textinfo='none',
-                hovertemplate='%{label}<br>%{value} klientov<br>%{percent}<extra></extra>'
+                hovertemplate='%{label}<br>%{value} klientů<br>%{percent}<extra></extra>'
             )])
             fig.update_layout(
                 showlegend=True,
@@ -924,7 +992,7 @@ def render_dashboard():
                 paper_bgcolor='rgba(0,0,0,0)',
                 plot_bgcolor='rgba(0,0,0,0)',
                 annotations=[dict(
-                    text=f'<b>{stats["progressing"]}</b><br><span style="font-size:10px;color:#64748b">úspešných</span>',
+                    text=f'<b>{stats["progressing"]}</b><br><span style="font-size:10px;color:#64748b">úspěšných</span>',
                     x=0.5, y=0.5,
                     font=dict(size=24, color='#059669'),
                     showarrow=False
@@ -938,7 +1006,7 @@ def render_dashboard():
             <div class="bento-card" style="margin-bottom: 1rem;">
                 <div class="section-header">
                     <div class="section-icon blue">📊</div>
-                    <span class="section-title">Váhové zmeny</span>
+                    <span class="section-title">Změny váhy</span>
                 </div>
             """, unsafe_allow_html=True)
 
@@ -981,7 +1049,7 @@ def render_dashboard():
             <div class="bento-card">
                 <div class="section-header">
                     <div class="section-icon red">⚠️</div>
-                    <span class="section-title">Vyžaduje pozornosť</span>
+                    <span class="section-title">Vyžaduje pozornost</span>
                 </div>
             """, unsafe_allow_html=True)
 
@@ -1012,8 +1080,8 @@ def render_dashboard():
         st.markdown(f"""
         <div class="avatar-card">
             <div class="avatar-placeholder"></div>
-            <div style="color: #0f172a; font-weight: 600; margin-bottom: 0.5rem;">Body Composition</div>
-            <div style="color: #64748b; font-size: 0.8rem;">Priemerná zmena klientov</div>
+            <div style="color: #0f172a; font-weight: 600; margin-bottom: 0.5rem;">Složení těla</div>
+            <div style="color: #64748b; font-size: 0.8rem;">Průměrná změna klientů</div>
             <div class="avatar-stats">
                 <div class="avatar-stat">
                     <div class="avatar-stat-value">-2.3</div>
@@ -1021,7 +1089,7 @@ def render_dashboard():
                 </div>
                 <div class="avatar-stat">
                     <div class="avatar-stat-value">+1.1</div>
-                    <div class="avatar-stat-label">kg svalov</div>
+                    <div class="avatar-stat-label">kg svalů</div>
                 </div>
             </div>
         </div>
@@ -1041,7 +1109,7 @@ def render_dashboard():
             avatar_class = {"active": "avatar-active", "stagnating": "avatar-warning", "problem": "avatar-danger"}.get(client.status, "avatar-active")
             initials = "".join([n[0].upper() for n in client.name.split()[:2]])
             days = client.days_since_checkin
-            time_text = "Dnes" if days == 0 else "Včera" if days == 1 else f"{days}d"
+            time_text = "Dnes" if days == 0 else "Včera" if days == 1 else f"před {days}d"
             badge_class = "badge-success" if client.weight_change < 0 else "badge-danger" if client.weight_change > 0 else "badge-warning"
             change_text = f"{client.weight_change:+.1f}kg"
 
@@ -1064,7 +1132,7 @@ def render_dashboard():
             st.session_state.page = 'new_client'
             st.rerun()
 
-        if st.button("👥 Všetci klienti", key="qa_clients", use_container_width=True, type="secondary"):
+        if st.button("👥 Všichni klienti", key="qa_clients", use_container_width=True, type="secondary"):
             st.session_state.page = 'clients'
             st.rerun()
 
@@ -1078,11 +1146,11 @@ def render_clients_list():
     # Filters
     col1, col2, col3 = st.columns([2, 2, 2])
     with col1:
-        search = st.text_input("🔍 Hľadať", placeholder="Meno alebo email...")
+        search = st.text_input("🔍 Hledat", placeholder="Jméno nebo email...")
     with col2:
-        status_filter = st.selectbox("Status", ["Všetci", "Aktívni", "Stagnujúci", "Problém"])
+        status_filter = st.selectbox("Stav", ["Všichni", "Aktivní", "Stagnující", "Problém"])
     with col3:
-        sort_by = st.selectbox("Zoradiť podľa", ["Posledný check-in", "Meno", "Progres"])
+        sort_by = st.selectbox("Seřadit podle", ["Poslední check-in", "Jméno", "Progres"])
 
     st.markdown("---")
 
@@ -1092,17 +1160,17 @@ def render_clients_list():
         search_lower = search.lower()
         filtered = [c for c in filtered if search_lower in c.name.lower() or search_lower in c.email.lower()]
 
-    if status_filter == "Aktívni":
+    if status_filter == "Aktivní":
         filtered = [c for c in filtered if c.status == "active"]
-    elif status_filter == "Stagnujúci":
+    elif status_filter == "Stagnující":
         filtered = [c for c in filtered if c.status == "stagnating"]
     elif status_filter == "Problém":
         filtered = [c for c in filtered if c.status == "problem"]
 
     # Sort
-    if sort_by == "Posledný check-in":
+    if sort_by == "Poslední check-in":
         filtered = sorted(filtered, key=lambda c: c.last_checkin, reverse=True)
-    elif sort_by == "Meno":
+    elif sort_by == "Jméno":
         filtered = sorted(filtered, key=lambda c: c.name)
     elif sort_by == "Progres":
         filtered = sorted(filtered, key=lambda c: c.progress_percent, reverse=True)
@@ -1116,10 +1184,10 @@ def render_clients_list():
 
             with col1:
                 st.markdown(f"### {status_emoji} {client.name}")
-                st.caption(f"{client.age} rokov, {'Muž' if client.gender == 'male' else 'Žena'}")
+                st.caption(f"{client.age} let, {'Muž' if client.gender == 'male' else 'Žena'}")
 
             with col2:
-                st.write(f"**Cieľ:** {client.goal}")
+                st.write(f"**Cíl:** {client.goal}")
                 weight_change = client.weight_change
                 change_emoji = "↓" if weight_change < 0 else "↑" if weight_change > 0 else "→"
                 st.write(f"**Váha:** {client.current_weight_kg}kg ({change_emoji}{abs(weight_change):.1f}kg)")
@@ -1131,9 +1199,9 @@ def render_clients_list():
 
                 days = client.days_since_checkin
                 if days > 7:
-                    st.caption(f"⚠️ Check-in pred {days} dňami")
+                    st.caption(f"⚠️ Check-in před {days} dny")
                 else:
-                    st.caption(f"✅ Check-in pred {days} dňami")
+                    st.caption(f"✅ Check-in před {days} dny")
 
             with col4:
                 if st.button("Detail", key=f"client_{client.id}", use_container_width=True):
@@ -1745,6 +1813,12 @@ def render_nutrition_analysis(segment):
 def main():
     """Main application"""
     init_session_state()
+
+    # Apply dark mode CSS if enabled
+    dark_css = get_theme_css(st.session_state.dark_mode)
+    if dark_css:
+        st.markdown(f"<style>{dark_css}</style>", unsafe_allow_html=True)
+
     render_sidebar()
 
     page = st.session_state.page

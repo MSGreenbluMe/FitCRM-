@@ -127,11 +127,11 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Custom CSS - Apple Power User Dark Mode Design
+# Custom CSS - Clean Professional Light Mode Design
 st.markdown("""
 <style>
-    /* ===== APPLE DARK MODE FOUNDATION ===== */
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+    /* ===== CLEAN PROFESSIONAL FOUNDATION ===== */
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
     /* Hide Streamlit branding */
     #MainMenu {visibility: hidden;}
@@ -139,8 +139,8 @@ st.markdown("""
     header {visibility: hidden;}
 
     .stApp {
-        background: linear-gradient(180deg, #0a0a0f 0%, #0f172a 50%, #0a0a0f 100%);
-        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;
+        background: #f8fafc;
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     }
 
     .main .block-container {
@@ -152,24 +152,22 @@ st.markdown("""
     .bento-grid {
         display: grid;
         grid-template-columns: repeat(12, 1fr);
-        gap: 1rem;
-        margin-bottom: 1.5rem;
+        gap: 1.5rem;
+        margin-bottom: 2rem;
     }
 
     .bento-card {
-        background: rgba(30, 41, 59, 0.5);
-        backdrop-filter: blur(20px);
-        -webkit-backdrop-filter: blur(20px);
-        border: 1px solid rgba(255, 255, 255, 0.08);
-        border-radius: 24px;
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 16px;
         padding: 1.5rem;
-        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        transition: all 0.2s ease;
     }
 
     .bento-card:hover {
-        background: rgba(30, 41, 59, 0.7);
-        border-color: rgba(255, 255, 255, 0.15);
-        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        border-color: #cbd5e1;
     }
 
     /* Card sizes */
@@ -181,40 +179,41 @@ st.markdown("""
 
     /* ===== TYPOGRAPHY ===== */
     .hero-title {
-        font-size: 3rem;
-        font-weight: 800;
-        letter-spacing: -0.03em;
-        color: #ffffff;
+        font-size: 2rem;
+        font-weight: 700;
+        letter-spacing: -0.02em;
+        color: #0f172a;
         margin: 0;
-        line-height: 1.1;
+        line-height: 1.2;
     }
 
     .hero-subtitle {
-        font-size: 1rem;
-        font-weight: 500;
-        color: #94a3b8;
-        margin-top: 0.5rem;
+        font-size: 0.95rem;
+        font-weight: 400;
+        color: #64748b;
+        margin-top: 0.25rem;
     }
 
     .stat-value {
-        font-size: 3rem;
-        font-weight: 800;
+        font-size: 2.5rem;
+        font-weight: 700;
         letter-spacing: -0.02em;
         line-height: 1;
         margin-bottom: 0.25rem;
+        color: #0f172a;
     }
 
-    .stat-value.lime { color: #bef264; }
-    .stat-value.cyan { color: #67e8f9; }
-    .stat-value.white { color: #f8fafc; }
-    .stat-value.orange { color: #fdba74; }
+    .stat-value.blue { color: #2563eb; }
+    .stat-value.emerald { color: #059669; }
+    .stat-value.slate { color: #0f172a; }
+    .stat-value.amber { color: #d97706; }
 
     .stat-label {
-        font-size: 0.875rem;
-        font-weight: 600;
-        color: #cbd5e1;
+        font-size: 0.8rem;
+        font-weight: 500;
+        color: #64748b;
         text-transform: uppercase;
-        letter-spacing: 0.05em;
+        letter-spacing: 0.03em;
     }
 
     .stat-trend {
@@ -222,25 +221,25 @@ st.markdown("""
         align-items: center;
         gap: 0.25rem;
         font-size: 0.75rem;
-        font-weight: 600;
+        font-weight: 500;
         padding: 0.25rem 0.5rem;
         border-radius: 6px;
         margin-top: 0.5rem;
     }
 
     .trend-up {
-        background: rgba(190, 242, 100, 0.15);
-        color: #bef264;
+        background: #ecfdf5;
+        color: #059669;
     }
 
     .trend-down {
-        background: rgba(252, 165, 165, 0.15);
-        color: #fca5a5;
+        background: #fef2f2;
+        color: #dc2626;
     }
 
     .trend-neutral {
-        background: rgba(148, 163, 184, 0.15);
-        color: #cbd5e1;
+        background: #f1f5f9;
+        color: #64748b;
     }
 
     /* ===== SECTION HEADERS ===== */
@@ -258,18 +257,18 @@ st.markdown("""
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 1.1rem;
+        font-size: 1rem;
     }
 
-    .section-icon.lime { background: rgba(190, 242, 100, 0.2); }
-    .section-icon.cyan { background: rgba(103, 232, 249, 0.2); }
-    .section-icon.orange { background: rgba(253, 186, 116, 0.2); }
-    .section-icon.red { background: rgba(252, 165, 165, 0.2); }
+    .section-icon.blue { background: #eff6ff; color: #2563eb; }
+    .section-icon.emerald { background: #ecfdf5; color: #059669; }
+    .section-icon.amber { background: #fffbeb; color: #d97706; }
+    .section-icon.red { background: #fef2f2; color: #dc2626; }
 
     .section-title {
-        font-size: 1rem;
+        font-size: 0.95rem;
         font-weight: 600;
-        color: #e2e8f0;
+        color: #0f172a;
         margin: 0;
     }
 
@@ -277,9 +276,9 @@ st.markdown("""
     .activity-item {
         display: flex;
         align-items: center;
-        gap: 1rem;
-        padding: 0.875rem 0;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        gap: 0.875rem;
+        padding: 0.75rem 0;
+        border-bottom: 1px solid #f1f5f9;
     }
 
     .activity-item:last-child {
@@ -287,33 +286,30 @@ st.markdown("""
     }
 
     .activity-avatar {
-        width: 44px;
-        height: 44px;
-        border-radius: 14px;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-weight: 700;
-        font-size: 0.9rem;
+        font-weight: 600;
+        font-size: 0.85rem;
         flex-shrink: 0;
     }
 
     .avatar-active {
-        background: linear-gradient(135deg, rgba(190, 242, 100, 0.2), rgba(190, 242, 100, 0.1));
-        color: #bef264;
-        border: 1px solid rgba(190, 242, 100, 0.3);
+        background: #ecfdf5;
+        color: #059669;
     }
 
     .avatar-warning {
-        background: linear-gradient(135deg, rgba(253, 224, 71, 0.2), rgba(253, 224, 71, 0.1));
-        color: #fde047;
-        border: 1px solid rgba(253, 224, 71, 0.3);
+        background: #fffbeb;
+        color: #d97706;
     }
 
     .avatar-danger {
-        background: linear-gradient(135deg, rgba(252, 165, 165, 0.2), rgba(252, 165, 165, 0.1));
-        color: #fca5a5;
-        border: 1px solid rgba(252, 165, 165, 0.3);
+        background: #fef2f2;
+        color: #dc2626;
     }
 
     .activity-content {
@@ -323,79 +319,79 @@ st.markdown("""
 
     .activity-name {
         font-weight: 600;
-        color: #f1f5f9;
-        font-size: 0.95rem;
+        color: #0f172a;
+        font-size: 0.9rem;
         margin-bottom: 0.125rem;
     }
 
     .activity-meta {
         font-size: 0.8rem;
-        color: #94a3b8;
+        color: #64748b;
     }
 
     .activity-badge {
         font-size: 0.75rem;
-        font-weight: 600;
+        font-weight: 500;
         padding: 0.25rem 0.625rem;
-        border-radius: 6px;
+        border-radius: 9999px;
     }
 
     .badge-success {
-        background: rgba(190, 242, 100, 0.15);
-        color: #bef264;
+        background: #ecfdf5;
+        color: #059669;
     }
 
     .badge-warning {
-        background: rgba(253, 224, 71, 0.15);
-        color: #fde047;
+        background: #fffbeb;
+        color: #d97706;
     }
 
     .badge-danger {
-        background: rgba(252, 165, 165, 0.15);
-        color: #fca5a5;
+        background: #fef2f2;
+        color: #dc2626;
     }
 
     /* ===== ALERT CARDS ===== */
     .alert-card {
-        background: rgba(248, 113, 113, 0.08);
-        border: 1px solid rgba(248, 113, 113, 0.2);
-        border-radius: 16px;
+        background: #fef2f2;
+        border: 1px solid #fecaca;
+        border-radius: 12px;
         padding: 1rem 1.25rem;
         margin-bottom: 0.75rem;
         display: flex;
         align-items: center;
-        gap: 1rem;
+        gap: 0.875rem;
     }
 
     .alert-card.warning {
-        background: rgba(251, 191, 36, 0.08);
-        border-color: rgba(251, 191, 36, 0.2);
+        background: #fffbeb;
+        border-color: #fde68a;
     }
 
     .alert-icon {
-        font-size: 1.25rem;
+        font-size: 1.1rem;
     }
 
     .alert-text {
         flex: 1;
-        color: #f1f5f9;
-        font-size: 0.9rem;
+        color: #374151;
+        font-size: 0.875rem;
     }
 
     .alert-text strong {
-        color: #ffffff;
+        color: #0f172a;
     }
 
-    /* ===== 3D AVATAR CARD ===== */
+    /* ===== STATS CARD ===== */
     .avatar-card {
-        background: linear-gradient(180deg, rgba(30, 41, 59, 0.6) 0%, rgba(15, 23, 42, 0.8) 100%);
-        border: 1px solid rgba(255, 255, 255, 0.08);
-        border-radius: 24px;
-        padding: 2rem;
+        background: linear-gradient(135deg, #eff6ff 0%, #f8fafc 100%);
+        border: 1px solid #e2e8f0;
+        border-radius: 16px;
+        padding: 1.5rem;
         text-align: center;
         position: relative;
         overflow: hidden;
-        min-height: 320px;
+        min-height: 280px;
         display: flex;
         flex-direction: column;
         justify-content: center;
@@ -405,34 +401,30 @@ st.markdown("""
     .avatar-card::before {
         content: '';
         position: absolute;
-        top: -100px;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 200px;
-        height: 200px;
-        background: radial-gradient(circle, rgba(190, 242, 100, 0.1) 0%, transparent 70%);
+        top: -50px;
+        right: -50px;
+        width: 150px;
+        height: 150px;
+        background: radial-gradient(circle, rgba(37, 99, 235, 0.08) 0%, transparent 70%);
         pointer-events: none;
     }
 
     .avatar-placeholder {
-        width: 140px;
-        height: 200px;
-        background: linear-gradient(180deg, rgba(148, 163, 184, 0.3) 0%, rgba(148, 163, 184, 0.1) 100%);
-        border-radius: 70px 70px 40px 40px;
-        margin: 0 auto 1.5rem;
+        width: 100px;
+        height: 100px;
+        background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+        border-radius: 50%;
+        margin: 0 auto 1rem;
         position: relative;
-        border: 2px solid rgba(190, 242, 100, 0.3);
-        box-shadow: 0 0 40px rgba(190, 242, 100, 0.08);
+        border: 3px solid #bfdbfe;
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
 
     .avatar-placeholder::before {
-        content: '🏋️';
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        font-size: 3rem;
-        opacity: 0.8;
+        content: '💪';
+        font-size: 2.5rem;
     }
 
     .avatar-stats {
@@ -447,16 +439,16 @@ st.markdown("""
     }
 
     .avatar-stat-value {
-        font-size: 1.5rem;
+        font-size: 1.25rem;
         font-weight: 700;
-        color: #bef264;
+        color: #059669;
     }
 
     .avatar-stat-label {
         font-size: 0.7rem;
-        color: #94a3b8;
+        color: #64748b;
         text-transform: uppercase;
-        letter-spacing: 0.05em;
+        letter-spacing: 0.03em;
     }
 
     /* ===== PROGRESS RINGS ===== */
@@ -470,191 +462,207 @@ st.markdown("""
 
     .ring-value {
         font-size: 2rem;
-        font-weight: 800;
-        color: #bef264;
+        font-weight: 700;
+        color: #2563eb;
         margin-bottom: 0.25rem;
     }
 
     .ring-label {
         font-size: 0.8rem;
-        color: #94a3b8;
+        color: #64748b;
     }
 
     /* ===== BUTTONS ===== */
     .stButton > button {
-        background: linear-gradient(135deg, #bef264 0%, #a3e635 100%) !important;
-        color: #0f172a !important;
+        background: #2563eb !important;
+        color: #ffffff !important;
         border: none !important;
-        border-radius: 12px !important;
-        font-weight: 600 !important;
-        padding: 0.75rem 1.5rem !important;
-        transition: all 0.3s ease !important;
+        border-radius: 8px !important;
+        font-weight: 500 !important;
+        padding: 0.625rem 1.25rem !important;
+        transition: all 0.2s ease !important;
     }
 
     .stButton > button:hover {
-        transform: translateY(-2px) !important;
-        box-shadow: 0 8px 25px rgba(190, 242, 100, 0.25) !important;
+        background: #1d4ed8 !important;
+        box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25) !important;
     }
 
     .stButton > button[kind="secondary"] {
-        background: rgba(255, 255, 255, 0.08) !important;
-        color: #e2e8f0 !important;
-        border: 1px solid rgba(255, 255, 255, 0.1) !important;
+        background: #ffffff !important;
+        color: #374151 !important;
+        border: 1px solid #e5e7eb !important;
     }
 
     .stButton > button[kind="secondary"]:hover {
-        background: rgba(255, 255, 255, 0.12) !important;
+        background: #f9fafb !important;
+        border-color: #d1d5db !important;
         box-shadow: none !important;
     }
 
     /* ===== SIDEBAR ===== */
     [data-testid="stSidebar"] {
-        background: linear-gradient(180deg, #0f172a 0%, #1e293b 100%);
-        border-right: 1px solid rgba(255, 255, 255, 0.06);
+        background: #ffffff;
+        border-right: 1px solid #e2e8f0;
     }
 
     [data-testid="stSidebar"] .stMarkdown {
-        color: #e2e8f0;
+        color: #374151;
     }
 
     /* ===== METRICS OVERRIDE ===== */
     [data-testid="stMetricValue"] {
-        font-size: 2.5rem !important;
-        font-weight: 800 !important;
-        color: #ffffff !important;
+        font-size: 2rem !important;
+        font-weight: 700 !important;
+        color: #0f172a !important;
     }
 
     [data-testid="stMetricDelta"] {
-        color: #bef264 !important;
+        color: #059669 !important;
     }
 
     [data-testid="stMetricLabel"] {
-        color: #94a3b8 !important;
+        color: #64748b !important;
     }
 
-    /* ===== CHARTS DARK MODE ===== */
+    /* ===== CHARTS ===== */
     .js-plotly-plot .plotly .modebar {
         display: none !important;
     }
 
-    /* ===== TICKET CARDS DARK ===== */
-    .ticket-dark {
-        background: rgba(30, 41, 59, 0.5);
-        backdrop-filter: blur(10px);
-        border: 1px solid rgba(255, 255, 255, 0.06);
-        border-radius: 12px;
-        padding: 0.875rem;
+    /* ===== TICKET CARDS ===== */
+    .ticket-card {
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        padding: 0.75rem;
         margin-bottom: 0.5rem;
-        transition: all 0.2s ease;
+        transition: all 0.15s ease;
     }
 
-    .ticket-dark:hover {
-        background: rgba(30, 41, 59, 0.7);
-        border-color: rgba(190, 242, 100, 0.3);
+    .ticket-card:hover {
+        background: #f8fafc;
+        border-color: #cbd5e1;
     }
 
-    .ticket-dark.priority-high {
-        border-left: 3px solid #fca5a5;
+    .ticket-card.priority-high {
+        border-left: 3px solid #dc2626;
     }
 
-    .ticket-dark.priority-normal {
-        border-left: 3px solid #67e8f9;
+    .ticket-card.priority-normal {
+        border-left: 3px solid #2563eb;
     }
 
-    .ticket-dark .ticket-subject {
-        color: #f1f5f9;
-        font-weight: 600;
+    .ticket-card .ticket-subject {
+        color: #0f172a;
+        font-weight: 500;
         font-size: 0.85rem;
     }
 
-    .ticket-dark .ticket-meta {
-        color: #94a3b8;
+    .ticket-card .ticket-meta {
+        color: #64748b;
         font-size: 0.7rem;
         margin-top: 0.25rem;
     }
 
     /* ===== LEGACY OVERRIDES ===== */
     .main-header {
-        font-size: 2rem;
-        font-weight: 800;
-        color: #ffffff;
-        letter-spacing: -0.02em;
-        margin-bottom: 1.5rem;
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: #0f172a;
+        letter-spacing: -0.01em;
+        margin-bottom: 1.25rem;
     }
 
     .stTabs [data-baseweb="tab-list"] {
-        background: rgba(30, 41, 59, 0.5);
-        border-radius: 12px;
+        background: #f1f5f9;
+        border-radius: 8px;
         padding: 0.25rem;
         gap: 0.25rem;
     }
 
     .stTabs [data-baseweb="tab"] {
         background: transparent;
-        color: #94a3b8;
-        border-radius: 8px;
+        color: #64748b;
+        border-radius: 6px;
     }
 
     .stTabs [aria-selected="true"] {
-        background: rgba(190, 242, 100, 0.15) !important;
-        color: #bef264 !important;
+        background: #ffffff !important;
+        color: #0f172a !important;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
     }
 
     /* Plan sections */
     .plan-section {
-        background: rgba(30, 41, 59, 0.5);
-        backdrop-filter: blur(10px);
-        border: 1px solid rgba(255, 255, 255, 0.06);
-        border-radius: 16px;
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
         padding: 1.5rem;
     }
 
     .plan-header {
-        color: #f1f5f9;
-        border-bottom-color: rgba(190, 242, 100, 0.3);
+        color: #0f172a;
+        border-bottom: 1px solid #e2e8f0;
+        padding-bottom: 0.75rem;
+        margin-bottom: 1rem;
     }
 
     /* Nutrition cards */
     .nutrition-card {
-        background: rgba(30, 41, 59, 0.6);
-        border: 1px solid rgba(255, 255, 255, 0.08);
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 1rem;
     }
 
     .nutrition-value {
-        color: #bef264 !important;
+        color: #0f172a !important;
+        font-weight: 700;
     }
 
     .nutrition-label {
-        color: #94a3b8 !important;
+        color: #64748b !important;
     }
 
     /* Text inputs */
     .stTextInput input, .stTextArea textarea {
-        background: rgba(30, 41, 59, 0.5) !important;
-        border: 1px solid rgba(255, 255, 255, 0.1) !important;
-        color: #f1f5f9 !important;
-        border-radius: 12px !important;
+        background: #ffffff !important;
+        border: 1px solid #e2e8f0 !important;
+        color: #0f172a !important;
+        border-radius: 8px !important;
     }
 
     .stTextInput input:focus, .stTextArea textarea:focus {
-        border-color: rgba(190, 242, 100, 0.5) !important;
-        box-shadow: 0 0 0 2px rgba(190, 242, 100, 0.1) !important;
+        border-color: #2563eb !important;
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1) !important;
     }
 
     /* Select boxes */
     .stSelectbox > div > div {
-        background: rgba(30, 41, 59, 0.5) !important;
-        border: 1px solid rgba(255, 255, 255, 0.1) !important;
-        border-radius: 12px !important;
+        background: #ffffff !important;
+        border: 1px solid #e2e8f0 !important;
+        border-radius: 8px !important;
     }
 
     /* Progress bars */
     .stProgress > div > div {
-        background: rgba(190, 242, 100, 0.15) !important;
+        background: #e2e8f0 !important;
+        border-radius: 9999px !important;
     }
 
     .stProgress > div > div > div {
-        background: linear-gradient(90deg, #bef264, #a3e635) !important;
+        background: #2563eb !important;
+        border-radius: 9999px !important;
+    }
+
+    /* Streamlit markdown text */
+    .stMarkdown, .stMarkdown p {
+        color: #374151;
+    }
+
+    h1, h2, h3, h4, h5, h6 {
+        color: #0f172a !important;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -744,18 +752,18 @@ def init_session_state():
 
 
 def render_sidebar():
-    """Render dark mode navigation sidebar"""
+    """Render clean light navigation sidebar"""
     with st.sidebar:
         # Logo / Brand
         st.markdown("""
         <div style="padding: 1rem 0 1.5rem 0;">
-            <span style="font-size: 1.5rem; font-weight: 800; color: #bef264;">FIT</span>
-            <span style="font-size: 1.5rem; font-weight: 300; color: #94a3b8;">CRM</span>
+            <span style="font-size: 1.5rem; font-weight: 700; color: #2563eb;">FIT</span>
+            <span style="font-size: 1.5rem; font-weight: 400; color: #64748b;">CRM</span>
         </div>
         """, unsafe_allow_html=True)
 
         # Navigation
-        st.markdown('<p style="color: #94a3b8; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.5rem;">Menu</p>', unsafe_allow_html=True)
+        st.markdown('<p style="color: #64748b; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.5rem;">Menu</p>', unsafe_allow_html=True)
 
         if st.button("📊  Dashboard", use_container_width=True,
                      type="primary" if st.session_state.page == 'dashboard' else "secondary"):
@@ -778,19 +786,20 @@ def render_sidebar():
 
         # Email Feed / Tickets
         new_tickets = [t for t in st.session_state.email_tickets if t['status'] == 'new']
-        st.markdown(f'<p style="color: #94a3b8; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.5rem;">Inbox <span style="color: #bef264;">({len(new_tickets)})</span></p>', unsafe_allow_html=True)
+        st.markdown(f'<p style="color: #64748b; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.5rem;">Inbox <span style="color: #2563eb; font-weight: 600;">({len(new_tickets)})</span></p>', unsafe_allow_html=True)
 
         for ticket in st.session_state.email_tickets[:3]:
             priority_class = f"priority-{ticket['priority']}"
             status_dot = {
-                'new': '🟢',
-                'assigned': '🟡',
+                'new': '●',
+                'assigned': '◐',
                 'done': '✓'
             }.get(ticket['status'], '')
+            status_color = {'new': '#059669', 'assigned': '#d97706', 'done': '#64748b'}.get(ticket['status'], '#64748b')
 
             st.markdown(f"""
-            <div class="ticket-dark {priority_class}">
-                <div class="ticket-subject">{status_dot} {ticket['subject'].split(': ')[-1]}</div>
+            <div class="ticket-card {priority_class}">
+                <div class="ticket-subject"><span style="color: {status_color};">{status_dot}</span> {ticket['subject'].split(': ')[-1]}</div>
                 <div class="ticket-meta">{ticket['time']}</div>
             </div>
             """, unsafe_allow_html=True)
@@ -810,21 +819,21 @@ def render_sidebar():
         st.markdown("<br>", unsafe_allow_html=True)
 
         # API Status
-        st.markdown('<p style="color: #94a3b8; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.5rem;">Status</p>', unsafe_allow_html=True)
+        st.markdown('<p style="color: #64748b; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.5rem;">Status</p>', unsafe_allow_html=True)
 
         api_key = get_api_key()
         nutrition_key = get_nutrition_api_key()
 
         status_html = f"""
         <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
-            <span style="background: {'rgba(190, 242, 100, 0.15)' if api_key else 'rgba(252, 165, 165, 0.15)'};
-                         color: {'#bef264' if api_key else '#fca5a5'};
-                         padding: 0.25rem 0.5rem; border-radius: 6px; font-size: 0.7rem; font-weight: 600;">
+            <span style="background: {'#ecfdf5' if api_key else '#fef2f2'};
+                         color: {'#059669' if api_key else '#dc2626'};
+                         padding: 0.25rem 0.5rem; border-radius: 6px; font-size: 0.7rem; font-weight: 500;">
                 {'✓' if api_key else '✗'} Gemini
             </span>
-            <span style="background: {'rgba(103, 232, 249, 0.15)' if nutrition_key else 'rgba(148, 163, 184, 0.15)'};
-                         color: {'#67e8f9' if nutrition_key else '#94a3b8'};
-                         padding: 0.25rem 0.5rem; border-radius: 6px; font-size: 0.7rem; font-weight: 600;">
+            <span style="background: {'#eff6ff' if nutrition_key else '#f1f5f9'};
+                         color: {'#2563eb' if nutrition_key else '#64748b'};
+                         padding: 0.25rem 0.5rem; border-radius: 6px; font-size: 0.7rem; font-weight: 500;">
                 {'✓' if nutrition_key else '○'} Nutrition
             </span>
         </div>
@@ -832,18 +841,18 @@ def render_sidebar():
         st.markdown(status_html, unsafe_allow_html=True)
 
         st.markdown("<br><br>", unsafe_allow_html=True)
-        st.markdown('<p style="color: #475569; font-size: 0.65rem;">FIT CRM v2.0 · Dark Mode</p>', unsafe_allow_html=True)
+        st.markdown('<p style="color: #94a3b8; font-size: 0.65rem;">FIT CRM v3.0 · Professional</p>', unsafe_allow_html=True)
 
 
 def render_dashboard():
-    """Render Apple-style dark mode dashboard with Bento grid"""
+    """Render clean professional dashboard with Bento grid"""
     clients = st.session_state.clients
     stats = get_dashboard_stats(clients)
     today = datetime.now()
 
     # Hero Header
     st.markdown(f"""
-    <div style="margin-bottom: 2rem;">
+    <div style="margin-bottom: 1.5rem;">
         <h1 class="hero-title">Vitaj späť</h1>
         <p class="hero-subtitle">{today.strftime('%A, %d. %B %Y')}</p>
     </div>
@@ -854,22 +863,22 @@ def render_dashboard():
     <div class="bento-grid">
         <div class="bento-card bento-sm">
             <div class="stat-label">Klienti</div>
-            <div class="stat-value lime">{stats["active_clients"]}</div>
+            <div class="stat-value blue">{stats["active_clients"]}</div>
             <div class="stat-trend trend-up">↑ +{stats['new_this_week']} tento týždeň</div>
         </div>
         <div class="bento-card bento-sm">
             <div class="stat-label">Retencia</div>
-            <div class="stat-value cyan">{stats['retention_percent']}%</div>
+            <div class="stat-value emerald">{stats['retention_percent']}%</div>
             <div class="stat-trend trend-neutral">→ stabilná</div>
         </div>
         <div class="bento-card bento-sm">
             <div class="stat-label">Adherencia</div>
-            <div class="stat-value white">{stats['avg_adherence']:.0f}%</div>
+            <div class="stat-value slate">{stats['avg_adherence']:.0f}%</div>
             <div class="stat-trend {'trend-up' if stats['avg_adherence'] > 75 else 'trend-down'}">{'↑ výborná' if stats['avg_adherence'] > 75 else '↓ zlepšiť'}</div>
         </div>
         <div class="bento-card bento-sm">
             <div class="stat-label">Príjem / mesiac</div>
-            <div class="stat-value orange">€{stats['mrr_eur']}</div>
+            <div class="stat-value amber">€{stats['mrr_eur']}</div>
             <div class="stat-trend trend-up">↑ +12%</div>
         </div>
     </div>
@@ -886,17 +895,17 @@ def render_dashboard():
             st.markdown("""
             <div class="bento-card" style="margin-bottom: 1rem;">
                 <div class="section-header">
-                    <div class="section-icon lime">📈</div>
+                    <div class="section-icon emerald">📈</div>
                     <span class="section-title">Progres klientov</span>
                 </div>
             """, unsafe_allow_html=True)
 
-            # Dark mode donut chart
+            # Light mode donut chart
             fig = go.Figure(data=[go.Pie(
                 labels=['Progres', 'Stagnácia', 'Regres'],
                 values=[stats['progressing'], stats['stagnating'], stats['regressing']],
                 hole=.7,
-                marker_colors=['#bef264', '#fde047', '#fca5a5'],
+                marker_colors=['#059669', '#d97706', '#dc2626'],
                 textinfo='none',
                 hovertemplate='%{label}<br>%{value} klientov<br>%{percent}<extra></extra>'
             )])
@@ -908,16 +917,16 @@ def render_dashboard():
                     y=-0.15,
                     xanchor="center",
                     x=0.5,
-                    font=dict(color='#94a3b8', size=11)
+                    font=dict(color='#64748b', size=11)
                 ),
                 height=240,
                 margin=dict(t=10, b=30, l=10, r=10),
                 paper_bgcolor='rgba(0,0,0,0)',
                 plot_bgcolor='rgba(0,0,0,0)',
                 annotations=[dict(
-                    text=f'<b>{stats["progressing"]}</b><br><span style="font-size:10px;color:#94a3b8">úspešných</span>',
+                    text=f'<b>{stats["progressing"]}</b><br><span style="font-size:10px;color:#64748b">úspešných</span>',
                     x=0.5, y=0.5,
-                    font=dict(size=24, color='#bef264'),
+                    font=dict(size=24, color='#059669'),
                     showarrow=False
                 )]
             )
@@ -928,7 +937,7 @@ def render_dashboard():
             st.markdown("""
             <div class="bento-card" style="margin-bottom: 1rem;">
                 <div class="section-header">
-                    <div class="section-icon cyan">📊</div>
+                    <div class="section-icon blue">📊</div>
                     <span class="section-title">Váhové zmeny</span>
                 </div>
             """, unsafe_allow_html=True)
@@ -936,7 +945,7 @@ def render_dashboard():
             recent_clients = sorted(clients, key=lambda c: c.last_checkin, reverse=True)[:5]
             names = [c.name.split()[0] for c in recent_clients]
             changes = [c.weight_change for c in recent_clients]
-            colors = ['#bef264' if c < 0 else '#fca5a5' if c > 0 else '#94a3b8' for c in changes]
+            colors = ['#059669' if c < 0 else '#dc2626' if c > 0 else '#64748b' for c in changes]
 
             fig = go.Figure(data=[go.Bar(
                 x=names,
@@ -945,19 +954,19 @@ def render_dashboard():
                 marker_line_width=0,
                 text=[f"{c:+.1f}" for c in changes],
                 textposition='outside',
-                textfont=dict(size=10, color='#94a3b8'),
+                textfont=dict(size=10, color='#64748b'),
                 hovertemplate='%{x}<br>%{y:+.1f} kg<extra></extra>'
             )])
             fig.update_layout(
                 height=240,
                 margin=dict(t=10, b=30, l=30, r=10),
                 yaxis=dict(
-                    gridcolor='rgba(255,255,255,0.05)',
-                    zerolinecolor='rgba(255,255,255,0.1)',
-                    tickfont=dict(color='#94a3b8'),
+                    gridcolor='#f1f5f9',
+                    zerolinecolor='#e2e8f0',
+                    tickfont=dict(color='#64748b'),
                     title=None
                 ),
-                xaxis=dict(tickfont=dict(size=10, color='#94a3b8')),
+                xaxis=dict(tickfont=dict(size=10, color='#64748b')),
                 showlegend=False,
                 paper_bgcolor='rgba(0,0,0,0)',
                 plot_bgcolor='rgba(0,0,0,0)',
@@ -999,12 +1008,12 @@ def render_dashboard():
                     st.rerun()
 
     with col_side:
-        # 3D Avatar Card (Placeholder)
+        # Stats Card
         st.markdown(f"""
         <div class="avatar-card">
             <div class="avatar-placeholder"></div>
-            <div style="color: #f1f5f9; font-weight: 600; margin-bottom: 0.5rem;">Body Composition</div>
-            <div style="color: #94a3b8; font-size: 0.8rem;">Priemerná zmena klientov</div>
+            <div style="color: #0f172a; font-weight: 600; margin-bottom: 0.5rem;">Body Composition</div>
+            <div style="color: #64748b; font-size: 0.8rem;">Priemerná zmena klientov</div>
             <div class="avatar-stats">
                 <div class="avatar-stat">
                     <div class="avatar-stat-value">-2.3</div>
@@ -1022,7 +1031,7 @@ def render_dashboard():
         st.markdown("""
         <div class="bento-card" style="margin-top: 1rem;">
             <div class="section-header">
-                <div class="section-icon orange">🕐</div>
+                <div class="section-icon amber">🕐</div>
                 <span class="section-title">Aktivita</span>
             </div>
         """, unsafe_allow_html=True)

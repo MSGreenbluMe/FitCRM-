@@ -127,13 +127,309 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Custom CSS - Professional dashboard styling
+# Custom CSS - Modern Professional Dashboard Design
 st.markdown("""
 <style>
-    /* Global styles */
-    .main { background-color: #f5f7fa; }
+    /* ===== GLOBAL STYLES ===== */
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 
-    /* Header styling */
+    .main {
+        background: linear-gradient(135deg, #f5f7fa 0%, #e4e8ec 100%);
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+
+    /* ===== DASHBOARD HEADER ===== */
+    .dashboard-header {
+        background: linear-gradient(135deg, #1e3a5f 0%, #2c5282 50%, #3182ce 100%);
+        color: white;
+        padding: 2rem 2.5rem;
+        border-radius: 20px;
+        margin-bottom: 2rem;
+        box-shadow: 0 10px 40px rgba(30, 58, 95, 0.3);
+        position: relative;
+        overflow: hidden;
+    }
+    .dashboard-header::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        right: -20%;
+        width: 400px;
+        height: 400px;
+        background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+        border-radius: 50%;
+    }
+    .dashboard-header h1 {
+        font-size: 2.2rem;
+        font-weight: 800;
+        margin: 0;
+        letter-spacing: -1px;
+    }
+    .dashboard-header p {
+        opacity: 0.9;
+        margin: 0.5rem 0 0 0;
+        font-size: 1rem;
+    }
+
+    /* ===== KPI CARDS ===== */
+    .kpi-container {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+    .kpi-card {
+        background: white;
+        border-radius: 16px;
+        padding: 1.5rem;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+        overflow: hidden;
+    }
+    .kpi-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 12px 40px rgba(0,0,0,0.12);
+    }
+    .kpi-card::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        border-radius: 16px 16px 0 0;
+    }
+    .kpi-card.blue::after { background: linear-gradient(90deg, #3182ce, #63b3ed); }
+    .kpi-card.green::after { background: linear-gradient(90deg, #38a169, #68d391); }
+    .kpi-card.purple::after { background: linear-gradient(90deg, #805ad5, #b794f4); }
+    .kpi-card.orange::after { background: linear-gradient(90deg, #dd6b20, #f6ad55); }
+
+    .kpi-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        margin-bottom: 1rem;
+    }
+    .kpi-icon.blue { background: linear-gradient(135deg, #ebf8ff, #bee3f8); }
+    .kpi-icon.green { background: linear-gradient(135deg, #f0fff4, #c6f6d5); }
+    .kpi-icon.purple { background: linear-gradient(135deg, #faf5ff, #e9d8fd); }
+    .kpi-icon.orange { background: linear-gradient(135deg, #fffaf0, #feebc8); }
+
+    .kpi-value {
+        font-size: 2rem;
+        font-weight: 800;
+        color: #1a202c;
+        line-height: 1;
+        margin-bottom: 0.25rem;
+    }
+    .kpi-label {
+        font-size: 0.85rem;
+        color: #718096;
+        font-weight: 500;
+    }
+    .kpi-trend {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.25rem;
+        font-size: 0.8rem;
+        font-weight: 600;
+        padding: 0.25rem 0.5rem;
+        border-radius: 20px;
+        margin-top: 0.75rem;
+    }
+    .kpi-trend.up { background: #c6f6d5; color: #22543d; }
+    .kpi-trend.down { background: #fed7d7; color: #742a2a; }
+    .kpi-trend.neutral { background: #e2e8f0; color: #4a5568; }
+
+    /* ===== SECTION CARDS ===== */
+    .section-card {
+        background: white;
+        border-radius: 16px;
+        padding: 1.5rem;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+        margin-bottom: 1.5rem;
+    }
+    .section-title {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: #1a202c;
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    .section-title-icon {
+        width: 32px;
+        height: 32px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1rem;
+    }
+
+    /* ===== ALERT CARDS ===== */
+    .alert-card {
+        background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+        border: 1px solid #f59e0b;
+        border-radius: 12px;
+        padding: 1rem 1.25rem;
+        margin-bottom: 0.75rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        transition: all 0.2s ease;
+    }
+    .alert-card:hover {
+        transform: translateX(4px);
+        box-shadow: 0 4px 12px rgba(245, 158, 11, 0.2);
+    }
+    .alert-card.critical {
+        background: linear-gradient(135deg, #fef2f2 0%, #fecaca 100%);
+        border-color: #ef4444;
+    }
+    .alert-content {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+    .alert-icon {
+        font-size: 1.25rem;
+    }
+    .alert-text {
+        font-weight: 500;
+        color: #92400e;
+    }
+    .alert-card.critical .alert-text { color: #991b1b; }
+    .alert-action {
+        background: rgba(0,0,0,0.1);
+        border: none;
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background 0.2s;
+    }
+    .alert-action:hover { background: rgba(0,0,0,0.15); }
+
+    /* ===== ACTIVITY TIMELINE ===== */
+    .timeline-item {
+        display: flex;
+        gap: 1rem;
+        padding: 0.75rem 0;
+        border-bottom: 1px solid #e2e8f0;
+        transition: background 0.2s;
+    }
+    .timeline-item:last-child { border-bottom: none; }
+    .timeline-item:hover { background: #f7fafc; margin: 0 -1rem; padding: 0.75rem 1rem; border-radius: 8px; }
+
+    .timeline-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 0.9rem;
+        flex-shrink: 0;
+    }
+    .timeline-avatar.active { background: linear-gradient(135deg, #c6f6d5, #9ae6b4); color: #22543d; }
+    .timeline-avatar.warning { background: linear-gradient(135deg, #fef3c7, #fcd34d); color: #92400e; }
+    .timeline-avatar.danger { background: linear-gradient(135deg, #fecaca, #f87171); color: #991b1b; }
+
+    .timeline-content { flex: 1; }
+    .timeline-name {
+        font-weight: 600;
+        color: #1a202c;
+        font-size: 0.95rem;
+    }
+    .timeline-meta {
+        font-size: 0.8rem;
+        color: #718096;
+        display: flex;
+        gap: 1rem;
+        margin-top: 0.25rem;
+    }
+    .timeline-stat {
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+    }
+    .timeline-time {
+        font-size: 0.75rem;
+        color: #a0aec0;
+        text-align: right;
+        white-space: nowrap;
+    }
+
+    /* ===== QUICK ACTIONS ===== */
+    .quick-action {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 1rem;
+        background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
+        border-radius: 12px;
+        margin-bottom: 0.75rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        border: 1px solid transparent;
+    }
+    .quick-action:hover {
+        background: white;
+        border-color: #3182ce;
+        transform: translateX(4px);
+        box-shadow: 0 4px 12px rgba(49, 130, 206, 0.15);
+    }
+    .quick-action-icon {
+        width: 44px;
+        height: 44px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.25rem;
+        background: white;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+    .quick-action-text {
+        font-weight: 600;
+        color: #2d3748;
+    }
+    .quick-action-desc {
+        font-size: 0.8rem;
+        color: #718096;
+    }
+
+    /* ===== PROGRESS RING ===== */
+    .progress-ring-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 1rem;
+    }
+    .progress-ring {
+        width: 120px;
+        height: 120px;
+        position: relative;
+    }
+    .progress-ring-value {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #1a202c;
+    }
+
+    /* ===== LEGACY STYLES (kept for compatibility) ===== */
     .main-header {
         font-size: 2rem;
         font-weight: 700;
@@ -150,9 +446,7 @@ st.markdown("""
         font-weight: 700;
         color: #1e3a5f;
     }
-    [data-testid="stMetricDelta"] {
-        font-size: 0.85rem;
-    }
+    [data-testid="stMetricDelta"] { font-size: 0.85rem; }
 
     /* Ticket/Email feed styling */
     .ticket-item {
@@ -172,16 +466,8 @@ st.markdown("""
     .ticket-item.priority-high { border-left-color: #e74c3c; }
     .ticket-item.priority-normal { border-left-color: #4a90d9; }
     .ticket-item.priority-low { border-left-color: #95a5a6; }
-    .ticket-subject {
-        font-weight: 600;
-        font-size: 0.9rem;
-        color: #1e3a5f;
-        margin-bottom: 0.25rem;
-    }
-    .ticket-meta {
-        font-size: 0.75rem;
-        color: #7f8c8d;
-    }
+    .ticket-subject { font-weight: 600; font-size: 0.9rem; color: #1e3a5f; margin-bottom: 0.25rem; }
+    .ticket-meta { font-size: 0.75rem; color: #7f8c8d; }
     .ticket-badge {
         display: inline-block;
         padding: 0.15rem 0.5rem;
@@ -210,56 +496,6 @@ st.markdown("""
         border-bottom: 2px solid #4a90d9;
         margin-bottom: 1rem;
     }
-    .meal-card {
-        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-        border-radius: 10px;
-        padding: 1rem;
-        margin: 0.75rem 0;
-        border-left: 4px solid #27ae60;
-    }
-    .meal-title {
-        font-weight: 700;
-        color: #1e3a5f;
-        font-size: 1rem;
-        margin-bottom: 0.5rem;
-    }
-    .meal-macros {
-        display: flex;
-        gap: 1rem;
-        margin-top: 0.5rem;
-    }
-    .macro-badge {
-        display: inline-block;
-        padding: 0.25rem 0.5rem;
-        border-radius: 6px;
-        font-size: 0.75rem;
-        font-weight: 600;
-    }
-    .macro-protein { background: #ffebee; color: #c62828; }
-    .macro-carbs { background: #fff3e0; color: #ef6c00; }
-    .macro-fat { background: #e3f2fd; color: #1565c0; }
-    .macro-cal { background: #e8f5e9; color: #2e7d32; }
-
-    /* Training day card */
-    .training-day {
-        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-        border-radius: 10px;
-        padding: 1rem;
-        margin: 0.75rem 0;
-        border-left: 4px solid #4a90d9;
-    }
-    .training-title {
-        font-weight: 700;
-        color: #1e3a5f;
-        font-size: 1rem;
-        margin-bottom: 0.75rem;
-    }
-    .exercise-item {
-        padding: 0.5rem 0;
-        border-bottom: 1px solid #dee2e6;
-        font-size: 0.9rem;
-    }
-    .exercise-item:last-child { border-bottom: none; }
 
     /* Client cards */
     .client-card {
@@ -285,24 +521,6 @@ st.markdown("""
     .status-active { background: #d5f5e3; color: #27ae60; }
     .status-stagnating { background: #fdebd0; color: #f39c12; }
     .status-problem { background: #fadbd8; color: #e74c3c; }
-
-    /* Alert styling */
-    .alert-box {
-        background: linear-gradient(135deg, #fff3cd 0%, #ffe9a0 100%);
-        border: 1px solid #ffc107;
-        border-radius: 8px;
-        padding: 1rem;
-        margin: 0.5rem 0;
-    }
-
-    /* Mode selector */
-    .mode-selector {
-        background: white;
-        border-radius: 8px;
-        padding: 0.75rem;
-        margin: 1rem 0;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.08);
-    }
 
     /* Nutrition info */
     .nutrition-card {
@@ -494,133 +712,216 @@ def render_sidebar():
 
 
 def render_dashboard():
-    """Render main dashboard with stats"""
-    st.markdown('<div class="main-header">📊 Dashboard</div>', unsafe_allow_html=True)
-
+    """Render modern dashboard with stats"""
     clients = st.session_state.clients
     stats = get_dashboard_stats(clients)
+    today = datetime.now()
 
-    # Quick Stats Row
-    col1, col2, col3, col4 = st.columns(4)
+    # Dashboard Header
+    st.markdown(f"""
+    <div class="dashboard-header">
+        <h1>Dobrý deň! 👋</h1>
+        <p>{today.strftime('%A, %d. %B %Y')} • {len(clients)} aktívnych klientov</p>
+    </div>
+    """, unsafe_allow_html=True)
 
-    with col1:
-        st.metric(
-            label="Aktívni klienti",
-            value=stats["active_clients"],
-            delta=f"+{stats['new_this_week']} tento týždeň"
-        )
+    # KPI Cards Row
+    st.markdown(f"""
+    <div class="kpi-container">
+        <div class="kpi-card blue">
+            <div class="kpi-icon blue">👥</div>
+            <div class="kpi-value">{stats["active_clients"]}</div>
+            <div class="kpi-label">Aktívni klienti</div>
+            <div class="kpi-trend up">↑ +{stats['new_this_week']} tento týždeň</div>
+        </div>
+        <div class="kpi-card green">
+            <div class="kpi-icon green">🎯</div>
+            <div class="kpi-value">{stats['retention_percent']}%</div>
+            <div class="kpi-label">Retencia</div>
+            <div class="kpi-trend neutral">→ stabilná</div>
+        </div>
+        <div class="kpi-card purple">
+            <div class="kpi-icon purple">📊</div>
+            <div class="kpi-value">{stats['avg_adherence']:.0f}%</div>
+            <div class="kpi-label">Priem. adherencia</div>
+            <div class="kpi-trend {'up' if stats['avg_adherence'] > 75 else 'down'}">{'↑ výborná' if stats['avg_adherence'] > 75 else '↓ zlepšiť'}</div>
+        </div>
+        <div class="kpi-card orange">
+            <div class="kpi-icon orange">💰</div>
+            <div class="kpi-value">€{stats['mrr_eur']}</div>
+            <div class="kpi-label">Mesačný príjem</div>
+            <div class="kpi-trend up">↑ +12% MoM</div>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
 
-    with col2:
-        st.metric(
-            label="Retencia",
-            value=f"{stats['retention_percent']}%",
-            delta="stabilná"
-        )
+    # Main Content - Two Columns
+    col_left, col_right = st.columns([2, 1])
 
-    with col3:
-        st.metric(
-            label="Priem. adherencia",
-            value=f"{stats['avg_adherence']:.0f}%"
-        )
+    with col_left:
+        # Alerts Section
+        if stats["problem_clients"]:
+            st.markdown('<div class="section-card">', unsafe_allow_html=True)
+            st.markdown("""
+            <div class="section-title">
+                <div class="section-title-icon" style="background: linear-gradient(135deg, #fef3c7, #fcd34d);">⚠️</div>
+                Vyžaduje pozornosť
+            </div>
+            """, unsafe_allow_html=True)
 
-    with col4:
-        st.metric(
-            label="MRR",
-            value=f"€{stats['mrr_eur']}",
-            delta="+12%"
-        )
+            for client in stats["problem_clients"][:3]:
+                is_critical = client.days_since_checkin > 14
+                alert_class = "critical" if is_critical else ""
+                icon = "🚨" if is_critical else "⚠️"
+                message = f"{client.days_since_checkin} dní bez check-inu" if is_critical else "váha stagnuje/rastie"
 
-    st.markdown("---")
+                st.markdown(f"""
+                <div class="alert-card {alert_class}">
+                    <div class="alert-content">
+                        <span class="alert-icon">{icon}</span>
+                        <span class="alert-text"><strong>{client.name}</strong> — {message}</span>
+                    </div>
+                </div>
+                """, unsafe_allow_html=True)
 
-    # Alerts Section
-    if stats["problem_clients"]:
-        st.markdown("### ⚠️ Vyžaduje pozornosť")
-        for client in stats["problem_clients"]:
-            with st.container():
-                col1, col2 = st.columns([4, 1])
-                with col1:
-                    if client.days_since_checkin > 14:
-                        st.warning(f"🚨 **{client.name}** - {client.days_since_checkin} dní bez check-inu")
-                    elif client.status == "problem":
-                        st.warning(f"⚠️ **{client.name}** - váha stagnuje/rastie")
-                with col2:
-                    if st.button("Detail", key=f"alert_{client.id}"):
-                        st.session_state.selected_client = client.id
-                        st.session_state.page = 'client_detail'
-                        st.rerun()
+                if st.button("Zobraziť detail", key=f"alert_{client.id}", use_container_width=False):
+                    st.session_state.selected_client = client.id
+                    st.session_state.page = 'client_detail'
+                    st.rerun()
 
-    st.markdown("---")
+            st.markdown('</div>', unsafe_allow_html=True)
 
-    # Progress Overview
-    col1, col2 = st.columns(2)
+        # Charts Row
+        chart_col1, chart_col2 = st.columns(2)
 
-    with col1:
-        st.markdown("### 📈 Progres klientov")
+        with chart_col1:
+            st.markdown('<div class="section-card">', unsafe_allow_html=True)
+            st.markdown("""
+            <div class="section-title">
+                <div class="section-title-icon" style="background: linear-gradient(135deg, #c6f6d5, #9ae6b4);">📈</div>
+                Progres klientov
+            </div>
+            """, unsafe_allow_html=True)
 
-        # Pie chart of progress status
-        fig = go.Figure(data=[go.Pie(
-            labels=['Progres ✅', 'Stagnácia ⚠️', 'Regres 🔴'],
-            values=[stats['progressing'], stats['stagnating'], stats['regressing']],
-            hole=.4,
-            marker_colors=['#27ae60', '#f39c12', '#e74c3c']
-        )])
-        fig.update_layout(
-            showlegend=True,
-            height=300,
-            margin=dict(t=20, b=20, l=20, r=20)
-        )
-        st.plotly_chart(fig, use_container_width=True)
+            # Modern donut chart
+            fig = go.Figure(data=[go.Pie(
+                labels=['Progres', 'Stagnácia', 'Regres'],
+                values=[stats['progressing'], stats['stagnating'], stats['regressing']],
+                hole=.65,
+                marker_colors=['#48bb78', '#ecc94b', '#fc8181'],
+                textinfo='value',
+                textfont_size=14,
+                hovertemplate='%{label}<br>%{value} klientov<br>%{percent}<extra></extra>'
+            )])
+            fig.update_layout(
+                showlegend=True,
+                legend=dict(orientation="h", yanchor="bottom", y=-0.2, xanchor="center", x=0.5),
+                height=280,
+                margin=dict(t=10, b=40, l=10, r=10),
+                paper_bgcolor='rgba(0,0,0,0)',
+                plot_bgcolor='rgba(0,0,0,0)',
+                annotations=[dict(text=f'{stats["progressing"]}<br>úspešných', x=0.5, y=0.5, font_size=16, showarrow=False)]
+            )
+            st.plotly_chart(fig, use_container_width=True)
+            st.markdown('</div>', unsafe_allow_html=True)
 
-    with col2:
-        st.markdown("### 📊 Váhové zmeny (posledných 7 dní)")
+        with chart_col2:
+            st.markdown('<div class="section-card">', unsafe_allow_html=True)
+            st.markdown("""
+            <div class="section-title">
+                <div class="section-title-icon" style="background: linear-gradient(135deg, #bee3f8, #90cdf4);">📊</div>
+                Váhové zmeny
+            </div>
+            """, unsafe_allow_html=True)
 
-        # Bar chart of weight changes
-        recent_clients = sorted(clients, key=lambda c: c.last_checkin, reverse=True)[:5]
-        names = [c.name.split()[0] for c in recent_clients]
-        changes = [c.weight_change for c in recent_clients]
-        colors = ['#27ae60' if c < 0 else '#e74c3c' if c > 0 else '#95a5a6' for c in changes]
+            # Modern bar chart
+            recent_clients = sorted(clients, key=lambda c: c.last_checkin, reverse=True)[:5]
+            names = [c.name.split()[0] for c in recent_clients]
+            changes = [c.weight_change for c in recent_clients]
+            colors = ['#48bb78' if c < 0 else '#fc8181' if c > 0 else '#a0aec0' for c in changes]
 
-        fig = go.Figure(data=[go.Bar(
-            x=names,
-            y=changes,
-            marker_color=colors,
-            text=[f"{c:+.1f}kg" for c in changes],
-            textposition='outside'
-        )])
-        fig.update_layout(
-            height=300,
-            margin=dict(t=20, b=20, l=20, r=20),
-            yaxis_title="Zmena (kg)",
-            showlegend=False
-        )
-        st.plotly_chart(fig, use_container_width=True)
+            fig = go.Figure(data=[go.Bar(
+                x=names,
+                y=changes,
+                marker_color=colors,
+                marker_line_width=0,
+                text=[f"{c:+.1f}" for c in changes],
+                textposition='outside',
+                textfont=dict(size=11, color='#4a5568'),
+                hovertemplate='%{x}<br>%{y:+.1f} kg<extra></extra>'
+            )])
+            fig.update_layout(
+                height=280,
+                margin=dict(t=10, b=40, l=40, r=10),
+                yaxis_title="kg",
+                yaxis=dict(gridcolor='#e2e8f0', zerolinecolor='#cbd5e0'),
+                xaxis=dict(tickfont=dict(size=11)),
+                showlegend=False,
+                paper_bgcolor='rgba(0,0,0,0)',
+                plot_bgcolor='rgba(0,0,0,0)',
+                bargap=0.4
+            )
+            st.plotly_chart(fig, use_container_width=True)
+            st.markdown('</div>', unsafe_allow_html=True)
 
-    st.markdown("---")
+    with col_right:
+        # Quick Actions
+        st.markdown('<div class="section-card">', unsafe_allow_html=True)
+        st.markdown("""
+        <div class="section-title">
+            <div class="section-title-icon" style="background: linear-gradient(135deg, #e9d8fd, #d6bcfa);">⚡</div>
+            Rýchle akcie
+        </div>
+        """, unsafe_allow_html=True)
 
-    # Recent Activity
-    st.markdown("### 🕐 Posledná aktivita")
+        if st.button("➕ Nový klient", key="qa_new", use_container_width=True, type="primary"):
+            st.session_state.page = 'new_client'
+            st.rerun()
 
-    recent = sorted(clients, key=lambda c: c.last_checkin, reverse=True)[:5]
-    for client in recent:
-        col1, col2, col3, col4 = st.columns([3, 2, 2, 1])
-        with col1:
-            status_emoji = {"active": "🟢", "stagnating": "🟡", "problem": "🔴"}.get(client.status, "⚪")
-            st.write(f"{status_emoji} **{client.name}**")
-        with col2:
-            st.write(f"{client.current_weight_kg}kg ({client.weight_change:+.1f})")
-        with col3:
+        if st.button("👥 Zobraziť klientov", key="qa_clients", use_container_width=True):
+            st.session_state.page = 'clients'
+            st.rerun()
+
+        new_tickets = len([t for t in st.session_state.email_tickets if t['status'] == 'new'])
+        if st.button(f"📬 Emaily ({new_tickets} nových)", key="qa_emails", use_container_width=True):
+            st.session_state.page = 'new_client'
+            st.rerun()
+
+        st.markdown('</div>', unsafe_allow_html=True)
+
+        # Activity Timeline
+        st.markdown('<div class="section-card">', unsafe_allow_html=True)
+        st.markdown("""
+        <div class="section-title">
+            <div class="section-title-icon" style="background: linear-gradient(135deg, #feebc8, #fbd38d);">🕐</div>
+            Posledná aktivita
+        </div>
+        """, unsafe_allow_html=True)
+
+        recent = sorted(clients, key=lambda c: c.last_checkin, reverse=True)[:5]
+        for client in recent:
+            avatar_class = {"active": "active", "stagnating": "warning", "problem": "danger"}.get(client.status, "active")
+            initials = "".join([n[0].upper() for n in client.name.split()[:2]])
             days = client.days_since_checkin
-            if days == 0:
-                st.write("Dnes")
-            elif days == 1:
-                st.write("Včera")
-            else:
-                st.write(f"Pred {days} dňami")
-        with col4:
-            if st.button("→", key=f"recent_{client.id}"):
-                st.session_state.selected_client = client.id
-                st.session_state.page = 'client_detail'
-                st.rerun()
+            time_text = "Dnes" if days == 0 else "Včera" if days == 1 else f"Pred {days}d"
+            change_icon = "↓" if client.weight_change < 0 else "↑" if client.weight_change > 0 else "→"
+            change_color = "#48bb78" if client.weight_change < 0 else "#fc8181" if client.weight_change > 0 else "#a0aec0"
+
+            st.markdown(f"""
+            <div class="timeline-item">
+                <div class="timeline-avatar {avatar_class}">{initials}</div>
+                <div class="timeline-content">
+                    <div class="timeline-name">{client.name}</div>
+                    <div class="timeline-meta">
+                        <span class="timeline-stat">⚖️ {client.current_weight_kg}kg</span>
+                        <span class="timeline-stat" style="color: {change_color}">{change_icon} {abs(client.weight_change):.1f}</span>
+                    </div>
+                </div>
+                <div class="timeline-time">{time_text}</div>
+            </div>
+            """, unsafe_allow_html=True)
+
+        st.markdown('</div>', unsafe_allow_html=True)
 
 
 def render_clients_list():

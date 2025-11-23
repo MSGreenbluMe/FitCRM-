@@ -192,7 +192,7 @@ st.markdown("""
     .hero-subtitle {
         font-size: 1rem;
         font-weight: 500;
-        color: #64748b;
+        color: #94a3b8;
         margin-top: 0.5rem;
     }
 
@@ -204,15 +204,15 @@ st.markdown("""
         margin-bottom: 0.25rem;
     }
 
-    .stat-value.lime { color: #a3e635; }
-    .stat-value.cyan { color: #22d3ee; }
-    .stat-value.white { color: #ffffff; }
-    .stat-value.orange { color: #fb923c; }
+    .stat-value.lime { color: #bef264; }
+    .stat-value.cyan { color: #67e8f9; }
+    .stat-value.white { color: #f8fafc; }
+    .stat-value.orange { color: #fdba74; }
 
     .stat-label {
         font-size: 0.875rem;
-        font-weight: 500;
-        color: #64748b;
+        font-weight: 600;
+        color: #cbd5e1;
         text-transform: uppercase;
         letter-spacing: 0.05em;
     }
@@ -229,18 +229,18 @@ st.markdown("""
     }
 
     .trend-up {
-        background: rgba(163, 230, 53, 0.15);
-        color: #a3e635;
+        background: rgba(190, 242, 100, 0.15);
+        color: #bef264;
     }
 
     .trend-down {
-        background: rgba(248, 113, 113, 0.15);
-        color: #f87171;
+        background: rgba(252, 165, 165, 0.15);
+        color: #fca5a5;
     }
 
     .trend-neutral {
-        background: rgba(100, 116, 139, 0.2);
-        color: #94a3b8;
+        background: rgba(148, 163, 184, 0.15);
+        color: #cbd5e1;
     }
 
     /* ===== SECTION HEADERS ===== */
@@ -261,10 +261,10 @@ st.markdown("""
         font-size: 1.1rem;
     }
 
-    .section-icon.lime { background: rgba(163, 230, 53, 0.15); }
-    .section-icon.cyan { background: rgba(34, 211, 238, 0.15); }
-    .section-icon.orange { background: rgba(251, 146, 60, 0.15); }
-    .section-icon.red { background: rgba(248, 113, 113, 0.15); }
+    .section-icon.lime { background: rgba(190, 242, 100, 0.2); }
+    .section-icon.cyan { background: rgba(103, 232, 249, 0.2); }
+    .section-icon.orange { background: rgba(253, 186, 116, 0.2); }
+    .section-icon.red { background: rgba(252, 165, 165, 0.2); }
 
     .section-title {
         font-size: 1rem;
@@ -299,21 +299,21 @@ st.markdown("""
     }
 
     .avatar-active {
-        background: linear-gradient(135deg, rgba(163, 230, 53, 0.2), rgba(163, 230, 53, 0.1));
-        color: #a3e635;
-        border: 1px solid rgba(163, 230, 53, 0.3);
+        background: linear-gradient(135deg, rgba(190, 242, 100, 0.2), rgba(190, 242, 100, 0.1));
+        color: #bef264;
+        border: 1px solid rgba(190, 242, 100, 0.3);
     }
 
     .avatar-warning {
-        background: linear-gradient(135deg, rgba(251, 191, 36, 0.2), rgba(251, 191, 36, 0.1));
-        color: #fbbf24;
-        border: 1px solid rgba(251, 191, 36, 0.3);
+        background: linear-gradient(135deg, rgba(253, 224, 71, 0.2), rgba(253, 224, 71, 0.1));
+        color: #fde047;
+        border: 1px solid rgba(253, 224, 71, 0.3);
     }
 
     .avatar-danger {
-        background: linear-gradient(135deg, rgba(248, 113, 113, 0.2), rgba(248, 113, 113, 0.1));
-        color: #f87171;
-        border: 1px solid rgba(248, 113, 113, 0.3);
+        background: linear-gradient(135deg, rgba(252, 165, 165, 0.2), rgba(252, 165, 165, 0.1));
+        color: #fca5a5;
+        border: 1px solid rgba(252, 165, 165, 0.3);
     }
 
     .activity-content {
@@ -330,7 +330,7 @@ st.markdown("""
 
     .activity-meta {
         font-size: 0.8rem;
-        color: #64748b;
+        color: #94a3b8;
     }
 
     .activity-badge {
@@ -341,18 +341,18 @@ st.markdown("""
     }
 
     .badge-success {
-        background: rgba(163, 230, 53, 0.15);
-        color: #a3e635;
+        background: rgba(190, 242, 100, 0.15);
+        color: #bef264;
     }
 
     .badge-warning {
-        background: rgba(251, 191, 36, 0.15);
-        color: #fbbf24;
+        background: rgba(253, 224, 71, 0.15);
+        color: #fde047;
     }
 
     .badge-danger {
-        background: rgba(248, 113, 113, 0.15);
-        color: #f87171;
+        background: rgba(252, 165, 165, 0.15);
+        color: #fca5a5;
     }
 
     /* ===== ALERT CARDS ===== */
@@ -410,19 +410,19 @@ st.markdown("""
         transform: translateX(-50%);
         width: 200px;
         height: 200px;
-        background: radial-gradient(circle, rgba(163, 230, 53, 0.15) 0%, transparent 70%);
+        background: radial-gradient(circle, rgba(190, 242, 100, 0.1) 0%, transparent 70%);
         pointer-events: none;
     }
 
     .avatar-placeholder {
         width: 140px;
         height: 200px;
-        background: linear-gradient(180deg, rgba(100, 116, 139, 0.3) 0%, rgba(100, 116, 139, 0.1) 100%);
+        background: linear-gradient(180deg, rgba(148, 163, 184, 0.3) 0%, rgba(148, 163, 184, 0.1) 100%);
         border-radius: 70px 70px 40px 40px;
         margin: 0 auto 1.5rem;
         position: relative;
-        border: 2px solid rgba(163, 230, 53, 0.3);
-        box-shadow: 0 0 40px rgba(163, 230, 53, 0.1);
+        border: 2px solid rgba(190, 242, 100, 0.3);
+        box-shadow: 0 0 40px rgba(190, 242, 100, 0.08);
     }
 
     .avatar-placeholder::before {
@@ -449,12 +449,12 @@ st.markdown("""
     .avatar-stat-value {
         font-size: 1.5rem;
         font-weight: 700;
-        color: #a3e635;
+        color: #bef264;
     }
 
     .avatar-stat-label {
         font-size: 0.7rem;
-        color: #64748b;
+        color: #94a3b8;
         text-transform: uppercase;
         letter-spacing: 0.05em;
     }
@@ -471,18 +471,18 @@ st.markdown("""
     .ring-value {
         font-size: 2rem;
         font-weight: 800;
-        color: #a3e635;
+        color: #bef264;
         margin-bottom: 0.25rem;
     }
 
     .ring-label {
         font-size: 0.8rem;
-        color: #64748b;
+        color: #94a3b8;
     }
 
     /* ===== BUTTONS ===== */
     .stButton > button {
-        background: linear-gradient(135deg, #a3e635 0%, #84cc16 100%) !important;
+        background: linear-gradient(135deg, #bef264 0%, #a3e635 100%) !important;
         color: #0f172a !important;
         border: none !important;
         border-radius: 12px !important;
@@ -493,7 +493,7 @@ st.markdown("""
 
     .stButton > button:hover {
         transform: translateY(-2px) !important;
-        box-shadow: 0 8px 25px rgba(163, 230, 53, 0.3) !important;
+        box-shadow: 0 8px 25px rgba(190, 242, 100, 0.25) !important;
     }
 
     .stButton > button[kind="secondary"] {
@@ -525,11 +525,11 @@ st.markdown("""
     }
 
     [data-testid="stMetricDelta"] {
-        color: #a3e635 !important;
+        color: #bef264 !important;
     }
 
     [data-testid="stMetricLabel"] {
-        color: #64748b !important;
+        color: #94a3b8 !important;
     }
 
     /* ===== CHARTS DARK MODE ===== */
@@ -550,15 +550,15 @@ st.markdown("""
 
     .ticket-dark:hover {
         background: rgba(30, 41, 59, 0.7);
-        border-color: rgba(163, 230, 53, 0.3);
+        border-color: rgba(190, 242, 100, 0.3);
     }
 
     .ticket-dark.priority-high {
-        border-left: 3px solid #f87171;
+        border-left: 3px solid #fca5a5;
     }
 
     .ticket-dark.priority-normal {
-        border-left: 3px solid #22d3ee;
+        border-left: 3px solid #67e8f9;
     }
 
     .ticket-dark .ticket-subject {
@@ -568,7 +568,7 @@ st.markdown("""
     }
 
     .ticket-dark .ticket-meta {
-        color: #64748b;
+        color: #94a3b8;
         font-size: 0.7rem;
         margin-top: 0.25rem;
     }
@@ -591,13 +591,13 @@ st.markdown("""
 
     .stTabs [data-baseweb="tab"] {
         background: transparent;
-        color: #64748b;
+        color: #94a3b8;
         border-radius: 8px;
     }
 
     .stTabs [aria-selected="true"] {
-        background: rgba(163, 230, 53, 0.15) !important;
-        color: #a3e635 !important;
+        background: rgba(190, 242, 100, 0.15) !important;
+        color: #bef264 !important;
     }
 
     /* Plan sections */
@@ -611,7 +611,7 @@ st.markdown("""
 
     .plan-header {
         color: #f1f5f9;
-        border-bottom-color: rgba(163, 230, 53, 0.3);
+        border-bottom-color: rgba(190, 242, 100, 0.3);
     }
 
     /* Nutrition cards */
@@ -621,11 +621,11 @@ st.markdown("""
     }
 
     .nutrition-value {
-        color: #a3e635 !important;
+        color: #bef264 !important;
     }
 
     .nutrition-label {
-        color: #64748b !important;
+        color: #94a3b8 !important;
     }
 
     /* Text inputs */
@@ -637,8 +637,8 @@ st.markdown("""
     }
 
     .stTextInput input:focus, .stTextArea textarea:focus {
-        border-color: rgba(163, 230, 53, 0.5) !important;
-        box-shadow: 0 0 0 2px rgba(163, 230, 53, 0.1) !important;
+        border-color: rgba(190, 242, 100, 0.5) !important;
+        box-shadow: 0 0 0 2px rgba(190, 242, 100, 0.1) !important;
     }
 
     /* Select boxes */
@@ -650,11 +650,11 @@ st.markdown("""
 
     /* Progress bars */
     .stProgress > div > div {
-        background: rgba(163, 230, 53, 0.2) !important;
+        background: rgba(190, 242, 100, 0.15) !important;
     }
 
     .stProgress > div > div > div {
-        background: linear-gradient(90deg, #a3e635, #84cc16) !important;
+        background: linear-gradient(90deg, #bef264, #a3e635) !important;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -749,13 +749,13 @@ def render_sidebar():
         # Logo / Brand
         st.markdown("""
         <div style="padding: 1rem 0 1.5rem 0;">
-            <span style="font-size: 1.5rem; font-weight: 800; color: #a3e635;">FIT</span>
-            <span style="font-size: 1.5rem; font-weight: 300; color: #64748b;">CRM</span>
+            <span style="font-size: 1.5rem; font-weight: 800; color: #bef264;">FIT</span>
+            <span style="font-size: 1.5rem; font-weight: 300; color: #94a3b8;">CRM</span>
         </div>
         """, unsafe_allow_html=True)
 
         # Navigation
-        st.markdown('<p style="color: #64748b; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.5rem;">Menu</p>', unsafe_allow_html=True)
+        st.markdown('<p style="color: #94a3b8; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.5rem;">Menu</p>', unsafe_allow_html=True)
 
         if st.button("📊  Dashboard", use_container_width=True,
                      type="primary" if st.session_state.page == 'dashboard' else "secondary"):
@@ -778,7 +778,7 @@ def render_sidebar():
 
         # Email Feed / Tickets
         new_tickets = [t for t in st.session_state.email_tickets if t['status'] == 'new']
-        st.markdown(f'<p style="color: #64748b; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.5rem;">Inbox <span style="color: #a3e635;">({len(new_tickets)})</span></p>', unsafe_allow_html=True)
+        st.markdown(f'<p style="color: #94a3b8; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.5rem;">Inbox <span style="color: #bef264;">({len(new_tickets)})</span></p>', unsafe_allow_html=True)
 
         for ticket in st.session_state.email_tickets[:3]:
             priority_class = f"priority-{ticket['priority']}"
@@ -810,20 +810,20 @@ def render_sidebar():
         st.markdown("<br>", unsafe_allow_html=True)
 
         # API Status
-        st.markdown('<p style="color: #64748b; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.5rem;">Status</p>', unsafe_allow_html=True)
+        st.markdown('<p style="color: #94a3b8; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.5rem;">Status</p>', unsafe_allow_html=True)
 
         api_key = get_api_key()
         nutrition_key = get_nutrition_api_key()
 
         status_html = f"""
         <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
-            <span style="background: {'rgba(163, 230, 53, 0.15)' if api_key else 'rgba(248, 113, 113, 0.15)'};
-                         color: {'#a3e635' if api_key else '#f87171'};
+            <span style="background: {'rgba(190, 242, 100, 0.15)' if api_key else 'rgba(252, 165, 165, 0.15)'};
+                         color: {'#bef264' if api_key else '#fca5a5'};
                          padding: 0.25rem 0.5rem; border-radius: 6px; font-size: 0.7rem; font-weight: 600;">
                 {'✓' if api_key else '✗'} Gemini
             </span>
-            <span style="background: {'rgba(34, 211, 238, 0.15)' if nutrition_key else 'rgba(100, 116, 139, 0.15)'};
-                         color: {'#22d3ee' if nutrition_key else '#64748b'};
+            <span style="background: {'rgba(103, 232, 249, 0.15)' if nutrition_key else 'rgba(148, 163, 184, 0.15)'};
+                         color: {'#67e8f9' if nutrition_key else '#94a3b8'};
                          padding: 0.25rem 0.5rem; border-radius: 6px; font-size: 0.7rem; font-weight: 600;">
                 {'✓' if nutrition_key else '○'} Nutrition
             </span>
@@ -896,7 +896,7 @@ def render_dashboard():
                 labels=['Progres', 'Stagnácia', 'Regres'],
                 values=[stats['progressing'], stats['stagnating'], stats['regressing']],
                 hole=.7,
-                marker_colors=['#a3e635', '#fbbf24', '#f87171'],
+                marker_colors=['#bef264', '#fde047', '#fca5a5'],
                 textinfo='none',
                 hovertemplate='%{label}<br>%{value} klientov<br>%{percent}<extra></extra>'
             )])
@@ -915,9 +915,9 @@ def render_dashboard():
                 paper_bgcolor='rgba(0,0,0,0)',
                 plot_bgcolor='rgba(0,0,0,0)',
                 annotations=[dict(
-                    text=f'<b>{stats["progressing"]}</b><br><span style="font-size:10px;color:#64748b">úspešných</span>',
+                    text=f'<b>{stats["progressing"]}</b><br><span style="font-size:10px;color:#94a3b8">úspešných</span>',
                     x=0.5, y=0.5,
-                    font=dict(size=24, color='#a3e635'),
+                    font=dict(size=24, color='#bef264'),
                     showarrow=False
                 )]
             )
@@ -936,7 +936,7 @@ def render_dashboard():
             recent_clients = sorted(clients, key=lambda c: c.last_checkin, reverse=True)[:5]
             names = [c.name.split()[0] for c in recent_clients]
             changes = [c.weight_change for c in recent_clients]
-            colors = ['#a3e635' if c < 0 else '#f87171' if c > 0 else '#64748b' for c in changes]
+            colors = ['#bef264' if c < 0 else '#fca5a5' if c > 0 else '#94a3b8' for c in changes]
 
             fig = go.Figure(data=[go.Bar(
                 x=names,
@@ -954,7 +954,7 @@ def render_dashboard():
                 yaxis=dict(
                     gridcolor='rgba(255,255,255,0.05)',
                     zerolinecolor='rgba(255,255,255,0.1)',
-                    tickfont=dict(color='#64748b'),
+                    tickfont=dict(color='#94a3b8'),
                     title=None
                 ),
                 xaxis=dict(tickfont=dict(size=10, color='#94a3b8')),
@@ -1004,7 +1004,7 @@ def render_dashboard():
         <div class="avatar-card">
             <div class="avatar-placeholder"></div>
             <div style="color: #f1f5f9; font-weight: 600; margin-bottom: 0.5rem;">Body Composition</div>
-            <div style="color: #64748b; font-size: 0.8rem;">Priemerná zmena klientov</div>
+            <div style="color: #94a3b8; font-size: 0.8rem;">Priemerná zmena klientov</div>
             <div class="avatar-stats">
                 <div class="avatar-stat">
                     <div class="avatar-stat-value">-2.3</div>

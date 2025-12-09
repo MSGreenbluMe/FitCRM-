@@ -1648,13 +1648,15 @@ def render_generated_plans():
             try:
                 pdf_gen = PDFGenerator()
                 with tempfile.NamedTemporaryFile(suffix=".pdf", delete=False) as tmp:
-                    pdf_gen.generate_pdf(display_meal, tmp.name, f"Jedálniček - {profile.name}")
-                    with open(tmp.name, "rb") as f:
-                        st.download_button("📥 Stiahnuť PDF", f.read(),
-                                           f"jedalnicky_{profile.name.replace(' ', '_')}.pdf",
-                                           "application/pdf", use_container_width=True)
-            except:
-                pass
+                    if pdf_gen.generate_pdf(display_meal, tmp.name, f"Jedálniček - {profile.name}"):
+                        with open(tmp.name, "rb") as f:
+                            st.download_button("📥 Stiahnuť PDF", f.read(),
+                                               f"jedalnicky_{profile.name.replace(' ', '_')}.pdf",
+                                               "application/pdf", use_container_width=True)
+                    else:
+                        st.warning("⚠️ PDF sa nepodarilo vygenerovať")
+            except Exception as e:
+                st.error(f"❌ Chyba PDF: {e}")
 
     with tab2:
         st.markdown('<div class="plan-section">', unsafe_allow_html=True)
@@ -1680,13 +1682,15 @@ def render_generated_plans():
             try:
                 pdf_gen = PDFGenerator()
                 with tempfile.NamedTemporaryFile(suffix=".pdf", delete=False) as tmp:
-                    pdf_gen.generate_pdf(display_training, tmp.name, f"Tréning - {profile.name}")
-                    with open(tmp.name, "rb") as f:
-                        st.download_button("📥 Stiahnuť PDF", f.read(),
-                                           f"trening_{profile.name.replace(' ', '_')}.pdf",
-                                           "application/pdf", use_container_width=True)
-            except:
-                pass
+                    if pdf_gen.generate_pdf(display_training, tmp.name, f"Tréning - {profile.name}"):
+                        with open(tmp.name, "rb") as f:
+                            st.download_button("📥 Stiahnuť PDF", f.read(),
+                                               f"trening_{profile.name.replace(' ', '_')}.pdf",
+                                               "application/pdf", use_container_width=True)
+                    else:
+                        st.warning("⚠️ PDF sa nepodarilo vygenerovať")
+            except Exception as e:
+                st.error(f"❌ Chyba PDF: {e}")
 
     with tab3:
         render_nutrition_analysis(segment)
@@ -1707,7 +1711,52 @@ def render_generated_plans():
 
     with col2:
         if st.button("📧 Odoslať klientovi", use_container_width=True):
-            st.info("📧 Funkcia odosielania emailu bude dostupná v ďalšej verzii")
+            email_user = os.getenv('EMAIL_USER', '')
+            email_pass = os.getenv('EMAIL_PASS', '')
+            
+            if not email_user or not email_pass:
+                st.error("❌ Email credentials nie sú nastavené v .env súbore")
+            else:
+                try:
+                    from src.email_sender import EmailSender
+                    sender = EmailSender(
+                        smtp_host=os.getenv('SMTP_HOST', 'smtp.gmail.com'),
+                        smtp_port=int(os.getenv('SMTP_PORT', '587')),
+                        username=email_user,
+                        password=email_pass
+                    )
+                    
+                    # Generate PDFs to temp files
+                    pdf_gen = PDFGenerator()
+                    meal_pdf_path = None
+                    training_pdf_path = None
+                    
+                    with tempfile.NamedTemporaryFile(suffix=".pdf", delete=False) as tmp:
+                        if pdf_gen.generate_pdf(meal_plan, tmp.name, f"Jedálniček - {profile.name}"):
+                            meal_pdf_path = Path(tmp.name)
+                    
+                    with tempfile.NamedTemporaryFile(suffix=".pdf", delete=False) as tmp:
+                        if pdf_gen.generate_pdf(training_plan, tmp.name, f"Tréning - {profile.name}"):
+                            training_pdf_path = Path(tmp.name)
+                    
+                    trainer_name = os.getenv('TRAINER_NAME', 'Tvoj Tréner')
+                    
+                    with st.spinner("📧 Odosielam email..."):
+                        success = sender.send_welcome_email(
+                            to_email=profile.email,
+                            client_name=profile.name,
+                            meal_plan_pdf=meal_pdf_path,
+                            training_plan_pdf=training_pdf_path,
+                            trainer_name=trainer_name
+                        )
+                    
+                    if success:
+                        st.success(f"✅ Email odoslaný na: {profile.email}")
+                    else:
+                        st.error("❌ Nepodarilo sa odoslať email")
+                        
+                except Exception as e:
+                    st.error(f"❌ Chyba pri odosielaní: {e}")
 
     with col3:
         if st.button("🔄 Nový klient", use_container_width=True):

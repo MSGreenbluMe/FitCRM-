@@ -96,7 +96,7 @@ class EmailParser:
             r"(?:práce|prace|work|zamestnanie)[:\s]+([^\n]+)",
         ],
         "experience": [
-            r"(?:skúsenosti|zkušenosti|experience|úroveň|uroven)[:\s]+([^\n]+)",
+            r"(?:skúsenosti|skusenosti|zkušenosti|zkusenosti|experience|úroveň|uroven)[:\s]+([^\n]+)",
         ],
         "restrictions": [
             r"(?:obmedzenia|omezení|alergie|restrictions)[:\s]+([^\n]+)",

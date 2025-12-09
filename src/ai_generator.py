@@ -43,16 +43,26 @@ class ClientSegment:
 class FitAIGenerator:
     """Generate fitness plans using Google Gemini AI"""
 
-    def __init__(self, api_key: str, model_name: str = "gemini-2.5-pro"):
+    def __init__(self, api_key: str, model_name: str = None):
         """
         Initialize the AI generator.
 
         Args:
             api_key: Google Gemini API key
-            model_name: Model to use (default: gemini-2.5-pro)
+            model_name: Model to use (default from config or gemini-2.5-pro)
         """
         if not api_key:
             raise ValueError("Gemini API key is required")
+
+        # Use config model if not specified
+        if model_name is None:
+            try:
+                import sys
+                sys.path.insert(0, str(Path(__file__).parent.parent))
+                from config import GEMINI_MODEL
+                model_name = GEMINI_MODEL
+            except ImportError:
+                model_name = "gemini-2.5-pro"
 
         genai.configure(api_key=api_key)
         self.model = genai.GenerativeModel(model_name)

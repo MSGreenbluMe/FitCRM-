@@ -1530,11 +1530,13 @@ def render_client_form():
 
 def generate_plans(profile: ClientProfile, api_key: str):
     """Generate meal and training plans"""
+    import time
+    
     progress = st.progress(0)
     status = st.empty()
 
     try:
-        status.text("🔄 Pripájam sa k Gemini 2.5 Pro...")
+        status.text("🔄 Pripájam sa k Gemini API...")
         progress.progress(10)
 
         ai = FitAIGenerator(api_key=api_key)
@@ -1544,9 +1546,15 @@ def generate_plans(profile: ClientProfile, api_key: str):
         segment = ai.segment_client(profile)
         st.session_state.segment = segment
 
+        # Delay to avoid rate limiting
+        time.sleep(2)
+
         status.text("🍽️ Generujem jedálniček...")
         progress.progress(50)
         meal_plan = ai.generate_meal_plan(profile, segment)
+
+        # Delay to avoid rate limiting
+        time.sleep(2)
 
         status.text("💪 Generujem tréningový plán...")
         progress.progress(75)

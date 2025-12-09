@@ -89,8 +89,8 @@ class FitAIGenerator:
     def _generate_with_retry(
         self,
         prompt: str,
-        max_retries: int = 3,
-        initial_delay: float = 1.0
+        max_retries: int = 2,
+        initial_delay: float = 5.0
     ) -> str:
         """
         Generate content with exponential backoff retry.
@@ -110,6 +110,13 @@ class FitAIGenerator:
                 response = self.model.generate_content(prompt)
                 return response.text
             except Exception as e:
+                error_str = str(e).lower()
+                
+                # If rate limited, don't retry - just raise immediately
+                if "429" in str(e) or "quota" in error_str or "rate" in error_str:
+                    self.logger.error(f"Rate limit hit: {e}")
+                    raise
+                
                 if attempt == max_retries:
                     raise
 

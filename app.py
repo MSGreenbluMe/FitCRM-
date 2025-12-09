@@ -1529,11 +1529,12 @@ def render_client_form():
 
 
 def generate_plans(profile: ClientProfile, api_key: str):
-    """Generate meal and training plans"""
+    """Generate meal and training plans - sequential with delays"""
     import time
     
     progress = st.progress(0)
     status = st.empty()
+    error_container = st.empty()
 
     try:
         status.text("🔄 Pripájam sa k Gemini API...")
@@ -1541,27 +1542,32 @@ def generate_plans(profile: ClientProfile, api_key: str):
 
         ai = FitAIGenerator(api_key=api_key)
 
-        status.text("📊 Analyzujem profil...")
-        progress.progress(25)
+        # Step 1: Segment client (1 API request)
+        status.text("📊 Analyzujem profil... (1/3)")
+        progress.progress(20)
         segment = ai.segment_client(profile)
         st.session_state.segment = segment
+        progress.progress(33)
 
-        # Delay to avoid rate limiting
-        time.sleep(2)
+        # Wait before next request
+        status.text("⏳ Čakám pred ďalším requestom...")
+        time.sleep(3)
 
-        status.text("🍽️ Generujem jedálniček...")
-        progress.progress(50)
+        # Step 2: Generate meal plan (1 API request)
+        status.text("🍽️ Generujem jedálniček... (2/3)")
+        progress.progress(45)
         meal_plan = ai.generate_meal_plan(profile, segment)
-
-        # Delay to avoid rate limiting
-        time.sleep(2)
-
-        status.text("💪 Generujem tréningový plán...")
-        progress.progress(75)
-        training_plan = ai.generate_training_plan(profile, segment)
-
-        # Store plans
         st.session_state.meal_plan = meal_plan
+        progress.progress(66)
+
+        # Wait before next request
+        status.text("⏳ Čakám pred ďalším requestom...")
+        time.sleep(3)
+
+        # Step 3: Generate training plan (1 API request)
+        status.text("💪 Generujem tréningový plán... (3/3)")
+        progress.progress(80)
+        training_plan = ai.generate_training_plan(profile, segment)
         st.session_state.training_plan = training_plan
 
         # For semi-auto mode, also store editable versions
@@ -1575,7 +1581,11 @@ def generate_plans(profile: ClientProfile, api_key: str):
         st.rerun()
 
     except Exception as e:
-        st.error(f"❌ Chyba: {e}")
+        error_msg = str(e)
+        if "429" in error_msg or "quota" in error_msg.lower():
+            error_container.error(f"❌ Rate limit - počkajte 60 sekúnd a skúste znova")
+        else:
+            error_container.error(f"❌ Chyba: {e}")
 
 
 def render_generated_plans():

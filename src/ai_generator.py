@@ -86,47 +86,24 @@ class FitAIGenerator:
 
         return prompts
 
-    def _generate_with_retry(
-        self,
-        prompt: str,
-        max_retries: int = 2,
-        initial_delay: float = 5.0
-    ) -> str:
+    def _generate_single_request(self, prompt: str) -> str:
         """
-        Generate content with exponential backoff retry.
-
+        Generate content with a single API request - no retries.
+        
         Args:
             prompt: The prompt to send
-            max_retries: Maximum number of retries
-            initial_delay: Initial delay in seconds
-
+            
         Returns:
             Generated text content
         """
-        delay = initial_delay
-
-        for attempt in range(max_retries + 1):
-            try:
-                response = self.model.generate_content(prompt)
-                return response.text
-            except Exception as e:
-                error_str = str(e).lower()
-                
-                # If rate limited, don't retry - just raise immediately
-                if "429" in str(e) or "quota" in error_str or "rate" in error_str:
-                    self.logger.error(f"Rate limit hit: {e}")
-                    raise
-                
-                if attempt == max_retries:
-                    raise
-
-                self.logger.warning(
-                    f"Generation failed (attempt {attempt + 1}/{max_retries + 1}): {e}"
-                )
-                time.sleep(delay)
-                delay *= 2  # Exponential backoff
-
-        return ""
+        try:
+            self.logger.info("Sending single API request...")
+            response = self.model.generate_content(prompt)
+            self.logger.info("API request successful")
+            return response.text
+        except Exception as e:
+            self.logger.error(f"API request failed: {e}")
+            raise
 
     def segment_client(self, profile: ClientProfile) -> ClientSegment:
         """
@@ -158,8 +135,8 @@ class FitAIGenerator:
             health_conditions=", ".join(profile.health_conditions) or "None"
         )
 
-        # Generate response
-        response_text = self._generate_with_retry(prompt)
+        # Generate response - single request, no retry
+        response_text = self._generate_single_request(prompt)
 
         # Parse JSON response
         try:
@@ -268,7 +245,7 @@ class FitAIGenerator:
             health_conditions=", ".join(profile.health_conditions) or "Žiadne"
         )
 
-        meal_plan = self._generate_with_retry(prompt)
+        meal_plan = self._generate_single_request(prompt)
         self.logger.info(f"Meal plan generated: {len(meal_plan)} characters")
         return meal_plan
 
@@ -320,7 +297,7 @@ class FitAIGenerator:
             available_equipment=", ".join(profile.available_equipment) or "Štandardné fitness centrum"
         )
 
-        training_plan = self._generate_with_retry(prompt)
+        training_plan = self._generate_single_request(prompt)
         self.logger.info(f"Training plan generated: {len(training_plan)} characters")
         return training_plan
 

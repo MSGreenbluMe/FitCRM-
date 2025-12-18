@@ -1,0 +1,6 @@
+{
+  "name": "FitCRM",
+  "version": "0.2.0",
+  "description": "FIT CRM - Streamlit web app for fitness trainers (inbox + client intake + plan generation)",
+  "entry": "app.py"
+}

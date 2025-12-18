@@ -363,6 +363,34 @@ st.markdown("""
         height: 38px;
     }
 
+    /* Topbar wrapper (same note: style by marker) */
+    div[data-testid="stVerticalBlock"]:has(#topbar-marker) {
+        background: var(--surface-1);
+        border: 1px solid var(--border);
+        border-radius: 18px;
+        padding: 0.75rem 0.85rem;
+        margin-bottom: 1.0rem;
+    }
+
+    div[data-testid="stVerticalBlock"]:has(#topbar-marker) div[data-testid="stHorizontalBlock"] {
+        align-items: center;
+    }
+
+    .topbar-title {
+        font-weight: 900;
+        letter-spacing: -0.02em;
+        color: var(--text);
+        font-size: 1.1rem;
+        line-height: 1.1;
+        margin-top: 0.1rem;
+    }
+
+    .topbar-sub {
+        color: var(--muted);
+        font-size: 0.86rem;
+        margin-top: 0.1rem;
+    }
+
     .stTextInput input {
         border-radius: 14px !important;
         border-color: var(--border) !important;
@@ -1811,38 +1839,102 @@ def render_dashboard():
 
         st.markdown('<div style="height: 0.9rem;"></div>', unsafe_allow_html=True)
 
-        st.markdown(
-            """
-            <div class="section-card">
-                <div class="section-head">
-                    <div class="title">Zdravie & progres</div>
-                    <div class="meta">Prehľad stavu klientov</div>
-                </div>
-            """,
-            unsafe_allow_html=True,
-        )
+        dm = st.session_state.dark_mode
+        font_color = "#e7f3eb" if dm else "#0f172a"
+        grid_color = "rgba(35, 72, 47, 0.35)" if dm else "rgba(217, 234, 223, 0.9)"
+        muted_color = "#92c9a4" if dm else "#456a55"
 
-        fig = go.Figure(
-            data=[
-                go.Pie(
-                    labels=["Progres", "Stagnácia", "Problém"],
-                    values=[stats["progressing"], stats["stagnating"], stats["regressing"]],
-                    hole=0.72,
-                    marker_colors=["#13ec5b", "#fbbf24", "#f87171"],
-                    textinfo="none",
-                )
-            ]
-        )
-        fig.update_layout(
-            showlegend=True,
-            height=280,
-            margin=dict(t=10, b=10, l=10, r=10),
-            paper_bgcolor="rgba(0,0,0,0)",
-            plot_bgcolor="rgba(0,0,0,0)",
-            legend=dict(orientation="h", yanchor="bottom", y=-0.15, xanchor="center", x=0.5),
-        )
-        st.plotly_chart(fig, use_container_width=True, config={"displayModeBar": False})
-        st.markdown("</div>", unsafe_allow_html=True)
+        def _adherence_at_day(c: ClientData, day: datetime) -> int | None:
+            if not c.checkins:
+                return None
+            latest = None
+            for ch in sorted(c.checkins, key=lambda x: x.date):
+                if ch.date <= day:
+                    latest = ch
+            if not latest:
+                return None
+            return int(latest.adherence_percent)
+
+        active_clients = [c for c in clients if c.status in ["active", "stagnating"]]
+        days = [today - timedelta(days=i) for i in range(6, -1, -1)]
+        vals = []
+        for d in days:
+            per = [v for v in (_adherence_at_day(c, d) for c in active_clients) if v is not None]
+            vals.append(round(sum(per) / len(per)) if per else 0)
+
+        ch1, ch2 = st.columns(2)
+        with ch1:
+            st.markdown(
+                """
+                <div class="section-card">
+                    <div class="section-head">
+                        <div class="title">Zdravie & progres</div>
+                        <div class="meta">Rozdelenie klientov</div>
+                    </div>
+                """,
+                unsafe_allow_html=True,
+            )
+            fig = go.Figure(
+                data=[
+                    go.Pie(
+                        labels=["Progres", "Stagnácia", "Problém"],
+                        values=[stats["progressing"], stats["stagnating"], stats["regressing"]],
+                        hole=0.72,
+                        marker_colors=["#13ec5b", "#fbbf24", "#f87171"],
+                        textinfo="none",
+                    )
+                ]
+            )
+            fig.update_layout(
+                showlegend=True,
+                height=280,
+                margin=dict(t=10, b=10, l=10, r=10),
+                font=dict(color=font_color),
+                paper_bgcolor="rgba(0,0,0,0)",
+                plot_bgcolor="rgba(0,0,0,0)",
+                legend=dict(orientation="h", yanchor="bottom", y=-0.15, xanchor="center", x=0.5),
+            )
+            st.plotly_chart(fig, use_container_width=True, config={"displayModeBar": False})
+            st.markdown("</div>", unsafe_allow_html=True)
+
+        with ch2:
+            st.markdown(
+                """
+                <div class="section-card">
+                    <div class="section-head">
+                        <div class="title">Compliance</div>
+                        <div class="meta">Posledných 7 dní</div>
+                    </div>
+                """,
+                unsafe_allow_html=True,
+            )
+            x = [d.strftime("%a") for d in days]
+            fig2 = go.Figure(
+                data=[
+                    go.Scatter(
+                        x=x,
+                        y=vals,
+                        mode="lines+markers",
+                        line=dict(color="#13ec5b", width=3),
+                        marker=dict(size=7, color="#13ec5b"),
+                        fill="tozeroy",
+                        fillcolor="rgba(19, 236, 91, 0.12)",
+                        hovertemplate="%{x}<br>%{y}%<extra></extra>",
+                    )
+                ]
+            )
+            fig2.update_layout(
+                height=280,
+                margin=dict(t=10, b=10, l=10, r=10),
+                font=dict(color=font_color),
+                paper_bgcolor="rgba(0,0,0,0)",
+                plot_bgcolor="rgba(0,0,0,0)",
+                xaxis=dict(showgrid=False, tickfont=dict(color=muted_color)),
+                yaxis=dict(range=[0, 100], gridcolor=grid_color, tickfont=dict(color=muted_color), zeroline=False),
+                showlegend=False,
+            )
+            st.plotly_chart(fig2, use_container_width=True, config={"displayModeBar": False})
+            st.markdown("</div>", unsafe_allow_html=True)
 
     with col_side:
         st.markdown(
@@ -1947,21 +2039,35 @@ def render_app_shell():
     with content_col:
         top = st.container()
         with top:
-            c1, c2, c3, c4 = st.columns([2.9, 1.0, 0.45, 0.65])
+            st.markdown('<div id="topbar-marker"></div>', unsafe_allow_html=True)
+
+            page_label = {
+                "dashboard": "Dashboard",
+                "clients": "Klienti",
+                "client_detail": "Klient",
+                "inbox": "Inbox",
+                "new_client": "Nový klient",
+                "email_connector": "Email konektor",
+            }.get(st.session_state.page, "FitCRM")
+
+            c0, c1, c2, c3, c4, c5 = st.columns([1.25, 2.35, 0.20, 0.85, 0.45, 0.65])
+            with c0:
+                st.markdown(f'<div class="topbar-title">{html.escape(page_label)}</div>', unsafe_allow_html=True)
+                sha = _git_sha_short()
+                if sha:
+                    st.markdown(f'<div class="topbar-sub">{html.escape(sha)}</div>', unsafe_allow_html=True)
             with c1:
-                st.text_input("", placeholder="Search…", label_visibility="collapsed", key="global_search")
-            with c2:
-                next_dm = st.toggle("Dark mode", value=dm, label_visibility="collapsed", key="top_dark_toggle")
+                st.text_input("", placeholder="Search clients, emails…", label_visibility="collapsed", key="global_search")
+            with c3:
+                next_dm = st.toggle("Dark", value=dm, key="top_dark_toggle")
                 if next_dm != dm:
                     st.session_state.dark_mode = next_dm
                     st.rerun()
-            with c3:
-                st.markdown('<div class="topbar-icon">🔔</div>', unsafe_allow_html=True)
             with c4:
+                st.markdown('<div class="topbar-icon">🔔</div>', unsafe_allow_html=True)
+            with c5:
                 avatar = _portrait_data_uri("trainer")
                 st.markdown(f'<div class="topbar-avatar"><img src="{avatar}" alt="avatar" /></div>', unsafe_allow_html=True)
-
-        st.markdown('<div class="topbar-row" style="display:none;"></div>', unsafe_allow_html=True)
 
         page = st.session_state.page
         if page == 'dashboard':

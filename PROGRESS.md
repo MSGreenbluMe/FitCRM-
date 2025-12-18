@@ -10,6 +10,7 @@
 ✅ UI styling unified across app (more consistent spacing/typography/cards).
 ✅ Offline sample avatars improved (portrait-style SVG avatars in Clients list + Client detail).
 🚧 Dashboard redesigned toward Tailwind mockup style (dense KPI cards + schedule/health/activity + green palette).
+✅ Dashboard: topbar card (title/search/actions) + Compliance chart (7 days) added.
 
 ## Completed
 

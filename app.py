@@ -17,6 +17,7 @@ import pandas as pd
 import html
 import base64
 import hashlib
+import subprocess
 
 # Add parent directory to path
 sys.path.insert(0, str(Path(__file__).parent))
@@ -124,6 +125,16 @@ Obmedzenia: ziadne
 Motivacia: Chcem sa citit lepsie a byt fit."""
     }
 ]
+
+
+@st.cache_data(show_spinner=False)
+def _git_sha_short() -> str:
+    try:
+        cwd = str(Path(__file__).parent)
+        out = subprocess.check_output(["git", "rev-parse", "--short", "HEAD"], cwd=cwd, stderr=subprocess.DEVNULL)
+        return out.decode("utf-8").strip()
+    except Exception:
+        return ""
 
 # Page config
 st.set_page_config(
@@ -452,11 +463,11 @@ st.markdown("""
         background: linear-gradient(135deg, #eff6ff 0%, #f8fafc 100%);
         border: 1px solid #e2e8f0;
         border-radius: 16px;
-        padding: 1.5rem;
+        padding: 1.05rem;
         text-align: center;
         position: relative;
         overflow: hidden;
-        min-height: 280px;
+        min-height: 210px;
         display: flex;
         flex-direction: column;
         justify-content: center;
@@ -704,6 +715,42 @@ st.markdown("""
         color: #0f172a;
     }
 
+    .inbox-item {
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 0.65rem 0.75rem;
+        background: #ffffff;
+        margin-bottom: 0.5rem;
+    }
+
+    .inbox-item.selected {
+        border-color: #93c5fd;
+        background: #eff6ff;
+    }
+
+    .inbox-item-title {
+        font-weight: 700;
+        font-size: 0.95rem;
+        color: #0f172a;
+        line-height: 1.25;
+    }
+
+    .inbox-item-meta {
+        display: flex;
+        justify-content: space-between;
+        gap: 0.75rem;
+        margin-top: 0.25rem;
+        color: #64748b;
+        font-size: 0.8rem;
+    }
+
+    .inbox-item-snippet {
+        margin-top: 0.35rem;
+        color: #475569;
+        font-size: 0.82rem;
+        line-height: 1.25;
+    }
+
     /* ===== LEGACY OVERRIDES ===== */
     .main-header {
         font-size: 1.5rem;
@@ -901,6 +948,31 @@ def _avatar_data_uri(seed: str) -> str:
     return f"data:image/svg+xml;base64,{b64}"
 
 
+def _portrait_data_uri(seed: str) -> str:
+    h = hashlib.md5((seed or "").encode("utf-8")).hexdigest()
+    bg = ["#eef2ff", "#ecfeff", "#fef3c7", "#ecfdf5", "#fce7f3", "#f1f5f9"][int(h[0], 16) % 6]
+    hair = ["#0f172a", "#111827", "#1f2937", "#0b1320"][int(h[1], 16) % 4]
+    skin = ["#f2c9ac", "#f6d3b8", "#eec3a5", "#f7d7c2"][int(h[2], 16) % 4]
+    shirt = ["#2563eb", "#059669", "#7c3aed", "#d97706", "#0ea5e9"][int(h[3], 16) % 5]
+    accent = ["#93c5fd", "#86efac", "#c4b5fd", "#fcd34d", "#67e8f9"][int(h[4], 16) % 5]
+
+    svg = f"""<svg xmlns='http://www.w3.org/2000/svg' width='96' height='96' viewBox='0 0 96 96'>
+    <defs>
+      <linearGradient id='g' x1='0' y1='0' x2='1' y2='1'>
+        <stop offset='0' stop-color='{bg}'/>
+        <stop offset='1' stop-color='#ffffff'/>
+      </linearGradient>
+    </defs>
+    <rect width='96' height='96' rx='48' fill='url(#g)'/>
+    <circle cx='48' cy='42' r='18' fill='{skin}'/>
+    <path d='M30 44c2-14 34-14 36 0v4c-6 6-30 6-36 0z' fill='{hair}' opacity='0.95'/>
+    <path d='M22 92c4-20 18-28 26-28s22 8 26 28' fill='{shirt}'/>
+    <path d='M30 76c6 4 30 4 36 0' stroke='{accent}' stroke-width='4' stroke-linecap='round' opacity='0.9'/>
+    </svg>"""
+    encoded = base64.b64encode(svg.encode("utf-8")).decode("utf-8")
+    return f"data:image/svg+xml;base64,{encoded}"
+
+
 def init_session_state():
     """Initialize session state variables"""
     if 'page' not in st.session_state:
@@ -915,7 +987,6 @@ def init_session_state():
         st.session_state.meal_plan = None
     if 'training_plan' not in st.session_state:
         st.session_state.training_plan = None
-    # Email ticket system
     if 'email_tickets' not in st.session_state:
         st.session_state.email_tickets = [
             {**t, "read": False, "source": "demo"}
@@ -945,15 +1016,12 @@ def init_session_state():
         }
     if 'imap_last_test' not in st.session_state:
         st.session_state.imap_last_test = {"ok": None, "error": None}
-    # Generation mode: 'auto' or 'semi'
     if 'generation_mode' not in st.session_state:
         st.session_state.generation_mode = 'auto'
-    # Editable plans for semi-auto mode
     if 'editable_meal_plan' not in st.session_state:
         st.session_state.editable_meal_plan = None
     if 'editable_training_plan' not in st.session_state:
         st.session_state.editable_training_plan = None
-    # Dark mode
     if 'dark_mode' not in st.session_state:
         st.session_state.dark_mode = False
 
@@ -1067,8 +1135,10 @@ def render_sidebar():
         """
         st.markdown(status_html, unsafe_allow_html=True)
 
+        sha = _git_sha_short()
+        sha_txt = f" · {sha}" if sha else ""
         st.markdown('<div style="height: 0.6rem;"></div>', unsafe_allow_html=True)
-        st.markdown(f'<p style="color: #94a3b8; font-size: 0.65rem;">FIT CRM v{APP_VERSION} · {"Tmavý" if dm else "Světlý"}</p>', unsafe_allow_html=True)
+        st.markdown(f'<p style="color: #94a3b8; font-size: 0.65rem;">FIT CRM v{APP_VERSION}{sha_txt} · {"Tmavý" if dm else "Světlý"}</p>', unsafe_allow_html=True)
 
 
 def _relative_time(dt: datetime) -> str:
@@ -1183,45 +1253,35 @@ def render_inbox():
     tickets = st.session_state.email_tickets
 
     st.markdown('<div class="bento-card" style="padding: 0.85rem 1rem; margin-bottom: 1rem;">', unsafe_allow_html=True)
-    tcol1, tcol2, tcol3, tcol4 = st.columns([2.2, 1.2, 1.2, 1.1])
+    tcol1, tcol2, tcol3, tcol4, tcol5, tcol6 = st.columns([2.1, 1.1, 1.1, 1.0, 1.0, 1.0])
     with tcol1:
         query = st.text_input("", placeholder="Hľadať v inboxe…", label_visibility="collapsed")
     with tcol2:
-        status_filter = st.selectbox("Stav", ["Všetko", "Nové", "Priradené", "Hotové"], label_visibility="collapsed")
+        folder_label = st.selectbox(
+            "",
+            options=["Inbox", "Priradené", "Hotové", "Všetko"],
+            index={"inbox": 0, "assigned": 1, "done": 2, "all": 3}.get(st.session_state.inbox_folder, 0),
+            label_visibility="collapsed",
+        )
+        st.session_state.inbox_folder = {"Inbox": "inbox", "Priradené": "assigned", "Hotové": "done", "Všetko": "all"}.get(folder_label, "inbox")
     with tcol3:
-        show_unread_only = st.checkbox("Len neprečítané", value=False)
+        status_filter = st.selectbox("Stav", ["Všetko", "Nové", "Priradené", "Hotové"], label_visibility="collapsed")
     with tcol4:
+        show_unread_only = st.checkbox("Len neprečítané", value=False)
+    with tcol5:
+        st.session_state.inbox_page_size = st.selectbox(
+            "",
+            options=[25, 50, 100],
+            index=[25, 50, 100].index(st.session_state.inbox_page_size) if st.session_state.inbox_page_size in [25, 50, 100] else 0,
+            label_visibility="collapsed",
+            key="inbox_page_size_toolbar",
+        )
+    with tcol6:
         if st.button("🔄 Obnoviť", use_container_width=True):
             st.rerun()
     st.markdown('</div>', unsafe_allow_html=True)
 
-    col_folders, col_list, col_detail = st.columns([0.9, 1.55, 2.55])
-
-    with col_folders:
-        st.markdown('<div class="bento-card" style="padding: 0.9rem;">', unsafe_allow_html=True)
-        inbox_count = len([t for t in tickets if t.get("status") == "new"])
-        assigned_count = len([t for t in tickets if t.get("status") == "assigned"])
-        done_count = len([t for t in tickets if t.get("status") == "done"])
-
-        folder = st.session_state.inbox_folder
-        if st.button(f"📥 Inbox ({inbox_count})", use_container_width=True, type="primary" if folder == "inbox" else "secondary"):
-            st.session_state.inbox_folder = "inbox"
-            st.rerun()
-        if st.button(f"🟠 Priradené ({assigned_count})", use_container_width=True, type="primary" if folder == "assigned" else "secondary"):
-            st.session_state.inbox_folder = "assigned"
-            st.rerun()
-        if st.button(f"✅ Hotové ({done_count})", use_container_width=True, type="primary" if folder == "done" else "secondary"):
-            st.session_state.inbox_folder = "done"
-            st.rerun()
-        if st.button("📦 Všetko", use_container_width=True, type="primary" if folder == "all" else "secondary"):
-            st.session_state.inbox_folder = "all"
-            st.rerun()
-
-        st.markdown('<div style="height: 0.5rem;"></div>', unsafe_allow_html=True)
-        if st.button("⚙️ Nastaviť email konektor", use_container_width=True):
-            st.session_state.page = 'email_connector'
-            st.rerun()
-        st.markdown('</div>', unsafe_allow_html=True)
+    col_list, col_detail = st.columns([1.55, 2.45])
 
     filtered = tickets
     if st.session_state.inbox_folder == "inbox":
@@ -1255,16 +1315,7 @@ def render_inbox():
         total = len(filtered)
         unread = len([t for t in filtered if not t.get("read")])
 
-        h1, h2 = st.columns([1, 1])
-        with h1:
-            st.caption(f"Správy: {total} · Neprečítané: {unread}")
-        with h2:
-            st.session_state.inbox_page_size = st.selectbox(
-                "",
-                options=[25, 50, 100],
-                index=[25, 50, 100].index(st.session_state.inbox_page_size) if st.session_state.inbox_page_size in [25, 50, 100] else 0,
-                label_visibility="collapsed",
-            )
+        st.caption(f"Správy: {total} · Neprečítané: {unread}")
 
         if not filtered:
             st.info("Inbox je prázdny (alebo nič nezodpovedá filtru).")
@@ -1292,103 +1343,38 @@ def render_inbox():
             end = start + page_size
             visible = filtered[start:end]
 
-            rows = []
             for t in visible:
-                subject = (t.get("subject") or "").strip()
+                tid = t.get("id")
+                subject = (t.get("subject") or "(bez predmetu)").strip()
                 from_ = (t.get("from") or "").strip()
-
+                time_ = (t.get("time") or "").strip()
+                content = (t.get("content") or "").replace("\n", " ").strip()
+                snippet = content[:120] + ("…" if len(content) > 120 else "")
                 status_raw = (t.get("status") or "").strip().lower()
-                status_label = {
-                    "new": "Nové",
-                    "assigned": "Priradené",
-                    "done": "Hotové",
-                }.get(status_raw, status_raw)
-                status_symbol = {
-                    "new": "●",
-                    "assigned": "◐",
-                    "done": "✓",
-                }.get(status_raw, "")
+                status_label = {"new": "Nové", "assigned": "Priradené", "done": "Hotové"}.get(status_raw, status_raw)
 
+                selected_now = bool(st.session_state.selected_ticket and st.session_state.selected_ticket.get("id") == tid)
                 unread_dot = "● " if not t.get("read") else ""
+                wrap_cls = "inbox-item selected" if selected_now else "inbox-item"
 
-                rows.append(
-                    {
-                        "_id": t.get("id"),
-                        "Predmet": f"{unread_dot}{subject}".strip(),
-                        "Od": from_,
-                        "Čas": (t.get("time") or "").strip(),
-                        "Stav": f"{status_symbol} {status_label}".strip(),
-                    }
+                st.markdown(
+                    f"""
+                    <div class="{wrap_cls}">
+                        <div class="inbox-item-title">{html.escape(unread_dot + subject)}</div>
+                        <div class="inbox-item-meta">
+                            <span>{html.escape(from_)}</span>
+                            <span>{html.escape(time_)} · {html.escape(status_label)}</span>
+                        </div>
+                        <div class="inbox-item-snippet">{html.escape(snippet)}</div>
+                    </div>
+                    """,
+                    unsafe_allow_html=True,
                 )
 
-            df = pd.DataFrame(rows)
-            display = df.drop(columns=["_id"], errors="ignore")
-
-            # Prefer page scrolling over scrolling inside the table for the default page size.
-            df_height = max(240, min(980, 36 * (len(display) + 1) + 12))
-
-            try:
-                event = st.dataframe(
-                    display,
-                    use_container_width=True,
-                    hide_index=True,
-                    height=df_height,
-                    selection_mode="single-row",
-                    on_select="rerun",
-                    column_config={
-                        "Predmet": st.column_config.TextColumn("Predmet", width="large"),
-                        "Od": st.column_config.TextColumn("Od", width="small"),
-                        "Čas": st.column_config.TextColumn("Čas", width="small"),
-                        "Stav": st.column_config.TextColumn("Stav", width="small"),
-                    },
-                )
-                selection_obj = getattr(event, "selection", None)
-                sel_rows = None
-                if isinstance(selection_obj, dict):
-                    sel_rows = selection_obj.get("rows")
-                else:
-                    sel_rows = getattr(selection_obj, "rows", None)
-                if sel_rows:
-                    selected_idx = sel_rows[0]
-                    selected_id = df.iloc[int(selected_idx)]["_id"]
-                    selected = next((t for t in visible if t.get("id") == selected_id), None)
-                    if selected and (not st.session_state.selected_ticket or st.session_state.selected_ticket.get("id") != selected_id):
-                        st.session_state.selected_ticket = selected
-                        selected["read"] = True
-                        st.rerun()
-            except TypeError:
-                by_id = {t.get("id"): t for t in visible if t.get("id")}
-                current = st.session_state.selected_ticket.get("id") if st.session_state.selected_ticket else None
-                options = [t.get("id") for t in visible if t.get("id")]
-                if not options:
-                    st.info("Inbox je prázdny (alebo nič nezodpovedá filtru).")
-                else:
-                    index = 0
-                    if current in options:
-                        index = options.index(current)
-
-                    def _fmt(ticket_id: str) -> str:
-                        t = by_id.get(ticket_id, {})
-                        unread_dot = "●" if not t.get("read") else ""
-                        subject = t.get("subject", "")
-                        from_ = t.get("from", "")
-                        time_ = t.get("time", "")
-                        return f"{unread_dot} {subject} — {from_} · {time_}".strip()
-
-                    selected_id = st.radio(
-                        "",
-                        options=options,
-                        index=index,
-                        format_func=_fmt,
-                        label_visibility="collapsed",
-                        key="inbox_radio",
-                    )
-
-                    selected = by_id.get(selected_id)
-                    if selected and (not st.session_state.selected_ticket or st.session_state.selected_ticket.get("id") != selected_id):
-                        st.session_state.selected_ticket = selected
-                        selected["read"] = True
-                        st.rerun()
+                if st.button("Otvoriť", key=f"open_ticket_{tid}", use_container_width=True, type="secondary"):
+                    st.session_state.selected_ticket = t
+                    t["read"] = True
+                    st.rerun()
 
         st.markdown('</div>', unsafe_allow_html=True)
 
@@ -1396,7 +1382,16 @@ def render_inbox():
         st.markdown('<div class="bento-card" style="padding: 0.9rem;">', unsafe_allow_html=True)
         sel = st.session_state.selected_ticket
         if not sel:
-            st.info("Vyber správu vľavo.")
+            st.markdown(
+                """
+                <div style="text-align:center; padding: 2.25rem 1rem;">
+                    <div style="font-size: 2.1rem; margin-bottom: 0.35rem;">📨</div>
+                    <div style="font-weight: 700; color: #0f172a;">Vyber správu</div>
+                    <div style="margin-top: 0.35rem; color: #64748b; font-size: 0.9rem;">Klikni na správu vľavo pre náhľad a akcie.</div>
+                </div>
+                """,
+                unsafe_allow_html=True,
+            )
         else:
             subject = (sel.get("subject") or "").strip()
             from_ = (sel.get("from") or "").strip()
@@ -1775,7 +1770,7 @@ def render_clients_list():
         rows.append(
             {
                 "_id": c.id,
-                "Foto": _avatar_data_uri(c.name),
+                "Foto": _portrait_data_uri(c.name),
                 "Meno": c.name,
                 "Email": c.email,
                 "Stav": f"{status_symbol} {status_label}".strip(),
@@ -1860,7 +1855,7 @@ def render_client_detail():
 
     status_raw = (client.status or "").strip().lower()
     status_label = {"active": "Aktívny", "stagnating": "Stagnuje", "problem": "Problém"}.get(status_raw, status_raw)
-    avatar = _avatar_data_uri(client.name)
+    avatar = _portrait_data_uri(client.name)
     chips = [f'<span class="chip {status_raw}">{html.escape(status_label)}</span>']
     chips.append(f'<span class="chip">{html.escape(client.email)}</span>')
     st.markdown(

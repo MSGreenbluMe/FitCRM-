@@ -3,12 +3,12 @@
 ## Current Status
 
 ✅ Inbox UI (Gmail-like 3-panel layout) + Email Connector (IMAP) are implemented in Streamlit.
-✅ Inbox list improved for larger volumes (paging + list table UX).
+✅ Inbox list redesigned to dense Gmail-like row list (replaces dataframe; less whitespace).
 ✅ Sidebar made more compact (narrower width, reduced spacing).
-✅ Inbox table columns simplified (no empty narrow column / reduced horizontal scrolling, improved table height behavior).
+✅ Inbox UX refined: folders moved into toolbar, improved empty state in detail panel.
 ✅ Gemini requests improved for free tier (rate-limit/backoff + cache + flash-lite default).
 ✅ UI styling unified across app (more consistent spacing/typography/cards).
-✅ Offline sample avatars added for demo clients (SVG avatars in Clients list + Client detail).
+✅ Offline sample avatars improved (portrait-style SVG avatars in Clients list + Client detail).
 
 ## Completed
 

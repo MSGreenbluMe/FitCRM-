@@ -21,6 +21,8 @@ from src.email_parser import EmailParser, ClientProfile
 from src.ai_generator import FitAIGenerator, ClientSegment
 from src.pdf_generator import PDFGenerator
 from src.mock_data import get_mock_clients, get_dashboard_stats, ClientData
+from src import __version__ as APP_VERSION
+from src.email_connector import ImapAccount, test_imap_connection, fetch_imap_messages
 
 # Demo email data for simulated feed
 DEMO_EMAILS = [
@@ -789,9 +791,26 @@ def init_session_state():
         st.session_state.training_plan = None
     # Email ticket system
     if 'email_tickets' not in st.session_state:
-        st.session_state.email_tickets = DEMO_EMAILS.copy()
+        st.session_state.email_tickets = [
+            {**t, "read": False, "source": "demo"}
+            for t in DEMO_EMAILS.copy()
+        ]
     if 'selected_ticket' not in st.session_state:
         st.session_state.selected_ticket = None
+    if 'inbox_folder' not in st.session_state:
+        st.session_state.inbox_folder = 'inbox'
+    if 'imap_settings' not in st.session_state:
+        st.session_state.imap_settings = {
+            "host": os.getenv("IMAP_HOST", "imap.gmail.com"),
+            "port": int(os.getenv("IMAP_PORT", "993")),
+            "username": os.getenv("EMAIL_USER", ""),
+            "password": "",
+            "use_ssl": True,
+            "starttls": False,
+            "mailbox": os.getenv("IMAP_MAILBOX", "INBOX"),
+        }
+    if 'imap_last_test' not in st.session_state:
+        st.session_state.imap_last_test = {"ok": None, "error": None}
     # Generation mode: 'auto' or 'semi'
     if 'generation_mode' not in st.session_state:
         st.session_state.generation_mode = 'auto'
@@ -834,6 +853,12 @@ def render_sidebar():
             st.session_state.selected_client = None
             st.rerun()
 
+        if st.button("📥  Inbox", use_container_width=True,
+                     type="primary" if st.session_state.page == 'inbox' else "secondary"):
+            st.session_state.page = 'inbox'
+            st.session_state.selected_client = None
+            st.rerun()
+
         if st.button("👥  Klienti", use_container_width=True,
                      type="primary" if st.session_state.page == 'clients' else "secondary"):
             st.session_state.page = 'clients'
@@ -843,6 +868,11 @@ def render_sidebar():
         if st.button("➕  Nový klient", use_container_width=True,
                      type="primary" if st.session_state.page == 'new_client' else "secondary"):
             st.session_state.page = 'new_client'
+            st.rerun()
+
+        if st.button("⚙️  Email konektor", use_container_width=True,
+                     type="primary" if st.session_state.page == 'email_connector' else "secondary"):
+            st.session_state.page = 'email_connector'
             st.rerun()
 
         st.markdown("<br>", unsafe_allow_html=True)
@@ -904,7 +934,254 @@ def render_sidebar():
         st.markdown(status_html, unsafe_allow_html=True)
 
         st.markdown("<br><br>", unsafe_allow_html=True)
-        st.markdown(f'<p style="color: #94a3b8; font-size: 0.65rem;">FIT CRM v3.0 · {"Tmavý" if dm else "Světlý"}</p>', unsafe_allow_html=True)
+        st.markdown(f'<p style="color: #94a3b8; font-size: 0.65rem;">FIT CRM v{APP_VERSION} · {"Tmavý" if dm else "Světlý"}</p>', unsafe_allow_html=True)
+
+
+def _relative_time(dt: datetime) -> str:
+    now = datetime.now(dt.tzinfo) if dt.tzinfo else datetime.now()
+    delta = now - dt
+    seconds = int(delta.total_seconds())
+    if seconds < 60:
+        return "pred chvíľou"
+    minutes = seconds // 60
+    if minutes < 60:
+        return f"pred {minutes} min"
+    hours = minutes // 60
+    if hours < 24:
+        return f"pred {hours} hod"
+    days = hours // 24
+    return f"pred {days} dň"
+
+
+def _imap_settings_to_account() -> ImapAccount:
+    s = st.session_state.imap_settings
+    return ImapAccount(
+        host=s.get("host", ""),
+        port=int(s.get("port", 993)),
+        username=s.get("username", ""),
+        password=s.get("password", ""),
+        use_ssl=bool(s.get("use_ssl", True)),
+        starttls=bool(s.get("starttls", False)),
+    )
+
+
+def _ingest_imap_messages(messages):
+    existing_ids = {t.get("id") for t in st.session_state.email_tickets}
+    for m in messages:
+        uid = m.get("uid")
+        ticket_id = f"imap_{uid}"
+        if ticket_id in existing_ids:
+            continue
+        dt = m.get("date")
+        st.session_state.email_tickets.insert(
+            0,
+            {
+                "id": ticket_id,
+                "subject": m.get("subject") or "(bez predmetu)",
+                "from": m.get("from") or "",
+                "time": _relative_time(dt) if dt else "",
+                "priority": "normal",
+                "status": "new",
+                "content": m.get("body") or "",
+                "read": False,
+                "source": "imap",
+            },
+        )
+
+
+def render_email_connector():
+    st.markdown('<div class="main-header">⚙️ Email konektor</div>', unsafe_allow_html=True)
+
+    st.caption("Nastav IMAP prístup pre načítanie emailov do Inboxu. Pre Gmail použi App Password.")
+
+    s = st.session_state.imap_settings
+    col1, col2 = st.columns([2, 1])
+    with col1:
+        s["host"] = st.text_input("IMAP host", value=s.get("host", "imap.gmail.com"))
+        s["port"] = st.number_input("IMAP port", min_value=1, max_value=65535, value=int(s.get("port", 993)))
+        s["mailbox"] = st.text_input("Mailbox", value=s.get("mailbox", "INBOX"))
+
+    with col2:
+        s["use_ssl"] = st.checkbox("Použiť SSL", value=bool(s.get("use_ssl", True)))
+        s["starttls"] = st.checkbox("STARTTLS (ak bez SSL)", value=bool(s.get("starttls", False)))
+
+    st.markdown("---")
+    col1, col2 = st.columns(2)
+    with col1:
+        s["username"] = st.text_input("Používateľ", value=s.get("username", ""))
+    with col2:
+        s["password"] = st.text_input("Heslo / App Password", value=s.get("password", ""), type="password")
+
+    st.markdown("---")
+    col1, col2, col3 = st.columns([1, 1, 2])
+    with col1:
+        if st.button("✅ Test pripojenia", type="primary", use_container_width=True):
+            ok, err = test_imap_connection(_imap_settings_to_account(), mailbox=s.get("mailbox", "INBOX"))
+            st.session_state.imap_last_test = {"ok": ok, "error": err}
+            st.rerun()
+
+    with col2:
+        if st.button("📥 Načítať emaily", use_container_width=True):
+            try:
+                msgs = fetch_imap_messages(
+                    _imap_settings_to_account(),
+                    mailbox=s.get("mailbox", "INBOX"),
+                    limit=25,
+                )
+                _ingest_imap_messages(msgs)
+                st.success(f"✅ Načítané: {len(msgs)}")
+            except Exception as e:
+                st.error(f"❌ Chyba: {e}")
+
+    with col3:
+        test = st.session_state.imap_last_test
+        if test.get("ok") is True:
+            st.success("Pripojenie OK")
+        elif test.get("ok") is False:
+            st.error(f"Chyba pripojenia: {test.get('error')}")
+        else:
+            st.info("Otestuj pripojenie a potom načítaj emaily do Inboxu.")
+
+
+def render_inbox():
+    st.markdown('<div class="main-header">📥 Inbox</div>', unsafe_allow_html=True)
+
+    tickets = st.session_state.email_tickets
+
+    tcol1, tcol2, tcol3, tcol4 = st.columns([2.2, 1.2, 1.2, 1.4])
+    with tcol1:
+        query = st.text_input("", placeholder="Hľadať v inboxe…", label_visibility="collapsed")
+    with tcol2:
+        status_filter = st.selectbox("Stav", ["Všetko", "Nové", "Priradené", "Hotové"], label_visibility="collapsed")
+    with tcol3:
+        show_unread_only = st.checkbox("Len neprečítané", value=False)
+    with tcol4:
+        if st.button("🔄 Obnoviť", use_container_width=True):
+            st.rerun()
+
+    st.markdown("---")
+
+    col_folders, col_list, col_detail = st.columns([1, 1.4, 2.2])
+
+    with col_folders:
+        inbox_count = len([t for t in tickets if t.get("status") == "new"])
+        assigned_count = len([t for t in tickets if t.get("status") == "assigned"])
+        done_count = len([t for t in tickets if t.get("status") == "done"])
+
+        folder = st.session_state.inbox_folder
+        if st.button(f"📥 Inbox ({inbox_count})", use_container_width=True, type="primary" if folder == "inbox" else "secondary"):
+            st.session_state.inbox_folder = "inbox"
+            st.rerun()
+        if st.button(f"🟠 Priradené ({assigned_count})", use_container_width=True, type="primary" if folder == "assigned" else "secondary"):
+            st.session_state.inbox_folder = "assigned"
+            st.rerun()
+        if st.button(f"✅ Hotové ({done_count})", use_container_width=True, type="primary" if folder == "done" else "secondary"):
+            st.session_state.inbox_folder = "done"
+            st.rerun()
+        if st.button("📦 Všetko", use_container_width=True, type="primary" if folder == "all" else "secondary"):
+            st.session_state.inbox_folder = "all"
+            st.rerun()
+
+        st.markdown("---")
+        if st.button("⚙️ Nastaviť email konektor", use_container_width=True):
+            st.session_state.page = 'email_connector'
+            st.rerun()
+
+    filtered = tickets
+    if st.session_state.inbox_folder == "inbox":
+        filtered = [t for t in filtered if t.get("status") == "new"]
+    elif st.session_state.inbox_folder == "assigned":
+        filtered = [t for t in filtered if t.get("status") == "assigned"]
+    elif st.session_state.inbox_folder == "done":
+        filtered = [t for t in filtered if t.get("status") == "done"]
+
+    if status_filter == "Nové":
+        filtered = [t for t in filtered if t.get("status") == "new"]
+    elif status_filter == "Priradené":
+        filtered = [t for t in filtered if t.get("status") == "assigned"]
+    elif status_filter == "Hotové":
+        filtered = [t for t in filtered if t.get("status") == "done"]
+
+    if show_unread_only:
+        filtered = [t for t in filtered if not t.get("read")]
+
+    if query:
+        q = query.lower().strip()
+        filtered = [
+            t for t in filtered
+            if q in (t.get("subject") or "").lower()
+            or q in (t.get("from") or "").lower()
+            or q in (t.get("content") or "").lower()
+        ]
+
+    with col_list:
+        if not filtered:
+            st.info("Inbox je prázdny (alebo nič nezodpovedá filtru).")
+        else:
+            visible = filtered[:50]
+            by_id = {t.get("id"): t for t in visible if t.get("id")}
+
+            current = st.session_state.selected_ticket.get("id") if st.session_state.selected_ticket else None
+            options = [t.get("id") for t in visible if t.get("id")]
+            if not options:
+                st.info("Inbox je prázdny (alebo nič nezodpovedá filtru).")
+            else:
+                index = 0
+                if current in options:
+                    index = options.index(current)
+
+                def _fmt(ticket_id: str) -> str:
+                    t = by_id.get(ticket_id, {})
+                    unread_dot = "●" if not t.get("read") else ""
+                    subject = t.get("subject", "")
+                    from_ = t.get("from", "")
+                    time_ = t.get("time", "")
+                    return f"{unread_dot} {subject} — {from_} · {time_}".strip()
+
+                selected_id = st.radio(
+                    "",
+                    options=options,
+                    index=index,
+                    format_func=_fmt,
+                    label_visibility="collapsed",
+                    key="inbox_radio",
+                )
+
+                selected = by_id.get(selected_id)
+                if selected and (not st.session_state.selected_ticket or st.session_state.selected_ticket.get("id") != selected_id):
+                    st.session_state.selected_ticket = selected
+                    selected["read"] = True
+                    st.rerun()
+
+    with col_detail:
+        sel = st.session_state.selected_ticket
+        if not sel:
+            st.info("Vyber správu vľavo.")
+        else:
+            st.markdown(f"### {sel.get('subject', '')}")
+            st.caption(f"Od: {sel.get('from', '')}")
+            st.markdown("---")
+
+            a1, a2, a3, a4 = st.columns([1, 1, 1, 1])
+            with a1:
+                if st.button("🟠 Priradiť", use_container_width=True):
+                    sel["status"] = "assigned"
+                    st.rerun()
+            with a2:
+                if st.button("✅ Hotové", use_container_width=True):
+                    sel["status"] = "done"
+                    st.rerun()
+            with a3:
+                if st.button("👤 Vytvoriť klienta", type="primary", use_container_width=True):
+                    st.session_state.page = 'new_client'
+                    st.rerun()
+            with a4:
+                if st.button("✉️ Označiť ako neprečítané", use_container_width=True):
+                    sel["read"] = False
+                    st.rerun()
+
+            st.markdown("---")
+            st.text_area("Obsah", value=sel.get("content", ""), height=420)
 
 
 def render_dashboard():
@@ -1529,31 +1806,45 @@ def render_client_form():
 
 
 def generate_plans(profile: ClientProfile, api_key: str):
-    """Generate meal and training plans"""
+    """Generate meal and training plans - sequential with delays"""
+    import time
+    
     progress = st.progress(0)
     status = st.empty()
+    error_container = st.empty()
 
     try:
-        status.text("🔄 Pripájam sa k Gemini 2.5 Pro...")
+        status.text("🔄 Pripájam sa k Gemini API...")
         progress.progress(10)
 
         ai = FitAIGenerator(api_key=api_key)
 
-        status.text("📊 Analyzujem profil...")
-        progress.progress(25)
+        # Step 1: Segment client (1 API request)
+        status.text("📊 Analyzujem profil... (1/3)")
+        progress.progress(20)
         segment = ai.segment_client(profile)
         st.session_state.segment = segment
+        progress.progress(33)
 
-        status.text("🍽️ Generujem jedálniček...")
-        progress.progress(50)
+        # Wait before next request
+        status.text("⏳ Čakám pred ďalším requestom...")
+        time.sleep(3)
+
+        # Step 2: Generate meal plan (1 API request)
+        status.text("🍽️ Generujem jedálniček... (2/3)")
+        progress.progress(45)
         meal_plan = ai.generate_meal_plan(profile, segment)
-
-        status.text("💪 Generujem tréningový plán...")
-        progress.progress(75)
-        training_plan = ai.generate_training_plan(profile, segment)
-
-        # Store plans
         st.session_state.meal_plan = meal_plan
+        progress.progress(66)
+
+        # Wait before next request
+        status.text("⏳ Čakám pred ďalším requestom...")
+        time.sleep(3)
+
+        # Step 3: Generate training plan (1 API request)
+        status.text("💪 Generujem tréningový plán... (3/3)")
+        progress.progress(80)
+        training_plan = ai.generate_training_plan(profile, segment)
         st.session_state.training_plan = training_plan
 
         # For semi-auto mode, also store editable versions
@@ -1567,7 +1858,11 @@ def generate_plans(profile: ClientProfile, api_key: str):
         st.rerun()
 
     except Exception as e:
-        st.error(f"❌ Chyba: {e}")
+        error_msg = str(e)
+        if "429" in error_msg or "quota" in error_msg.lower():
+            error_container.error(f"❌ Rate limit - počkajte 60 sekúnd a skúste znova")
+        else:
+            error_container.error(f"❌ Chyba: {e}")
 
 
 def render_generated_plans():
@@ -1648,13 +1943,15 @@ def render_generated_plans():
             try:
                 pdf_gen = PDFGenerator()
                 with tempfile.NamedTemporaryFile(suffix=".pdf", delete=False) as tmp:
-                    pdf_gen.generate_pdf(display_meal, tmp.name, f"Jedálniček - {profile.name}")
-                    with open(tmp.name, "rb") as f:
-                        st.download_button("📥 Stiahnuť PDF", f.read(),
-                                           f"jedalnicky_{profile.name.replace(' ', '_')}.pdf",
-                                           "application/pdf", use_container_width=True)
-            except:
-                pass
+                    if pdf_gen.generate_pdf(display_meal, tmp.name, f"Jedálniček - {profile.name}"):
+                        with open(tmp.name, "rb") as f:
+                            st.download_button("📥 Stiahnuť PDF", f.read(),
+                                               f"jedalnicky_{profile.name.replace(' ', '_')}.pdf",
+                                               "application/pdf", use_container_width=True)
+                    else:
+                        st.warning("⚠️ PDF sa nepodarilo vygenerovať")
+            except Exception as e:
+                st.error(f"❌ Chyba PDF: {e}")
 
     with tab2:
         st.markdown('<div class="plan-section">', unsafe_allow_html=True)
@@ -1680,13 +1977,15 @@ def render_generated_plans():
             try:
                 pdf_gen = PDFGenerator()
                 with tempfile.NamedTemporaryFile(suffix=".pdf", delete=False) as tmp:
-                    pdf_gen.generate_pdf(display_training, tmp.name, f"Tréning - {profile.name}")
-                    with open(tmp.name, "rb") as f:
-                        st.download_button("📥 Stiahnuť PDF", f.read(),
-                                           f"trening_{profile.name.replace(' ', '_')}.pdf",
-                                           "application/pdf", use_container_width=True)
-            except:
-                pass
+                    if pdf_gen.generate_pdf(display_training, tmp.name, f"Tréning - {profile.name}"):
+                        with open(tmp.name, "rb") as f:
+                            st.download_button("📥 Stiahnuť PDF", f.read(),
+                                               f"trening_{profile.name.replace(' ', '_')}.pdf",
+                                               "application/pdf", use_container_width=True)
+                    else:
+                        st.warning("⚠️ PDF sa nepodarilo vygenerovať")
+            except Exception as e:
+                st.error(f"❌ Chyba PDF: {e}")
 
     with tab3:
         render_nutrition_analysis(segment)
@@ -1707,7 +2006,52 @@ def render_generated_plans():
 
     with col2:
         if st.button("📧 Odoslať klientovi", use_container_width=True):
-            st.info("📧 Funkcia odosielania emailu bude dostupná v ďalšej verzii")
+            email_user = os.getenv('EMAIL_USER', '')
+            email_pass = os.getenv('EMAIL_PASS', '')
+            
+            if not email_user or not email_pass:
+                st.error("❌ Email credentials nie sú nastavené v .env súbore")
+            else:
+                try:
+                    from src.email_sender import EmailSender
+                    sender = EmailSender(
+                        smtp_host=os.getenv('SMTP_HOST', 'smtp.gmail.com'),
+                        smtp_port=int(os.getenv('SMTP_PORT', '587')),
+                        username=email_user,
+                        password=email_pass
+                    )
+                    
+                    # Generate PDFs to temp files
+                    pdf_gen = PDFGenerator()
+                    meal_pdf_path = None
+                    training_pdf_path = None
+                    
+                    with tempfile.NamedTemporaryFile(suffix=".pdf", delete=False) as tmp:
+                        if pdf_gen.generate_pdf(meal_plan, tmp.name, f"Jedálniček - {profile.name}"):
+                            meal_pdf_path = Path(tmp.name)
+                    
+                    with tempfile.NamedTemporaryFile(suffix=".pdf", delete=False) as tmp:
+                        if pdf_gen.generate_pdf(training_plan, tmp.name, f"Tréning - {profile.name}"):
+                            training_pdf_path = Path(tmp.name)
+                    
+                    trainer_name = os.getenv('TRAINER_NAME', 'Tvoj Tréner')
+                    
+                    with st.spinner("📧 Odosielam email..."):
+                        success = sender.send_welcome_email(
+                            to_email=profile.email,
+                            client_name=profile.name,
+                            meal_plan_pdf=meal_pdf_path,
+                            training_plan_pdf=training_pdf_path,
+                            trainer_name=trainer_name
+                        )
+                    
+                    if success:
+                        st.success(f"✅ Email odoslaný na: {profile.email}")
+                    else:
+                        st.error("❌ Nepodarilo sa odoslať email")
+                        
+                except Exception as e:
+                    st.error(f"❌ Chyba pri odosielaní: {e}")
 
     with col3:
         if st.button("🔄 Nový klient", use_container_width=True):
@@ -1825,12 +2169,16 @@ def main():
 
     if page == 'dashboard':
         render_dashboard()
+    elif page == 'inbox':
+        render_inbox()
     elif page == 'clients':
         render_clients_list()
     elif page == 'client_detail':
         render_client_detail()
     elif page == 'new_client':
         render_new_client()
+    elif page == 'email_connector':
+        render_email_connector()
 
 
 if __name__ == "__main__":

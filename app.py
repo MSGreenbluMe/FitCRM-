@@ -148,80 +148,289 @@ def get_theme_css(dark_mode: bool) -> str:
     """Generate CSS based on theme mode"""
     if dark_mode:
         return """
-        /* Dark Mode Colors */
         :root {
-            --bg-primary: #0f172a;
-            --bg-secondary: #1e293b;
-            --bg-card: #1e293b;
-            --border-color: #334155;
-            --text-primary: #f1f5f9;
-            --text-secondary: #94a3b8;
-            --text-muted: #64748b;
+            --app-bg: #102216;
+            --surface-1: #112217;
+            --surface-2: #172d20;
+            --border: #23482f;
+            --text: #e7f3eb;
+            --muted: #92c9a4;
+            --accent: #13ec5b;
+            --accent-2: rgba(19, 236, 91, 0.16);
         }
-        .stApp { background: #0f172a !important; }
-        .bento-card { background: #1e293b !important; border-color: #334155 !important; }
-        .bento-card:hover { border-color: #475569 !important; }
-        .hero-title { color: #f1f5f9 !important; }
-        .hero-subtitle { color: #94a3b8 !important; }
-        .stat-value { color: #f1f5f9 !important; }
-        .stat-label { color: #94a3b8 !important; }
-        .section-title { color: #f1f5f9 !important; }
-        .activity-name { color: #f1f5f9 !important; }
-        .activity-meta { color: #94a3b8 !important; }
-        .alert-text { color: #e2e8f0 !important; }
-        .alert-text strong { color: #f1f5f9 !important; }
-        .avatar-card { background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%) !important; border-color: #334155 !important; }
-        .avatar-placeholder { background: linear-gradient(135deg, #334155 0%, #1e293b 100%) !important; border-color: #475569 !important; }
-        .ticket-card { background: #1e293b !important; border-color: #334155 !important; }
-        .ticket-card:hover { background: #334155 !important; }
-        .ticket-card .ticket-subject { color: #f1f5f9 !important; }
-        .ticket-card .ticket-meta { color: #94a3b8 !important; }
-        .inbox-detail-body { background: #0f172a !important; border-color: #334155 !important; color: #e2e8f0 !important; }
-        .chip { border-color: #334155 !important; }
-        .chip.new { background: rgba(5, 150, 105, 0.18) !important; color: #34d399 !important; }
-        .chip.assigned { background: rgba(217, 119, 6, 0.18) !important; color: #fbbf24 !important; }
-        .chip.done { background: rgba(100, 116, 139, 0.18) !important; color: #cbd5e1 !important; }
-        .chip.active { background: rgba(5, 150, 105, 0.18) !important; color: #34d399 !important; }
-        .chip.stagnating { background: rgba(217, 119, 6, 0.18) !important; color: #fbbf24 !important; }
-        .chip.problem { background: rgba(220, 38, 38, 0.18) !important; color: #f87171 !important; }
-        [data-testid="stSidebar"] { background: #1e293b !important; border-color: #334155 !important; }
-        [data-testid="stMetricValue"] { color: #f1f5f9 !important; }
-        [data-testid="stMetricLabel"] { color: #94a3b8 !important; }
-        .stMarkdown, .stMarkdown p { color: #e2e8f0 !important; }
-        h1, h2, h3, h4, h5, h6 { color: #f1f5f9 !important; }
-        .main-header { color: #f1f5f9 !important; }
-        .stTextInput input, .stTextArea textarea { background: #1e293b !important; border-color: #334155 !important; color: #f1f5f9 !important; }
-        .stSelectbox > div > div { background: #1e293b !important; border-color: #334155 !important; }
-        .stTabs [data-baseweb="tab-list"] { background: #1e293b !important; }
-        .stTabs [data-baseweb="tab"] { color: #94a3b8 !important; }
-        .stTabs [aria-selected="true"] { background: #334155 !important; color: #f1f5f9 !important; }
-        .plan-section { background: #1e293b !important; border-color: #334155 !important; }
-        .plan-header { color: #f1f5f9 !important; border-color: #334155 !important; }
-        .nutrition-card { background: #1e293b !important; border-color: #334155 !important; }
-        .nutrition-value { color: #f1f5f9 !important; }
-        .nutrition-label { color: #94a3b8 !important; }
+        .stApp { background: var(--app-bg) !important; color: var(--text) !important; }
+        .stMarkdown, .stMarkdown p { color: var(--text) !important; }
+        h1, h2, h3, h4, h5, h6 { color: var(--text) !important; }
+        [data-testid="stMetricValue"] { color: var(--text) !important; }
+        [data-testid="stMetricLabel"] { color: var(--muted) !important; }
+        .bento-card { background: var(--surface-1) !important; border-color: var(--border) !important; }
+        .bento-card:hover { border-color: rgba(19, 236, 91, 0.55) !important; }
+        .ticket-card { background: var(--surface-1) !important; border-color: var(--border) !important; }
+        .ticket-card:hover { background: var(--surface-2) !important; }
+        .ticket-card .ticket-subject { color: var(--text) !important; }
+        .ticket-card .ticket-meta { color: var(--muted) !important; }
+        .inbox-detail-body { background: var(--app-bg) !important; border-color: var(--border) !important; color: var(--text) !important; }
+        .chip { border-color: var(--border) !important; }
+        .chip.new, .chip.active { background: rgba(19, 236, 91, 0.14) !important; color: var(--accent) !important; }
+        .chip.assigned, .chip.stagnating { background: rgba(245, 158, 11, 0.14) !important; color: #fbbf24 !important; }
+        .chip.done { background: rgba(148, 163, 184, 0.14) !important; color: #cbd5e1 !important; }
+        .chip.problem { background: rgba(239, 68, 68, 0.14) !important; color: #f87171 !important; }
+        .stTextInput input, .stTextArea textarea { background: var(--surface-1) !important; border-color: var(--border) !important; color: var(--text) !important; }
+        .stSelectbox > div > div { background: var(--surface-1) !important; border-color: var(--border) !important; }
+        .stTabs [data-baseweb="tab-list"] { background: var(--surface-1) !important; }
+        .stTabs [data-baseweb="tab"] { color: var(--muted) !important; }
+        .stTabs [aria-selected="true"] { background: var(--surface-2) !important; color: var(--text) !important; }
         """
-    return ""
+    return """
+        :root {
+            --app-bg: #f7fbf8;
+            --surface-1: #ffffff;
+            --surface-2: #f0f7f2;
+            --border: #d9eadf;
+            --text: #0f172a;
+            --muted: #456a55;
+            --accent: #0fb54a;
+            --accent-2: rgba(15, 181, 74, 0.12);
+        }
+        .stApp { background: var(--app-bg) !important; color: var(--text) !important; }
+        .stMarkdown, .stMarkdown p { color: var(--text) !important; }
+        h1, h2, h3, h4, h5, h6 { color: var(--text) !important; }
+        [data-testid="stMetricValue"] { color: var(--text) !important; }
+        [data-testid="stMetricLabel"] { color: var(--muted) !important; }
+    """
 
 # Custom CSS - Clean Professional Design
 st.markdown("""
 <style>
     /* ===== CLEAN PROFESSIONAL FOUNDATION ===== */
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap');
 
     /* Hide Streamlit branding */
     #MainMenu {visibility: hidden;}
     footer {visibility: hidden;}
     header {visibility: hidden;}
+    [data-testid="stSidebar"], [data-testid="collapsedControl"] { display: none !important; }
 
     .stApp {
-        background: #f8fafc;
-        font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        background: var(--app-bg);
+        font-family: 'Manrope', -apple-system, BlinkMacSystemFont, sans-serif;
+        color: var(--text);
     }
 
     .main .block-container {
-        padding: 1.5rem 2.25rem;
-        max-width: 1400px;
+        padding: 0.9rem 1.1rem;
+        max-width: 1600px;
+    }
+
+    .nav-rail {
+        background: var(--surface-1);
+        border: 1px solid var(--border);
+        border-radius: 18px;
+        padding: 0.9rem;
+        height: calc(100vh - 2.0rem);
+        position: sticky;
+        top: 0.9rem;
+        overflow: hidden;
+    }
+
+    .nav-brand {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.75rem;
+        padding: 0.2rem 0.1rem 0.8rem 0.1rem;
+        border-bottom: 1px solid var(--border);
+        margin-bottom: 0.75rem;
+    }
+
+    .nav-brand .brand {
+        font-size: 1.05rem;
+        font-weight: 800;
+        letter-spacing: -0.01em;
+        color: var(--text);
+    }
+
+    .nav-brand .brand span {
+        color: var(--accent);
+    }
+
+    .nav-rail div.stButton > button {
+        width: 100%;
+        border-radius: 14px !important;
+        border: 1px solid transparent !important;
+        background: transparent !important;
+        color: var(--text) !important;
+        padding: 0.7rem 0.8rem !important;
+        font-weight: 600 !important;
+        text-align: left !important;
+    }
+
+    .nav-rail div.stButton > button:hover {
+        background: var(--surface-2) !important;
+        border-color: var(--border) !important;
+    }
+
+    .nav-rail div.stButton > button[kind="primary"] {
+        background: var(--accent-2) !important;
+        border-color: rgba(19, 236, 91, 0.45) !important;
+        color: var(--text) !important;
+    }
+
+    .topbar-row {
+        background: var(--surface-1);
+        border: 1px solid var(--border);
+        border-radius: 18px;
+        padding: 0.75rem 0.85rem;
+        margin-bottom: 1.0rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+    }
+
+    .topbar-row .topbar-title {
+        font-weight: 800;
+        letter-spacing: -0.015em;
+        color: var(--text);
+        font-size: 1.1rem;
+    }
+
+    .topbar-icon {
+        width: 38px;
+        height: 38px;
+        border-radius: 12px;
+        border: 1px solid var(--border);
+        background: var(--surface-2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--text);
+        font-size: 1.05rem;
+    }
+
+    .topbar-avatar {
+        width: 38px;
+        height: 38px;
+        border-radius: 14px;
+        border: 1px solid var(--border);
+        overflow: hidden;
+        background: var(--surface-2);
+    }
+
+    .topbar-avatar img {
+        display: block;
+        width: 38px;
+        height: 38px;
+    }
+
+    .stTextInput input {
+        border-radius: 14px !important;
+        border-color: var(--border) !important;
+        background: var(--surface-2) !important;
+        color: var(--text) !important;
+    }
+
+    .kpi-card {
+        background: var(--surface-1);
+        border: 1px solid var(--border);
+        border-radius: 18px;
+        padding: 1.0rem 1.0rem;
+    }
+
+    .kpi-label {
+        font-size: 0.78rem;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: var(--muted);
+        font-weight: 700;
+    }
+
+    .kpi-value {
+        font-size: 1.7rem;
+        font-weight: 850;
+        letter-spacing: -0.02em;
+        margin-top: 0.25rem;
+        color: var(--text);
+    }
+
+    .kpi-foot {
+        margin-top: 0.25rem;
+        color: var(--muted);
+        font-size: 0.88rem;
+    }
+
+    .section-card {
+        background: var(--surface-1);
+        border: 1px solid var(--border);
+        border-radius: 18px;
+        padding: 1.0rem;
+    }
+
+    .section-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 0.8rem;
+    }
+
+    .section-head .title {
+        font-weight: 800;
+        letter-spacing: -0.01em;
+        color: var(--text);
+    }
+
+    .section-head .meta {
+        font-size: 0.85rem;
+        color: var(--muted);
+    }
+
+    .list-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.75rem;
+        padding: 0.65rem 0.75rem;
+        border-radius: 14px;
+        border: 1px solid var(--border);
+        background: var(--surface-2);
+        margin-bottom: 0.55rem;
+    }
+
+    .list-row:last-child { margin-bottom: 0; }
+
+    .list-row .left {
+        display: flex;
+        flex-direction: column;
+        gap: 0.1rem;
+        min-width: 0;
+    }
+
+    .list-row .left .name {
+        font-weight: 700;
+        color: var(--text);
+        line-height: 1.1;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .list-row .left .sub {
+        color: var(--muted);
+        font-size: 0.85rem;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .pill {
+        border: 1px solid var(--border);
+        background: rgba(19, 236, 91, 0.10);
+        color: var(--accent);
+        font-weight: 750;
+        padding: 0.22rem 0.55rem;
+        border-radius: 999px;
+        font-size: 0.78rem;
+        white-space: nowrap;
     }
 
     /* ===== BENTO GRID SYSTEM ===== */
@@ -1461,224 +1670,273 @@ def render_dashboard():
     cz_months = ['ledna', 'února', 'března', 'dubna', 'května', 'června', 'července', 'srpna', 'září', 'října', 'listopadu', 'prosince']
     date_str = f"{cz_days[today.weekday()]}, {today.day}. {cz_months[today.month-1]} {today.year}"
 
-    # Hero Header
-    st.markdown(f"""
-    <div style="margin-bottom: 1.5rem;">
-        <h1 class="hero-title">Vítejte zpět</h1>
-        <p class="hero-subtitle">{date_str}</p>
-    </div>
-    """, unsafe_allow_html=True)
+    st.markdown(
+        f"""
+        <div style="margin-bottom: 1rem;">
+            <div style="font-size: 1.35rem; font-weight: 900; letter-spacing: -0.02em; color: var(--text);">Dashboard</div>
+            <div style="margin-top: 0.1rem; color: var(--muted); font-size: 0.95rem;">{date_str}</div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
 
-    # Bento Grid - Row 1: KPIs
-    st.markdown(f"""
-    <div class="bento-grid">
-        <div class="bento-card bento-sm">
-            <div class="stat-label">Klienti</div>
-            <div class="stat-value blue">{stats["active_clients"]}</div>
-            <div class="stat-trend trend-up">↑ +{stats['new_this_week']} tento týden</div>
-        </div>
-        <div class="bento-card bento-sm">
-            <div class="stat-label">Retence</div>
-            <div class="stat-value emerald">{stats['retention_percent']}%</div>
-            <div class="stat-trend trend-neutral">→ stabilní</div>
-        </div>
-        <div class="bento-card bento-sm">
-            <div class="stat-label">Adherence</div>
-            <div class="stat-value slate">{stats['avg_adherence']:.0f}%</div>
-            <div class="stat-trend {'trend-up' if stats['avg_adherence'] > 75 else 'trend-down'}">{'↑ výborná' if stats['avg_adherence'] > 75 else '↓ zlepšit'}</div>
-        </div>
-        <div class="bento-card bento-sm">
-            <div class="stat-label">Příjem / měsíc</div>
-            <div class="stat-value amber">€{stats['mrr_eur']}</div>
-            <div class="stat-trend trend-up">↑ +12%</div>
-        </div>
-    </div>
-    """, unsafe_allow_html=True)
+    k1, k2, k3, k4 = st.columns(4)
+    with k1:
+        st.markdown(
+            f"""
+            <div class="kpi-card">
+                <div class="kpi-label">Aktívni klienti</div>
+                <div class="kpi-value">{stats['active_clients']}</div>
+                <div class="kpi-foot">+{stats['new_this_week']} tento týždeň</div>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+    with k2:
+        st.markdown(
+            f"""
+            <div class="kpi-card">
+                <div class="kpi-label">Retencia</div>
+                <div class="kpi-value">{stats['retention_percent']}%</div>
+                <div class="kpi-foot">stabilná</div>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+    with k3:
+        st.markdown(
+            f"""
+            <div class="kpi-card">
+                <div class="kpi-label">Adherencia</div>
+                <div class="kpi-value">{stats['avg_adherence']:.0f}%</div>
+                <div class="kpi-foot">{'výborná' if stats['avg_adherence'] > 75 else 'treba zlepšiť'}</div>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+    with k4:
+        st.markdown(
+            f"""
+            <div class="kpi-card">
+                <div class="kpi-label">Príjem / mesiac</div>
+                <div class="kpi-value">€{stats['mrr_eur']}</div>
+                <div class="kpi-foot">trend ↑</div>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
 
-    # Main Content Grid
-    col_main, col_side = st.columns([2, 1])
+    st.markdown('<div style="height: 0.9rem;"></div>', unsafe_allow_html=True)
+
+    col_main, col_side = st.columns([1.65, 1.0], gap="large")
 
     with col_main:
-        # Charts in Bento cards
-        chart_col1, chart_col2 = st.columns(2)
-
-        with chart_col1:
-            st.markdown("""
-            <div class="bento-card" style="margin-bottom: 1rem;">
-                <div class="section-header">
-                    <div class="section-icon emerald">📈</div>
-                    <span class="section-title">Progres klientů</span>
+        st.markdown(
+            """
+            <div class="section-card">
+                <div class="section-head">
+                    <div class="title">Dnešný plán</div>
+                    <div class="meta">Najbližšie check-iny</div>
                 </div>
-            """, unsafe_allow_html=True)
-
-            # Light mode donut chart
-            fig = go.Figure(data=[go.Pie(
-                labels=['Progres', 'Stagnace', 'Regres'],
-                values=[stats['progressing'], stats['stagnating'], stats['regressing']],
-                hole=.7,
-                marker_colors=['#059669', '#d97706', '#dc2626'],
-                textinfo='none',
-                hovertemplate='%{label}<br>%{value} klientů<br>%{percent}<extra></extra>'
-            )])
-            fig.update_layout(
-                showlegend=True,
-                legend=dict(
-                    orientation="h",
-                    yanchor="bottom",
-                    y=-0.15,
-                    xanchor="center",
-                    x=0.5,
-                    font=dict(color='#64748b', size=11)
-                ),
-                height=240,
-                margin=dict(t=10, b=30, l=10, r=10),
-                paper_bgcolor='rgba(0,0,0,0)',
-                plot_bgcolor='rgba(0,0,0,0)',
-                annotations=[dict(
-                    text=f'<b>{stats["progressing"]}</b><br><span style="font-size:10px;color:#64748b">úspěšných</span>',
-                    x=0.5, y=0.5,
-                    font=dict(size=24, color='#059669'),
-                    showarrow=False
-                )]
-            )
-            st.plotly_chart(fig, use_container_width=True, config={'displayModeBar': False})
-            st.markdown('</div>', unsafe_allow_html=True)
-
-        with chart_col2:
-            st.markdown("""
-            <div class="bento-card" style="margin-bottom: 1rem;">
-                <div class="section-header">
-                    <div class="section-icon blue">📊</div>
-                    <span class="section-title">Změny váhy</span>
-                </div>
-            """, unsafe_allow_html=True)
-
-            recent_clients = sorted(clients, key=lambda c: c.last_checkin, reverse=True)[:5]
-            names = [c.name.split()[0] for c in recent_clients]
-            changes = [c.weight_change for c in recent_clients]
-            colors = ['#059669' if c < 0 else '#dc2626' if c > 0 else '#64748b' for c in changes]
-
-            fig = go.Figure(data=[go.Bar(
-                x=names,
-                y=changes,
-                marker_color=colors,
-                marker_line_width=0,
-                text=[f"{c:+.1f}" for c in changes],
-                textposition='outside',
-                textfont=dict(size=10, color='#64748b'),
-                hovertemplate='%{x}<br>%{y:+.1f} kg<extra></extra>'
-            )])
-            fig.update_layout(
-                barmode='group',
-                height=240,
-                margin=dict(t=10, b=30, l=30, r=10),
-                yaxis=dict(
-                    gridcolor='#f1f5f9',
-                    zerolinecolor='#e2e8f0',
-                    tickfont=dict(color='#64748b'),
-                    title=None
-                ),
-                xaxis=dict(tickfont=dict(size=10, color='#64748b')),
-                showlegend=False,
-                paper_bgcolor='rgba(0,0,0,0)',
-                plot_bgcolor='rgba(0,0,0,0)',
-                bargap=0.5
-            )
-            st.plotly_chart(fig, use_container_width=True, config={'displayModeBar': False})
-            st.markdown('</div>', unsafe_allow_html=True)
-
-        # Alerts Section
-        if stats["problem_clients"]:
-            st.markdown("""
-            <div class="bento-card">
-                <div class="section-header">
-                    <div class="section-icon red">⚠️</div>
-                    <span class="section-title">Vyžaduje pozornost</span>
-                </div>
-            """, unsafe_allow_html=True)
-
-            for client in stats["problem_clients"][:3]:
-                is_critical = client.days_since_checkin > 14
-                alert_class = "" if is_critical else "warning"
-                icon = "🚨" if is_critical else "⚠️"
-                message = f"{client.days_since_checkin} dní bez check-inu" if is_critical else "váha stagnuje"
-
-                st.markdown(f"""
-                <div class="alert-card {alert_class}">
-                    <span class="alert-icon">{icon}</span>
-                    <span class="alert-text"><strong>{client.name}</strong> — {message}</span>
-                </div>
-                """, unsafe_allow_html=True)
-
-            st.markdown('</div>', unsafe_allow_html=True)
-
-            # Action buttons for alerts
-            for client in stats["problem_clients"][:3]:
-                if st.button(f"→ {client.name}", key=f"alert_{client.id}"):
-                    st.session_state.selected_client = client.id
-                    st.session_state.page = 'client_detail'
-                    st.rerun()
-
-    with col_side:
-        # Stats Card
-        st.markdown(f"""
-        <div class="avatar-card">
-            <div class="avatar-placeholder"></div>
-            <div style="color: #0f172a; font-weight: 600; margin-bottom: 0.5rem;">Složení těla</div>
-            <div style="color: #64748b; font-size: 0.8rem;">Průměrná změna klientů</div>
-            <div class="avatar-stats">
-                <div class="avatar-stat">
-                    <div class="avatar-stat-value">-2.3</div>
-                    <div class="avatar-stat-label">kg tuku</div>
-                </div>
-                <div class="avatar-stat">
-                    <div class="avatar-stat-value">+1.1</div>
-                    <div class="avatar-stat-label">kg svalů</div>
-                </div>
-            </div>
-        </div>
-        """, unsafe_allow_html=True)
-
-        # Activity Timeline
-        st.markdown("""
-        <div class="bento-card" style="margin-top: 1rem;">
-            <div class="section-header">
-                <div class="section-icon amber">🕐</div>
-                <span class="section-title">Aktivita</span>
-            </div>
-        """, unsafe_allow_html=True)
+            """,
+            unsafe_allow_html=True,
+        )
 
         recent = sorted(clients, key=lambda c: c.last_checkin, reverse=True)[:4]
-        for client in recent:
-            avatar_class = {"active": "avatar-active", "stagnating": "avatar-warning", "problem": "avatar-danger"}.get(client.status, "avatar-active")
-            initials = "".join([n[0].upper() for n in client.name.split()[:2]])
-            days = client.days_since_checkin
-            time_text = "Dnes" if days == 0 else "Včera" if days == 1 else f"před {days}d"
-            badge_class = "badge-success" if client.weight_change < 0 else "badge-danger" if client.weight_change > 0 else "badge-warning"
-            change_text = f"{client.weight_change:+.1f}kg"
+        schedule_items = []
+        for c in recent:
+            schedule_items.append(
+                {
+                    "name": c.name,
+                    "sub": f"Check-in · {c.days_since_checkin}d · {c.current_weight_kg}kg",
+                    "pill": f"{c.progress_percent:.0f}%",
+                }
+            )
 
-            st.markdown(f"""
-            <div class="activity-item">
-                <div class="activity-avatar {avatar_class}">{initials}</div>
-                <div class="activity-content">
-                    <div class="activity-name">{client.name}</div>
-                    <div class="activity-meta">{client.current_weight_kg}kg · {time_text}</div>
+        for it in schedule_items:
+            st.markdown(
+                f"""
+                <div class="list-row">
+                    <div class="left">
+                        <div class="name">{html.escape(it['name'])}</div>
+                        <div class="sub">{html.escape(it['sub'])}</div>
+                    </div>
+                    <span class="pill">{html.escape(it['pill'])}</span>
                 </div>
-                <span class="activity-badge {badge_class}">{change_text}</span>
-            </div>
-            """, unsafe_allow_html=True)
+                """,
+                unsafe_allow_html=True,
+            )
 
+        st.markdown("</div>", unsafe_allow_html=True)
+
+        st.markdown('<div style="height: 0.9rem;"></div>', unsafe_allow_html=True)
+
+        st.markdown(
+            """
+            <div class="section-card">
+                <div class="section-head">
+                    <div class="title">Zdravie & progres</div>
+                    <div class="meta">Prehľad stavu klientov</div>
+                </div>
+            """,
+            unsafe_allow_html=True,
+        )
+
+        fig = go.Figure(
+            data=[
+                go.Pie(
+                    labels=["Progres", "Stagnácia", "Problém"],
+                    values=[stats["progressing"], stats["stagnating"], stats["regressing"]],
+                    hole=0.72,
+                    marker_colors=["#13ec5b", "#fbbf24", "#f87171"],
+                    textinfo="none",
+                )
+            ]
+        )
+        fig.update_layout(
+            showlegend=True,
+            height=280,
+            margin=dict(t=10, b=10, l=10, r=10),
+            paper_bgcolor="rgba(0,0,0,0)",
+            plot_bgcolor="rgba(0,0,0,0)",
+            legend=dict(orientation="h", yanchor="bottom", y=-0.15, xanchor="center", x=0.5),
+        )
+        st.plotly_chart(fig, use_container_width=True, config={"displayModeBar": False})
+        st.markdown("</div>", unsafe_allow_html=True)
+
+    with col_side:
+        st.markdown(
+            """
+            <div class="section-card">
+                <div class="section-head">
+                    <div class="title">Quick actions</div>
+                    <div class="meta">Najčastejšie</div>
+                </div>
+            """,
+            unsafe_allow_html=True,
+        )
+        a1 = st.button("➕ Nový klient", use_container_width=True, type="primary", key="dash_new_client")
+        a2 = st.button("📥 Inbox", use_container_width=True, key="dash_inbox")
+        a3 = st.button("👥 Klienti", use_container_width=True, key="dash_clients")
+        if a1:
+            st.session_state.page = "new_client"
+            st.rerun()
+        if a2:
+            st.session_state.page = "inbox"
+            st.rerun()
+        if a3:
+            st.session_state.page = "clients"
+            st.rerun()
+        st.markdown("</div>", unsafe_allow_html=True)
+
+        st.markdown('<div style="height: 0.9rem;"></div>', unsafe_allow_html=True)
+
+        st.markdown(
+            """
+            <div class="section-card">
+                <div class="section-head">
+                    <div class="title">Aktivita</div>
+                    <div class="meta">Posledné check-iny</div>
+                </div>
+            """,
+            unsafe_allow_html=True,
+        )
+        for c in sorted(clients, key=lambda x: x.last_checkin, reverse=True)[:5]:
+            status = {"active": "Aktívny", "stagnating": "Stagnuje", "problem": "Problém"}.get(c.status, c.status)
+            st.markdown(
+                f"""
+                <div class="list-row">
+                    <div class="left">
+                        <div class="name">{html.escape(c.name)}</div>
+                        <div class="sub">{html.escape(status)} · {c.current_weight_kg}kg · {c.days_since_checkin}d</div>
+                    </div>
+                    <span class="pill">{c.weight_change:+.1f}kg</span>
+                </div>
+                """,
+                unsafe_allow_html=True,
+            )
+        st.markdown("</div>", unsafe_allow_html=True)
+
+
+def render_app_shell():
+    dm = st.session_state.dark_mode
+    nav_col, content_col = st.columns([0.24, 0.76], gap="large")
+
+    with nav_col:
+        st.markdown('<div class="nav-rail">', unsafe_allow_html=True)
+        st.markdown(
+            """
+            <div class="nav-brand">
+                <div class="brand">Fit<span>CRM</span></div>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+
+        if st.button("📊  Dashboard", use_container_width=True, type="primary" if st.session_state.page == "dashboard" else "secondary"):
+            st.session_state.page = "dashboard"
+            st.session_state.selected_client = None
+            st.rerun()
+
+        if st.button("👥  Klienti", use_container_width=True, type="primary" if st.session_state.page == "clients" else "secondary"):
+            st.session_state.page = "clients"
+            st.session_state.selected_client = None
+            st.rerun()
+
+        if st.button("📥  Inbox", use_container_width=True, type="primary" if st.session_state.page == "inbox" else "secondary"):
+            st.session_state.page = "inbox"
+            st.session_state.selected_client = None
+            st.rerun()
+
+        if st.button("➕  Nový klient", use_container_width=True, type="primary" if st.session_state.page == "new_client" else "secondary"):
+            st.session_state.page = "new_client"
+            st.rerun()
+
+        if st.button("⚙️  Email konektor", use_container_width=True, type="primary" if st.session_state.page == "email_connector" else "secondary"):
+            st.session_state.page = "email_connector"
+            st.rerun()
+
+        st.markdown('<div style="height: 0.7rem;"></div>', unsafe_allow_html=True)
+        sha = _git_sha_short()
+        sha_txt = f" · {sha}" if sha else ""
+        st.markdown(
+            f'<div style="color: var(--muted); font-size: 0.75rem;">v{APP_VERSION}{sha_txt} · {"Dark" if dm else "Light"}</div>',
+            unsafe_allow_html=True,
+        )
         st.markdown('</div>', unsafe_allow_html=True)
 
-        # Quick Actions
-        st.markdown("---")
-        if st.button("➕ Nový klient", key="qa_new", use_container_width=True, type="primary"):
-            st.session_state.page = 'new_client'
-            st.rerun()
+    with content_col:
+        top = st.container()
+        with top:
+            c1, c2, c3, c4 = st.columns([2.9, 1.0, 0.45, 0.65])
+            with c1:
+                st.text_input("", placeholder="Search…", label_visibility="collapsed", key="global_search")
+            with c2:
+                next_dm = st.toggle("Dark mode", value=dm, label_visibility="collapsed", key="top_dark_toggle")
+                if next_dm != dm:
+                    st.session_state.dark_mode = next_dm
+                    st.rerun()
+            with c3:
+                st.markdown('<div class="topbar-icon">🔔</div>', unsafe_allow_html=True)
+            with c4:
+                avatar = _portrait_data_uri("trainer")
+                st.markdown(f'<div class="topbar-avatar"><img src="{avatar}" alt="avatar" /></div>', unsafe_allow_html=True)
 
-        if st.button("👥 Všichni klienti", key="qa_clients", use_container_width=True, type="secondary"):
-            st.session_state.page = 'clients'
-            st.rerun()
+        st.markdown('<div class="topbar-row" style="display:none;"></div>', unsafe_allow_html=True)
+
+        page = st.session_state.page
+        if page == 'dashboard':
+            render_dashboard()
+        elif page == 'inbox':
+            render_inbox()
+        elif page == 'clients':
+            render_clients_list()
+        elif page == 'client_detail':
+            render_client_detail()
+        elif page == 'new_client':
+            render_new_client()
+        elif page == 'email_connector':
+            render_email_connector()
 
 
 def render_clients_list():
@@ -2522,22 +2780,7 @@ def main():
     if dark_css:
         st.markdown(f"<style>{dark_css}</style>", unsafe_allow_html=True)
 
-    render_sidebar()
-
-    page = st.session_state.page
-
-    if page == 'dashboard':
-        render_dashboard()
-    elif page == 'inbox':
-        render_inbox()
-    elif page == 'clients':
-        render_clients_list()
-    elif page == 'client_detail':
-        render_client_detail()
-    elif page == 'new_client':
-        render_new_client()
-    elif page == 'email_connector':
-        render_email_connector()
+    render_app_shell()
 
 
 if __name__ == "__main__":

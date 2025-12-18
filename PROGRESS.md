@@ -4,11 +4,12 @@
 
 ✅ Inbox UI (Gmail-like 3-panel layout) + Email Connector (IMAP) are implemented in Streamlit.
 ✅ Inbox list redesigned to dense Gmail-like row list (replaces dataframe; less whitespace).
-✅ Sidebar made more compact (narrower width, reduced spacing).
+✅ App shell redesigned: Streamlit sidebar hidden; custom left navigation + topbar (with Light/Dark switch).
 ✅ Inbox UX refined: folders moved into toolbar, improved empty state in detail panel.
 ✅ Gemini requests improved for free tier (rate-limit/backoff + cache + flash-lite default).
 ✅ UI styling unified across app (more consistent spacing/typography/cards).
 ✅ Offline sample avatars improved (portrait-style SVG avatars in Clients list + Client detail).
+🚧 Dashboard redesigned toward Tailwind mockup style (dense KPI cards + schedule/health/activity + green palette).
 
 ## Completed
 

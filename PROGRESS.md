@@ -3,6 +3,10 @@
 ## Current Status
 
 ✅ Inbox UI (Gmail-like 3-panel layout) + Email Connector (IMAP) are implemented in Streamlit.
+✅ Inbox list improved for larger volumes (paging + list table UX).
+✅ Gemini requests improved for free tier (rate-limit/backoff + cache + flash-lite default).
+✅ UI styling unified across app (more consistent spacing/typography/cards).
+✅ Offline sample avatars added for demo clients (SVG avatars in Clients list + Client detail).
 
 ## Completed
 
@@ -18,3 +22,5 @@
 🔜 Gmail OAuth connector (instead of app-password IMAP)
 🔜 Message threading + labels (Inbox, Starred, etc.)
 🔜 Caching + rate-limit / retry policy for IMAP fetch
+
+

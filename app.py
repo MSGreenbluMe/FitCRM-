@@ -13,6 +13,10 @@ import tempfile
 import plotly.express as px
 import plotly.graph_objects as go
 import random
+import pandas as pd
+import html
+import base64
+import hashlib
 
 # Add parent directory to path
 sys.path.insert(0, str(Path(__file__).parent))
@@ -161,6 +165,14 @@ def get_theme_css(dark_mode: bool) -> str:
         .ticket-card:hover { background: #334155 !important; }
         .ticket-card .ticket-subject { color: #f1f5f9 !important; }
         .ticket-card .ticket-meta { color: #94a3b8 !important; }
+        .inbox-detail-body { background: #0f172a !important; border-color: #334155 !important; color: #e2e8f0 !important; }
+        .chip { border-color: #334155 !important; }
+        .chip.new { background: rgba(5, 150, 105, 0.18) !important; color: #34d399 !important; }
+        .chip.assigned { background: rgba(217, 119, 6, 0.18) !important; color: #fbbf24 !important; }
+        .chip.done { background: rgba(100, 116, 139, 0.18) !important; color: #cbd5e1 !important; }
+        .chip.active { background: rgba(5, 150, 105, 0.18) !important; color: #34d399 !important; }
+        .chip.stagnating { background: rgba(217, 119, 6, 0.18) !important; color: #fbbf24 !important; }
+        .chip.problem { background: rgba(220, 38, 38, 0.18) !important; color: #f87171 !important; }
         [data-testid="stSidebar"] { background: #1e293b !important; border-color: #334155 !important; }
         [data-testid="stMetricValue"] { color: #f1f5f9 !important; }
         [data-testid="stMetricLabel"] { color: #94a3b8 !important; }
@@ -197,7 +209,7 @@ st.markdown("""
     }
 
     .main .block-container {
-        padding: 2rem 3rem;
+        padding: 1.5rem 2.25rem;
         max-width: 1400px;
     }
 
@@ -213,7 +225,7 @@ st.markdown("""
         background: #ffffff;
         border: 1px solid #e2e8f0;
         border-radius: 16px;
-        padding: 1.5rem;
+        padding: 1.25rem;
         box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
         transition: all 0.2s ease;
     }
@@ -618,13 +630,62 @@ st.markdown("""
         margin-top: 0.25rem;
     }
 
+    .chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        padding: 0.2rem 0.55rem;
+        border-radius: 999px;
+        border: 1px solid #e2e8f0;
+        font-size: 0.72rem;
+        font-weight: 600;
+        line-height: 1;
+        white-space: nowrap;
+    }
+
+    .chip.new { background: #ecfdf5; color: #059669; }
+    .chip.assigned { background: #fff7ed; color: #d97706; }
+    .chip.done { background: #f1f5f9; color: #475569; }
+
+    .chip.active { background: #ecfdf5; color: #059669; }
+    .chip.stagnating { background: #fffbeb; color: #d97706; }
+    .chip.problem { background: #fef2f2; color: #dc2626; }
+
+    .avatar-img {
+        width: 44px;
+        height: 44px;
+        border-radius: 12px;
+        border: 1px solid #e2e8f0;
+        background: #ffffff;
+        display: block;
+    }
+
+    .inbox-detail-body {
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 0.85rem;
+        max-height: 420px;
+        overflow: auto;
+        white-space: pre-wrap;
+        font-size: 0.9rem;
+        line-height: 1.35;
+        color: #0f172a;
+    }
+
     /* ===== LEGACY OVERRIDES ===== */
     .main-header {
         font-size: 1.5rem;
         font-weight: 600;
         color: #0f172a;
         letter-spacing: -0.01em;
-        margin-bottom: 1.25rem;
+        margin-bottom: 1rem;
+    }
+
+    hr {
+        margin: 0.85rem 0;
+        border: none;
+        border-top: 1px solid #e2e8f0;
     }
 
     .stTabs [data-baseweb="tab-list"] {
@@ -775,6 +836,40 @@ def fetch_nutrition_info(food_query: str) -> dict:
     return None
 
 
+def _initials(name: str) -> str:
+    parts = [p for p in (name or "").strip().split() if p]
+    if not parts:
+        return "?"
+    return "".join([p[0].upper() for p in parts[:2]])
+
+
+def _avatar_data_uri(seed: str) -> str:
+    digest = hashlib.sha256((seed or "").encode("utf-8")).hexdigest()
+    palette = [
+        ("#2563eb", "#60a5fa"),
+        ("#7c3aed", "#a78bfa"),
+        ("#059669", "#34d399"),
+        ("#d97706", "#fbbf24"),
+        ("#dc2626", "#f87171"),
+        ("#0f172a", "#475569"),
+    ]
+    idx = int(digest[:2], 16) % len(palette)
+    c1, c2 = palette[idx]
+    initials = html.escape(_initials(seed))
+    svg = f"""<svg xmlns='http://www.w3.org/2000/svg' width='88' height='88' viewBox='0 0 88 88'>
+  <defs>
+    <linearGradient id='g' x1='0' y1='0' x2='1' y2='1'>
+      <stop offset='0' stop-color='{c1}'/>
+      <stop offset='1' stop-color='{c2}'/>
+    </linearGradient>
+  </defs>
+  <rect x='0' y='0' width='88' height='88' rx='18' fill='url(#g)'/>
+  <text x='44' y='52' text-anchor='middle' font-family='Inter, Arial, sans-serif' font-size='30' font-weight='700' fill='white'>{initials}</text>
+</svg>"""
+    b64 = base64.b64encode(svg.encode("utf-8")).decode("ascii")
+    return f"data:image/svg+xml;base64,{b64}"
+
+
 def init_session_state():
     """Initialize session state variables"""
     if 'page' not in st.session_state:
@@ -799,6 +894,14 @@ def init_session_state():
         st.session_state.selected_ticket = None
     if 'inbox_folder' not in st.session_state:
         st.session_state.inbox_folder = 'inbox'
+    if 'inbox_page' not in st.session_state:
+        st.session_state.inbox_page = 1
+    if 'inbox_page_size' not in st.session_state:
+        st.session_state.inbox_page_size = 25
+    if 'clients_page' not in st.session_state:
+        st.session_state.clients_page = 1
+    if 'clients_page_size' not in st.session_state:
+        st.session_state.clients_page_size = 25
     if 'imap_settings' not in st.session_state:
         st.session_state.imap_settings = {
             "host": os.getenv("IMAP_HOST", "imap.gmail.com"),
@@ -878,7 +981,7 @@ def render_sidebar():
         st.markdown("<br>", unsafe_allow_html=True)
 
         # Email Feed / Tickets
-        new_tickets = [t for t in st.session_state.email_tickets if t['status'] == 'new']
+        new_tickets = [t for t in st.session_state.email_tickets if t.get("status") == "new"]
         st.markdown(f'<p style="color: {"#94a3b8" if dm else "#64748b"}; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.5rem;">Příchozí <span style="color: #2563eb; font-weight: 600;">({len(new_tickets)})</span></p>', unsafe_allow_html=True)
 
         for ticket in st.session_state.email_tickets[:3]:
@@ -1048,7 +1151,8 @@ def render_inbox():
 
     tickets = st.session_state.email_tickets
 
-    tcol1, tcol2, tcol3, tcol4 = st.columns([2.2, 1.2, 1.2, 1.4])
+    st.markdown('<div class="bento-card" style="padding: 0.85rem 1rem; margin-bottom: 1rem;">', unsafe_allow_html=True)
+    tcol1, tcol2, tcol3, tcol4 = st.columns([2.2, 1.2, 1.2, 1.1])
     with tcol1:
         query = st.text_input("", placeholder="Hľadať v inboxe…", label_visibility="collapsed")
     with tcol2:
@@ -1058,12 +1162,12 @@ def render_inbox():
     with tcol4:
         if st.button("🔄 Obnoviť", use_container_width=True):
             st.rerun()
+    st.markdown('</div>', unsafe_allow_html=True)
 
-    st.markdown("---")
-
-    col_folders, col_list, col_detail = st.columns([1, 1.4, 2.2])
+    col_folders, col_list, col_detail = st.columns([0.9, 1.55, 2.55])
 
     with col_folders:
+        st.markdown('<div class="bento-card" style="padding: 0.9rem;">', unsafe_allow_html=True)
         inbox_count = len([t for t in tickets if t.get("status") == "new"])
         assigned_count = len([t for t in tickets if t.get("status") == "assigned"])
         done_count = len([t for t in tickets if t.get("status") == "done"])
@@ -1082,10 +1186,11 @@ def render_inbox():
             st.session_state.inbox_folder = "all"
             st.rerun()
 
-        st.markdown("---")
+        st.markdown('<div style="height: 0.5rem;"></div>', unsafe_allow_html=True)
         if st.button("⚙️ Nastaviť email konektor", use_container_width=True):
             st.session_state.page = 'email_connector'
             st.rerun()
+        st.markdown('</div>', unsafe_allow_html=True)
 
     filtered = tickets
     if st.session_state.inbox_folder == "inbox":
@@ -1115,52 +1220,183 @@ def render_inbox():
         ]
 
     with col_list:
+        st.markdown('<div class="bento-card" style="padding: 0.9rem;">', unsafe_allow_html=True)
+        total = len(filtered)
+        unread = len([t for t in filtered if not t.get("read")])
+
+        h1, h2 = st.columns([1, 1])
+        with h1:
+            st.caption(f"Správy: {total} · Neprečítané: {unread}")
+        with h2:
+            st.session_state.inbox_page_size = st.selectbox(
+                "",
+                options=[25, 50, 100],
+                index=[25, 50, 100].index(st.session_state.inbox_page_size) if st.session_state.inbox_page_size in [25, 50, 100] else 0,
+                label_visibility="collapsed",
+            )
+
         if not filtered:
             st.info("Inbox je prázdny (alebo nič nezodpovedá filtru).")
         else:
-            visible = filtered[:50]
-            by_id = {t.get("id"): t for t in visible if t.get("id")}
+            page_size = int(st.session_state.inbox_page_size)
+            page_count = max(1, (total + page_size - 1) // page_size)
+            if st.session_state.inbox_page > page_count:
+                st.session_state.inbox_page = page_count
+            if st.session_state.inbox_page < 1:
+                st.session_state.inbox_page = 1
 
-            current = st.session_state.selected_ticket.get("id") if st.session_state.selected_ticket else None
-            options = [t.get("id") for t in visible if t.get("id")]
-            if not options:
-                st.info("Inbox je prázdny (alebo nič nezodpovedá filtru).")
-            else:
-                index = 0
-                if current in options:
-                    index = options.index(current)
+            nav1, nav2, nav3 = st.columns([1, 1, 2])
+            with nav1:
+                if st.button("←", use_container_width=True, disabled=st.session_state.inbox_page <= 1, key="inbox_prev"):
+                    st.session_state.inbox_page -= 1
+                    st.rerun()
+            with nav2:
+                if st.button("→", use_container_width=True, disabled=st.session_state.inbox_page >= page_count, key="inbox_next"):
+                    st.session_state.inbox_page += 1
+                    st.rerun()
+            with nav3:
+                st.caption(f"Strana {st.session_state.inbox_page} / {page_count}")
 
-                def _fmt(ticket_id: str) -> str:
-                    t = by_id.get(ticket_id, {})
-                    unread_dot = "●" if not t.get("read") else ""
-                    subject = t.get("subject", "")
-                    from_ = t.get("from", "")
-                    time_ = t.get("time", "")
-                    return f"{unread_dot} {subject} — {from_} · {time_}".strip()
+            start = (st.session_state.inbox_page - 1) * page_size
+            end = start + page_size
+            visible = filtered[start:end]
 
-                selected_id = st.radio(
-                    "",
-                    options=options,
-                    index=index,
-                    format_func=_fmt,
-                    label_visibility="collapsed",
-                    key="inbox_radio",
+            rows = []
+            for t in visible:
+                content = (t.get("content") or "").replace("\n", " ").strip()
+                snippet = content[:120] + ("…" if len(content) > 120 else "")
+
+                status_raw = (t.get("status") or "").strip().lower()
+                status_label = {
+                    "new": "Nové",
+                    "assigned": "Priradené",
+                    "done": "Hotové",
+                }.get(status_raw, status_raw)
+                status_symbol = {
+                    "new": "●",
+                    "assigned": "◐",
+                    "done": "✓",
+                }.get(status_raw, "")
+
+                rows.append(
+                    {
+                        "_id": t.get("id"),
+                        " ": "●" if not t.get("read") else "",
+                        "Predmet": (t.get("subject") or "").strip(),
+                        "Od": (t.get("from") or "").strip(),
+                        "Snippet": snippet,
+                        "Čas": (t.get("time") or "").strip(),
+                        "Stav": f"{status_symbol} {status_label}".strip(),
+                    }
                 )
 
-                selected = by_id.get(selected_id)
-                if selected and (not st.session_state.selected_ticket or st.session_state.selected_ticket.get("id") != selected_id):
-                    st.session_state.selected_ticket = selected
-                    selected["read"] = True
-                    st.rerun()
+            df = pd.DataFrame(rows)
+            display = df.drop(columns=["_id"], errors="ignore")
+
+            try:
+                event = st.dataframe(
+                    display,
+                    use_container_width=True,
+                    hide_index=True,
+                    height=620,
+                    selection_mode="single-row",
+                    on_select="rerun",
+                    column_config={
+                        " ": st.column_config.TextColumn("", width="small"),
+                        "Predmet": st.column_config.TextColumn("Predmet", width="medium"),
+                        "Od": st.column_config.TextColumn("Od", width="medium"),
+                        "Snippet": st.column_config.TextColumn("", width="large"),
+                        "Čas": st.column_config.TextColumn("Čas", width="small"),
+                        "Stav": st.column_config.TextColumn("Stav", width="small"),
+                    },
+                )
+                selection_obj = getattr(event, "selection", None)
+                sel_rows = None
+                if isinstance(selection_obj, dict):
+                    sel_rows = selection_obj.get("rows")
+                else:
+                    sel_rows = getattr(selection_obj, "rows", None)
+                if sel_rows:
+                    selected_idx = sel_rows[0]
+                    selected_id = df.iloc[int(selected_idx)]["_id"]
+                    selected = next((t for t in visible if t.get("id") == selected_id), None)
+                    if selected and (not st.session_state.selected_ticket or st.session_state.selected_ticket.get("id") != selected_id):
+                        st.session_state.selected_ticket = selected
+                        selected["read"] = True
+                        st.rerun()
+            except TypeError:
+                by_id = {t.get("id"): t for t in visible if t.get("id")}
+                current = st.session_state.selected_ticket.get("id") if st.session_state.selected_ticket else None
+                options = [t.get("id") for t in visible if t.get("id")]
+                if not options:
+                    st.info("Inbox je prázdny (alebo nič nezodpovedá filtru).")
+                else:
+                    index = 0
+                    if current in options:
+                        index = options.index(current)
+
+                    def _fmt(ticket_id: str) -> str:
+                        t = by_id.get(ticket_id, {})
+                        unread_dot = "●" if not t.get("read") else ""
+                        subject = t.get("subject", "")
+                        from_ = t.get("from", "")
+                        time_ = t.get("time", "")
+                        return f"{unread_dot} {subject} — {from_} · {time_}".strip()
+
+                    selected_id = st.radio(
+                        "",
+                        options=options,
+                        index=index,
+                        format_func=_fmt,
+                        label_visibility="collapsed",
+                        key="inbox_radio",
+                    )
+
+                    selected = by_id.get(selected_id)
+                    if selected and (not st.session_state.selected_ticket or st.session_state.selected_ticket.get("id") != selected_id):
+                        st.session_state.selected_ticket = selected
+                        selected["read"] = True
+                        st.rerun()
+
+        st.markdown('</div>', unsafe_allow_html=True)
 
     with col_detail:
+        st.markdown('<div class="bento-card" style="padding: 0.9rem;">', unsafe_allow_html=True)
         sel = st.session_state.selected_ticket
         if not sel:
             st.info("Vyber správu vľavo.")
         else:
-            st.markdown(f"### {sel.get('subject', '')}")
-            st.caption(f"Od: {sel.get('from', '')}")
-            st.markdown("---")
+            subject = (sel.get("subject") or "").strip()
+            from_ = (sel.get("from") or "").strip()
+            time_ = (sel.get("time") or "").strip()
+            source_ = (sel.get("source") or "").strip()
+            status_raw = (sel.get("status") or "").strip().lower()
+            status_label = {
+                "new": "Nové",
+                "assigned": "Priradené",
+                "done": "Hotové",
+            }.get(status_raw, status_raw)
+
+            chips = []
+            chips.append(f'<span class="chip {status_raw}">{status_label}</span>')
+            if source_:
+                chips.append(f'<span class="chip">{html.escape(source_)}</span>')
+            if not sel.get("read"):
+                chips.append('<span class="chip new">Neprečítané</span>')
+            chips_html = "".join(chips)
+
+            st.markdown(
+                f"""
+                <div style="display:flex; justify-content: space-between; gap: 1rem; align-items: flex-start;">
+                    <div style="min-width: 0;">
+                        <div style="font-size: 1.05rem; font-weight: 700; color: {'#f1f5f9' if st.session_state.dark_mode else '#0f172a'}; line-height: 1.25; overflow-wrap: anywhere;">{html.escape(subject)}</div>
+                        <div style="margin-top: 0.25rem; display:flex; gap: 0.5rem; flex-wrap: wrap;">{chips_html}</div>
+                        <div style="margin-top: 0.45rem; color: {'#94a3b8' if st.session_state.dark_mode else '#64748b'}; font-size: 0.82rem;">Od: {html.escape(from_)}{' · ' + html.escape(time_) if time_ else ''}</div>
+                    </div>
+                </div>
+                """,
+                unsafe_allow_html=True,
+            )
 
             a1, a2, a3, a4 = st.columns([1, 1, 1, 1])
             with a1:
@@ -1180,8 +1416,11 @@ def render_inbox():
                     sel["read"] = False
                     st.rerun()
 
-            st.markdown("---")
-            st.text_area("Obsah", value=sel.get("content", ""), height=420)
+            st.markdown(
+                f'<div class="inbox-detail-body">{html.escape(sel.get("content", "") or "")}</div>',
+                unsafe_allow_html=True,
+            )
+        st.markdown('</div>', unsafe_allow_html=True)
 
 
 def render_dashboard():
@@ -1303,6 +1542,7 @@ def render_dashboard():
                 hovertemplate='%{x}<br>%{y:+.1f} kg<extra></extra>'
             )])
             fig.update_layout(
+                barmode='group',
                 height=240,
                 margin=dict(t=10, b=30, l=30, r=10),
                 yaxis=dict(
@@ -1420,16 +1660,19 @@ def render_clients_list():
 
     clients = st.session_state.clients
 
-    # Filters
-    col1, col2, col3 = st.columns([2, 2, 2])
+    st.markdown('<div class="bento-card" style="padding: 0.85rem 1rem; margin-bottom: 1rem;">', unsafe_allow_html=True)
+    col1, col2, col3, col4 = st.columns([2.2, 1.25, 1.25, 1.1])
     with col1:
-        search = st.text_input("🔍 Hledat", placeholder="Jméno nebo email...")
+        search = st.text_input("", placeholder="Hľadať klienta (meno/email)…", label_visibility="collapsed")
     with col2:
-        status_filter = st.selectbox("Stav", ["Všichni", "Aktivní", "Stagnující", "Problém"])
+        status_filter = st.selectbox("Stav", ["Všetko", "Aktívny", "Stagnuje", "Problém"], label_visibility="collapsed")
     with col3:
-        sort_by = st.selectbox("Seřadit podle", ["Poslední check-in", "Jméno", "Progres"])
-
-    st.markdown("---")
+        sort_by = st.selectbox("Zoradiť", ["Posledný check-in", "Meno", "Progres"], label_visibility="collapsed")
+    with col4:
+        if st.button("➕", use_container_width=True):
+            st.session_state.page = 'new_client'
+            st.rerun()
+    st.markdown('</div>', unsafe_allow_html=True)
 
     # Filter clients
     filtered = clients
@@ -1437,56 +1680,135 @@ def render_clients_list():
         search_lower = search.lower()
         filtered = [c for c in filtered if search_lower in c.name.lower() or search_lower in c.email.lower()]
 
-    if status_filter == "Aktivní":
+    if status_filter == "Aktívny":
         filtered = [c for c in filtered if c.status == "active"]
-    elif status_filter == "Stagnující":
+    elif status_filter == "Stagnuje":
         filtered = [c for c in filtered if c.status == "stagnating"]
     elif status_filter == "Problém":
         filtered = [c for c in filtered if c.status == "problem"]
 
     # Sort
-    if sort_by == "Poslední check-in":
+    if sort_by == "Posledný check-in":
         filtered = sorted(filtered, key=lambda c: c.last_checkin, reverse=True)
-    elif sort_by == "Jméno":
+    elif sort_by == "Meno":
         filtered = sorted(filtered, key=lambda c: c.name)
     elif sort_by == "Progres":
         filtered = sorted(filtered, key=lambda c: c.progress_percent, reverse=True)
 
-    # Display clients
-    for client in filtered:
-        status_emoji = {"active": "🟢", "stagnating": "🟡", "problem": "🔴"}.get(client.status, "⚪")
+    st.markdown('<div class="bento-card" style="padding: 0.9rem;">', unsafe_allow_html=True)
+    total = len(filtered)
+    st.caption(f"Klienti: {total}")
 
-        with st.container():
-            col1, col2, col3, col4 = st.columns([3, 2, 3, 1])
+    if not filtered:
+        st.info("Žiadni klienti (alebo nič nezodpovedá filtru).")
+        st.markdown('</div>', unsafe_allow_html=True)
+        return
 
-            with col1:
-                st.markdown(f"### {status_emoji} {client.name}")
-                st.caption(f"{client.age} let, {'Muž' if client.gender == 'male' else 'Žena'}")
+    page_size = int(st.session_state.clients_page_size)
+    page_count = max(1, (total + page_size - 1) // page_size)
+    if st.session_state.clients_page > page_count:
+        st.session_state.clients_page = page_count
+    if st.session_state.clients_page < 1:
+        st.session_state.clients_page = 1
 
-            with col2:
-                st.write(f"**Cíl:** {client.goal}")
-                weight_change = client.weight_change
-                change_emoji = "↓" if weight_change < 0 else "↑" if weight_change > 0 else "→"
-                st.write(f"**Váha:** {client.current_weight_kg}kg ({change_emoji}{abs(weight_change):.1f}kg)")
+    nav1, nav2, nav3, nav4 = st.columns([1, 1, 1.2, 1.8])
+    with nav1:
+        if st.button("←", use_container_width=True, disabled=st.session_state.clients_page <= 1, key="clients_prev"):
+            st.session_state.clients_page -= 1
+            st.rerun()
+    with nav2:
+        if st.button("→", use_container_width=True, disabled=st.session_state.clients_page >= page_count, key="clients_next"):
+            st.session_state.clients_page += 1
+            st.rerun()
+    with nav3:
+        st.session_state.clients_page_size = st.selectbox(
+            "",
+            options=[25, 50, 100],
+            index=[25, 50, 100].index(st.session_state.clients_page_size) if st.session_state.clients_page_size in [25, 50, 100] else 0,
+            label_visibility="collapsed",
+            key="clients_page_size_select",
+        )
+    with nav4:
+        st.caption(f"Strana {st.session_state.clients_page} / {page_count}")
 
-            with col3:
-                progress = client.progress_percent
-                st.write(f"**Progres:** {progress:.0f}%")
-                st.progress(progress / 100)
+    start = (st.session_state.clients_page - 1) * page_size
+    end = start + page_size
+    visible = filtered[start:end]
 
-                days = client.days_since_checkin
-                if days > 7:
-                    st.caption(f"⚠️ Check-in před {days} dny")
-                else:
-                    st.caption(f"✅ Check-in před {days} dny")
+    rows = []
+    for c in visible:
+        status_raw = (c.status or "").strip().lower()
+        status_label = {"active": "Aktívny", "stagnating": "Stagnuje", "problem": "Problém"}.get(status_raw, status_raw)
+        status_symbol = {"active": "●", "stagnating": "◐", "problem": "!"}.get(status_raw, "")
+        rows.append(
+            {
+                "_id": c.id,
+                "Foto": _avatar_data_uri(c.name),
+                "Meno": c.name,
+                "Email": c.email,
+                "Stav": f"{status_symbol} {status_label}".strip(),
+                "Progres": f"{c.progress_percent:.0f}%",
+                "Check-in": f"{c.days_since_checkin}d",
+            }
+        )
 
-            with col4:
-                if st.button("Detail", key=f"client_{client.id}", use_container_width=True):
-                    st.session_state.selected_client = client.id
-                    st.session_state.page = 'client_detail'
-                    st.rerun()
+    df = pd.DataFrame(rows)
+    display = df.drop(columns=["_id"], errors="ignore")
 
-            st.markdown("---")
+    try:
+        event = st.dataframe(
+            display,
+            use_container_width=True,
+            hide_index=True,
+            height=620,
+            selection_mode="single-row",
+            on_select="rerun",
+            column_config={
+                "Foto": st.column_config.ImageColumn("", width="small"),
+                "Meno": st.column_config.TextColumn("Meno", width="medium"),
+                "Email": st.column_config.TextColumn("Email", width="medium"),
+                "Stav": st.column_config.TextColumn("Stav", width="small"),
+                "Progres": st.column_config.TextColumn("Progres", width="small"),
+                "Check-in": st.column_config.TextColumn("Check-in", width="small"),
+            },
+        )
+
+        selection_obj = getattr(event, "selection", None)
+        sel_rows = None
+        if isinstance(selection_obj, dict):
+            sel_rows = selection_obj.get("rows")
+        else:
+            sel_rows = getattr(selection_obj, "rows", None)
+
+        if sel_rows:
+            selected_idx = sel_rows[0]
+            selected_id = df.iloc[int(selected_idx)]["_id"]
+            st.session_state.selected_client = selected_id
+            st.session_state.page = 'client_detail'
+            st.rerun()
+    except TypeError:
+        by_id = {c.id: c for c in visible}
+        options = [c.id for c in visible]
+
+        def _fmt(client_id: str) -> str:
+            c = by_id.get(client_id)
+            if not c:
+                return client_id
+            status_label = {"active": "Aktívny", "stagnating": "Stagnuje", "problem": "Problém"}.get(c.status, c.status)
+            return f"{c.name} · {status_label} · {c.progress_percent:.0f}%"
+
+        selected_id = st.radio(
+            "",
+            options=options,
+            format_func=_fmt,
+            label_visibility="collapsed",
+            key="clients_radio",
+        )
+        st.session_state.selected_client = selected_id
+        st.session_state.page = 'client_detail'
+        st.rerun()
+
+    st.markdown('</div>', unsafe_allow_html=True)
 
 
 def render_client_detail():
@@ -1504,7 +1826,25 @@ def render_client_detail():
         st.session_state.selected_client = None
         st.rerun()
 
-    st.markdown(f'<div class="main-header">👤 {client.name}</div>', unsafe_allow_html=True)
+    status_raw = (client.status or "").strip().lower()
+    status_label = {"active": "Aktívny", "stagnating": "Stagnuje", "problem": "Problém"}.get(status_raw, status_raw)
+    avatar = _avatar_data_uri(client.name)
+    chips = [f'<span class="chip {status_raw}">{html.escape(status_label)}</span>']
+    chips.append(f'<span class="chip">{html.escape(client.email)}</span>')
+    st.markdown(
+        f"""
+        <div class="bento-card" style="padding: 0.95rem; margin-bottom: 1rem;">
+            <div style="display:flex; gap: 0.9rem; align-items: center;">
+                <img class="avatar-img" src="{avatar}" alt="avatar" />
+                <div style="min-width: 0;">
+                    <div style="font-size: 1.25rem; font-weight: 800; line-height: 1.15; color: {'#f1f5f9' if st.session_state.dark_mode else '#0f172a'};">{html.escape(client.name)}</div>
+                    <div style="margin-top: 0.35rem; display:flex; gap: 0.5rem; flex-wrap: wrap;">{''.join(chips)}</div>
+                </div>
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
 
     # Client Info Row
     col1, col2, col3, col4 = st.columns(4)
@@ -1545,7 +1885,7 @@ def render_client_detail():
 
             fig.update_layout(
                 height=300,
-                margin=dict(t=20, b=20, l=20, r=20),
+                margin=dict(t=10, b=30, l=10, r=10),
                 yaxis_title="Váha (kg)",
                 showlegend=False
             )
@@ -1596,7 +1936,7 @@ def render_client_detail():
             fig.update_layout(
                 barmode='group',
                 height=350,
-                margin=dict(t=20, b=20, l=20, r=20),
+                margin=dict(t=10, b=30, l=30, r=10),
                 yaxis_title="Váha (kg)",
                 legend=dict(orientation="h", yanchor="bottom", y=1.02)
             )
@@ -1621,7 +1961,7 @@ def render_client_detail():
 
             fig.update_layout(
                 height=350,
-                margin=dict(t=20, b=20, l=20, r=20),
+                margin=dict(t=10, b=30, l=30, r=10),
                 yaxis_title="Adherencia (%)",
                 yaxis=dict(range=[0, 100])
             )
@@ -1826,20 +2166,12 @@ def generate_plans(profile: ClientProfile, api_key: str):
         st.session_state.segment = segment
         progress.progress(33)
 
-        # Wait before next request
-        status.text("⏳ Čakám pred ďalším requestom...")
-        time.sleep(3)
-
         # Step 2: Generate meal plan (1 API request)
         status.text("🍽️ Generujem jedálniček... (2/3)")
         progress.progress(45)
         meal_plan = ai.generate_meal_plan(profile, segment)
         st.session_state.meal_plan = meal_plan
         progress.progress(66)
-
-        # Wait before next request
-        status.text("⏳ Čakám pred ďalším requestom...")
-        time.sleep(3)
 
         # Step 3: Generate training plan (1 API request)
         status.text("💪 Generujem tréningový plán... (3/3)")

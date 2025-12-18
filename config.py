@@ -20,7 +20,7 @@ LOGS_DIR.mkdir(exist_ok=True)
 
 # API Configuration
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "")
-GEMINI_MODEL = "gemini-2.5-pro"
+GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-2.5-flash-lite")
 
 # Email Configuration
 EMAIL_USER = os.getenv("EMAIL_USER", "")

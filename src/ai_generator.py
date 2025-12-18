@@ -1,7 +1,11 @@
 """AI Generator - Generate meal and training plans using Google Gemini"""
 import json
 import logging
+import os
 import time
+import hashlib
+import random
+import threading
 from pathlib import Path
 from typing import Dict, Any, Optional
 from dataclasses import dataclass
@@ -68,9 +72,22 @@ class FitAIGenerator:
         self.model = genai.GenerativeModel(model_name)
         self.logger = logging.getLogger(self.__class__.__name__)
 
+        self._min_interval_seconds = float(os.getenv("GEMINI_MIN_INTERVAL_SECONDS", "0") or 0)
+        if self._min_interval_seconds <= 0:
+            try:
+                rpm = float(os.getenv("GEMINI_RPM", "5") or 5)
+            except ValueError:
+                rpm = 5
+            rpm = max(1.0, rpm)
+            self._min_interval_seconds = 60.0 / rpm
+        self._last_request_ts = 0.0
+
         # Load prompt templates
         self.prompts_dir = Path(__file__).parent.parent / "prompts"
         self.prompts = self._load_prompts()
+
+    _cache_lock = threading.Lock()
+    _response_cache: Dict[str, str] = {}
 
     def _load_prompts(self) -> Dict[str, str]:
         """Load prompt templates from files"""
@@ -89,21 +106,58 @@ class FitAIGenerator:
     def _generate_single_request(self, prompt: str) -> str:
         """
         Generate content with a single API request - no retries.
-        
+
         Args:
             prompt: The prompt to send
-            
+
         Returns:
             Generated text content
         """
-        try:
-            self.logger.info("Sending single API request...")
-            response = self.model.generate_content(prompt)
-            self.logger.info("API request successful")
-            return response.text
-        except Exception as e:
-            self.logger.error(f"API request failed: {e}")
-            raise
+        cache_key = hashlib.sha256(prompt.encode("utf-8")).hexdigest()
+        with self._cache_lock:
+            cached = self._response_cache.get(cache_key)
+        if cached is not None:
+            return cached
+
+        max_attempts = int(os.getenv("GEMINI_MAX_ATTEMPTS", "3") or 3)
+        max_attempts = max(1, max_attempts)
+
+        for attempt in range(1, max_attempts + 1):
+            try:
+                now = time.monotonic()
+                wait_for = (self._last_request_ts + self._min_interval_seconds) - now
+                if wait_for > 0:
+                    time.sleep(wait_for)
+
+                self.logger.info("Sending API request...")
+                response = self.model.generate_content(prompt)
+                self._last_request_ts = time.monotonic()
+                text = response.text
+
+                with self._cache_lock:
+                    self._response_cache[cache_key] = text
+                self.logger.info("API request successful")
+                return text
+            except Exception as e:
+                msg = str(e)
+                is_rate_limit = (
+                    "429" in msg
+                    or "RESOURCE_EXHAUSTED" in msg
+                    or "quota" in msg.lower()
+                    or "rate" in msg.lower()
+                )
+
+                if (attempt < max_attempts) and is_rate_limit:
+                    base = float(os.getenv("GEMINI_BACKOFF_BASE_SECONDS", "5") or 5)
+                    cap = float(os.getenv("GEMINI_BACKOFF_CAP_SECONDS", "60") or 60)
+                    sleep_for = min(cap, base * (2 ** (attempt - 1)))
+                    sleep_for = sleep_for + random.uniform(0.0, 1.0)
+                    self.logger.warning(f"Rate limit/quota hit; backing off for {sleep_for:.1f}s (attempt {attempt}/{max_attempts})")
+                    time.sleep(sleep_for)
+                    continue
+
+                self.logger.error(f"API request failed: {e}")
+                raise
 
     def segment_client(self, profile: ClientProfile) -> ClientSegment:
         """

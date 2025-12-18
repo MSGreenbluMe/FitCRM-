@@ -238,9 +238,9 @@ st.markdown("""
         overflow: hidden;
     }
 
-    /* Streamlit cannot render widgets inside arbitrary HTML wrappers.
-       Style the whole left column by detecting a marker element. */
-    div[data-testid="column"]:has(#nav-rail-marker) div[data-testid="stVerticalBlock"] {
+    /* Streamlit renders widgets in its own blocks; to avoid "empty blocks",
+       style the exact VerticalBlock that contains our marker. */
+    div[data-testid="stVerticalBlock"]:has(#nav-rail-marker) {
         background: var(--surface-1);
         border: 1px solid var(--border);
         border-radius: 18px;
@@ -251,7 +251,7 @@ st.markdown("""
         overflow: hidden;
     }
 
-    div[data-testid="column"]:has(#nav-rail-marker) div.stButton > button {
+    div[data-testid="stVerticalBlock"]:has(#nav-rail-marker) div.stButton > button {
         width: 100%;
         border-radius: 14px !important;
         border: 1px solid transparent !important;
@@ -262,12 +262,12 @@ st.markdown("""
         text-align: left !important;
     }
 
-    div[data-testid="column"]:has(#nav-rail-marker) div.stButton > button:hover {
+    div[data-testid="stVerticalBlock"]:has(#nav-rail-marker) div.stButton > button:hover {
         background: var(--surface-2) !important;
         border-color: var(--border) !important;
     }
 
-    div[data-testid="column"]:has(#nav-rail-marker) div.stButton > button[kind="primary"] {
+    div[data-testid="stVerticalBlock"]:has(#nav-rail-marker) div.stButton > button[kind="primary"] {
         background: var(--accent-2) !important;
         border-color: rgba(19, 236, 91, 0.45) !important;
         color: var(--text) !important;
@@ -1995,46 +1995,48 @@ def render_app_shell():
     nav_col, content_col = st.columns([0.24, 0.76], gap="large")
 
     with nav_col:
-        st.markdown('<div id="nav-rail-marker"></div>', unsafe_allow_html=True)
-        st.markdown(
-            """
-            <div class="nav-brand">
-                <div class="brand">Fit<span>CRM</span></div>
-            </div>
-            """,
-            unsafe_allow_html=True,
-        )
+        nav = st.container()
+        with nav:
+            st.markdown('<div id="nav-rail-marker"></div>', unsafe_allow_html=True)
+            st.markdown(
+                """
+                <div class="nav-brand">
+                    <div class="brand">Fit<span>CRM</span></div>
+                </div>
+                """,
+                unsafe_allow_html=True,
+            )
 
-        if st.button("📊  Dashboard", use_container_width=True, type="primary" if st.session_state.page == "dashboard" else "secondary"):
-            st.session_state.page = "dashboard"
-            st.session_state.selected_client = None
-            st.rerun()
+            if st.button("📊  Dashboard", use_container_width=True, type="primary" if st.session_state.page == "dashboard" else "secondary"):
+                st.session_state.page = "dashboard"
+                st.session_state.selected_client = None
+                st.rerun()
 
-        if st.button("👥  Klienti", use_container_width=True, type="primary" if st.session_state.page == "clients" else "secondary"):
-            st.session_state.page = "clients"
-            st.session_state.selected_client = None
-            st.rerun()
+            if st.button("👥  Klienti", use_container_width=True, type="primary" if st.session_state.page == "clients" else "secondary"):
+                st.session_state.page = "clients"
+                st.session_state.selected_client = None
+                st.rerun()
 
-        if st.button("📥  Inbox", use_container_width=True, type="primary" if st.session_state.page == "inbox" else "secondary"):
-            st.session_state.page = "inbox"
-            st.session_state.selected_client = None
-            st.rerun()
+            if st.button("📥  Inbox", use_container_width=True, type="primary" if st.session_state.page == "inbox" else "secondary"):
+                st.session_state.page = "inbox"
+                st.session_state.selected_client = None
+                st.rerun()
 
-        if st.button("➕  Nový klient", use_container_width=True, type="primary" if st.session_state.page == "new_client" else "secondary"):
-            st.session_state.page = "new_client"
-            st.rerun()
+            if st.button("➕  Nový klient", use_container_width=True, type="primary" if st.session_state.page == "new_client" else "secondary"):
+                st.session_state.page = "new_client"
+                st.rerun()
 
-        if st.button("⚙️  Email konektor", use_container_width=True, type="primary" if st.session_state.page == "email_connector" else "secondary"):
-            st.session_state.page = "email_connector"
-            st.rerun()
+            if st.button("⚙️  Email konektor", use_container_width=True, type="primary" if st.session_state.page == "email_connector" else "secondary"):
+                st.session_state.page = "email_connector"
+                st.rerun()
 
-        st.markdown('<div style="height: 0.7rem;"></div>', unsafe_allow_html=True)
-        sha = _git_sha_short()
-        sha_txt = f" · {sha}" if sha else ""
-        st.markdown(
-            f'<div style="color: var(--muted); font-size: 0.75rem;">v{APP_VERSION}{sha_txt} · {"Dark" if dm else "Light"}</div>',
-            unsafe_allow_html=True,
-        )
+            st.markdown('<div style="height: 0.7rem;"></div>', unsafe_allow_html=True)
+            sha = _git_sha_short()
+            sha_txt = f" · {sha}" if sha else ""
+            st.markdown(
+                f'<div style="color: var(--muted); font-size: 0.75rem;">v{APP_VERSION}{sha_txt} · {"Dark" if dm else "Light"}</div>',
+                unsafe_allow_html=True,
+            )
 
     with content_col:
         top = st.container()

@@ -569,6 +569,37 @@ st.markdown("""
     [data-testid="stSidebar"] {
         background: #ffffff;
         border-right: 1px solid #e2e8f0;
+        min-width: 216px;
+        width: 216px;
+        max-width: 216px;
+    }
+
+    [data-testid="stSidebar"] [data-testid="stSidebarContent"] {
+        padding-top: 0.35rem;
+    }
+
+    [data-testid="stSidebar"] .block-container {
+        padding-left: 0.75rem;
+        padding-right: 0.75rem;
+    }
+
+    [data-testid="stSidebar"] [data-testid="stVerticalBlock"] {
+        gap: 0.35rem;
+    }
+
+    [data-testid="stSidebar"] .stButton > button {
+        padding: 0.45rem 0.75rem !important;
+        font-size: 0.85rem !important;
+        border-radius: 10px !important;
+    }
+
+    [data-testid="stSidebar"] .stToggleSwitch {
+        transform: scale(0.92);
+        transform-origin: left center;
+    }
+
+    [data-testid="stSidebar"] hr {
+        margin: 0.55rem 0;
     }
 
     [data-testid="stSidebar"] .stMarkdown {
@@ -933,9 +964,9 @@ def render_sidebar():
     with st.sidebar:
         # Logo / Brand
         st.markdown(f"""
-        <div style="padding: 1rem 0 1.5rem 0;">
-            <span style="font-size: 1.5rem; font-weight: 700; color: #2563eb;">FIT</span>
-            <span style="font-size: 1.5rem; font-weight: 400; color: {'#94a3b8' if dm else '#64748b'};">CRM</span>
+        <div style="padding: 0.65rem 0 0.75rem 0;">
+            <span style="font-size: 1.25rem; font-weight: 800; color: #2563eb;">FIT</span>
+            <span style="font-size: 1.25rem; font-weight: 500; color: {'#94a3b8' if dm else '#64748b'};">CRM</span>
         </div>
         """, unsafe_allow_html=True)
 
@@ -945,7 +976,7 @@ def render_sidebar():
             st.session_state.dark_mode = dark_mode
             st.rerun()
 
-        st.markdown("<br>", unsafe_allow_html=True)
+        st.markdown('<div style="height: 0.4rem;"></div>', unsafe_allow_html=True)
 
         # Navigation
         st.markdown(f'<p style="color: {"#94a3b8" if dm else "#64748b"}; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.5rem;">Nabídka</p>', unsafe_allow_html=True)
@@ -978,7 +1009,7 @@ def render_sidebar():
             st.session_state.page = 'email_connector'
             st.rerun()
 
-        st.markdown("<br>", unsafe_allow_html=True)
+        st.markdown('<div style="height: 0.35rem;"></div>', unsafe_allow_html=True)
 
         # Email Feed / Tickets
         new_tickets = [t for t in st.session_state.email_tickets if t.get("status") == "new"]
@@ -1012,7 +1043,7 @@ def render_sidebar():
                 st.session_state.training_plan = None
                 st.rerun()
 
-        st.markdown("<br>", unsafe_allow_html=True)
+        st.markdown('<div style="height: 0.35rem;"></div>', unsafe_allow_html=True)
 
         # API Status
         st.markdown(f'<p style="color: {"#94a3b8" if dm else "#64748b"}; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.5rem;">Stav</p>', unsafe_allow_html=True)
@@ -1036,7 +1067,7 @@ def render_sidebar():
         """
         st.markdown(status_html, unsafe_allow_html=True)
 
-        st.markdown("<br><br>", unsafe_allow_html=True)
+        st.markdown('<div style="height: 0.6rem;"></div>', unsafe_allow_html=True)
         st.markdown(f'<p style="color: #94a3b8; font-size: 0.65rem;">FIT CRM v{APP_VERSION} · {"Tmavý" if dm else "Světlý"}</p>', unsafe_allow_html=True)
 
 
@@ -1263,8 +1294,8 @@ def render_inbox():
 
             rows = []
             for t in visible:
-                content = (t.get("content") or "").replace("\n", " ").strip()
-                snippet = content[:120] + ("…" if len(content) > 120 else "")
+                subject = (t.get("subject") or "").strip()
+                from_ = (t.get("from") or "").strip()
 
                 status_raw = (t.get("status") or "").strip().lower()
                 status_label = {
@@ -1278,13 +1309,13 @@ def render_inbox():
                     "done": "✓",
                 }.get(status_raw, "")
 
+                unread_dot = "● " if not t.get("read") else ""
+
                 rows.append(
                     {
                         "_id": t.get("id"),
-                        " ": "●" if not t.get("read") else "",
-                        "Predmet": (t.get("subject") or "").strip(),
-                        "Od": (t.get("from") or "").strip(),
-                        "Snippet": snippet,
+                        "Predmet": f"{unread_dot}{subject}".strip(),
+                        "Od": from_,
                         "Čas": (t.get("time") or "").strip(),
                         "Stav": f"{status_symbol} {status_label}".strip(),
                     }
@@ -1293,19 +1324,20 @@ def render_inbox():
             df = pd.DataFrame(rows)
             display = df.drop(columns=["_id"], errors="ignore")
 
+            # Prefer page scrolling over scrolling inside the table for the default page size.
+            df_height = max(240, min(980, 36 * (len(display) + 1) + 12))
+
             try:
                 event = st.dataframe(
                     display,
                     use_container_width=True,
                     hide_index=True,
-                    height=620,
+                    height=df_height,
                     selection_mode="single-row",
                     on_select="rerun",
                     column_config={
-                        " ": st.column_config.TextColumn("", width="small"),
-                        "Predmet": st.column_config.TextColumn("Predmet", width="medium"),
-                        "Od": st.column_config.TextColumn("Od", width="medium"),
-                        "Snippet": st.column_config.TextColumn("", width="large"),
+                        "Predmet": st.column_config.TextColumn("Predmet", width="large"),
+                        "Od": st.column_config.TextColumn("Od", width="small"),
                         "Čas": st.column_config.TextColumn("Čas", width="small"),
                         "Stav": st.column_config.TextColumn("Stav", width="small"),
                     },

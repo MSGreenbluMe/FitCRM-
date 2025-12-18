@@ -238,6 +238,41 @@ st.markdown("""
         overflow: hidden;
     }
 
+    /* Streamlit cannot render widgets inside arbitrary HTML wrappers.
+       Style the whole left column by detecting a marker element. */
+    div[data-testid="column"]:has(#nav-rail-marker) div[data-testid="stVerticalBlock"] {
+        background: var(--surface-1);
+        border: 1px solid var(--border);
+        border-radius: 18px;
+        padding: 0.9rem;
+        height: calc(100vh - 2.0rem);
+        position: sticky;
+        top: 0.9rem;
+        overflow: hidden;
+    }
+
+    div[data-testid="column"]:has(#nav-rail-marker) div.stButton > button {
+        width: 100%;
+        border-radius: 14px !important;
+        border: 1px solid transparent !important;
+        background: transparent !important;
+        color: var(--text) !important;
+        padding: 0.7rem 0.8rem !important;
+        font-weight: 600 !important;
+        text-align: left !important;
+    }
+
+    div[data-testid="column"]:has(#nav-rail-marker) div.stButton > button:hover {
+        background: var(--surface-2) !important;
+        border-color: var(--border) !important;
+    }
+
+    div[data-testid="column"]:has(#nav-rail-marker) div.stButton > button[kind="primary"] {
+        background: var(--accent-2) !important;
+        border-color: rgba(19, 236, 91, 0.45) !important;
+        color: var(--text) !important;
+    }
+
     .nav-brand {
         display: flex;
         align-items: center;
@@ -1868,7 +1903,7 @@ def render_app_shell():
     nav_col, content_col = st.columns([0.24, 0.76], gap="large")
 
     with nav_col:
-        st.markdown('<div class="nav-rail">', unsafe_allow_html=True)
+        st.markdown('<div id="nav-rail-marker"></div>', unsafe_allow_html=True)
         st.markdown(
             """
             <div class="nav-brand">
@@ -1908,7 +1943,6 @@ def render_app_shell():
             f'<div style="color: var(--muted); font-size: 0.75rem;">v{APP_VERSION}{sha_txt} · {"Dark" if dm else "Light"}</div>',
             unsafe_allow_html=True,
         )
-        st.markdown('</div>', unsafe_allow_html=True)
 
     with content_col:
         top = st.container()

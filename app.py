@@ -150,8 +150,9 @@ def get_theme_css(dark_mode: bool) -> str:
         return """
         :root {
             --app-bg: #102216;
-            --surface-1: #112217;
-            --surface-2: #172d20;
+            --surface-1: #23482f;
+            --surface-2: #1a3824;
+            --surface-3: #2a5538;
             --border: #23482f;
             --text: #e7f3eb;
             --muted: #92c9a4;
@@ -425,6 +426,81 @@ st.markdown("""
         margin-top: 0.25rem;
         color: var(--muted);
         font-size: 0.88rem;
+    }
+
+    .hero-h1 {
+        font-size: 2.4rem;
+        font-weight: 900;
+        letter-spacing: -0.02em;
+        line-height: 1.05;
+        color: var(--text);
+        margin: 0;
+    }
+
+    .hero-h1 .accent {
+        color: var(--accent);
+    }
+
+    .stat-card {
+        background: var(--surface-1);
+        border: 1px solid transparent;
+        border-radius: 18px;
+        padding: 1.1rem 1.2rem;
+        transition: border-color 0.15s ease, transform 0.15s ease;
+    }
+
+    .stat-card:hover {
+        border-color: rgba(19, 236, 91, 0.28);
+        transform: translateY(-1px);
+    }
+
+    .stat-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 0.75rem;
+    }
+
+    .stat-label-sm {
+        color: var(--muted);
+        font-size: 0.78rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.12em;
+    }
+
+    .stat-ico {
+        color: var(--accent);
+        font-size: 1.05rem;
+        margin-top: 0.1rem;
+    }
+
+    .stat-value-lg {
+        color: var(--text);
+        font-size: 1.9rem;
+        font-weight: 900;
+        line-height: 1.0;
+        margin-top: 0.55rem;
+    }
+
+    .stat-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        padding: 0.18rem 0.55rem;
+        border-radius: 10px;
+        font-size: 0.75rem;
+        font-weight: 900;
+        background: rgba(19, 236, 91, 0.12);
+        color: var(--accent);
+        margin-left: 0.6rem;
+        border: 1px solid rgba(19, 236, 91, 0.18);
+    }
+
+    .stat-chip.warn {
+        background: rgba(245, 158, 11, 0.14);
+        color: #fbbf24;
+        border-color: rgba(245, 158, 11, 0.25);
     }
 
     .section-card {
@@ -1738,57 +1814,68 @@ def render_dashboard():
     cz_months = ['ledna', 'února', 'března', 'dubna', 'května', 'června', 'července', 'srpna', 'září', 'října', 'listopadu', 'prosince']
     date_str = f"{cz_days[today.weekday()]}, {today.day}. {cz_months[today.month-1]} {today.year}"
 
+    active_clients = [c for c in clients if c.status in ["active", "stagnating"]]
+    pending_checkins = len([c for c in active_clients if c.days_since_checkin >= 7])
+    sessions_today = min(4, len(active_clients))
+
     st.markdown(
         f"""
-        <div style="margin-bottom: 1rem;">
-            <div style="font-size: 1.35rem; font-weight: 900; letter-spacing: -0.02em; color: var(--text);">Dashboard</div>
-            <div style="margin-top: 0.1rem; color: var(--muted); font-size: 0.95rem;">{date_str}</div>
+        <div style="margin-top: 0.35rem; margin-bottom: 1.1rem;">
+            <h1 class="hero-h1">Good Morning, Coach.<br/><span class="accent">You have {sessions_today} sessions today.</span></h1>
         </div>
         """,
         unsafe_allow_html=True,
     )
 
-    k1, k2, k3, k4 = st.columns(4)
-    with k1:
+    s1, s2, s3, s4 = st.columns(4)
+    with s1:
         st.markdown(
             f"""
-            <div class="kpi-card">
-                <div class="kpi-label">Aktívni klienti</div>
-                <div class="kpi-value">{stats['active_clients']}</div>
-                <div class="kpi-foot">+{stats['new_this_week']} tento týždeň</div>
+            <div class="stat-card">
+                <div class="stat-top">
+                    <div class="stat-label-sm">ACTIVE CLIENTS</div>
+                    <div class="stat-ico">👥</div>
+                </div>
+                <div class="stat-value-lg">{len(active_clients)}<span class="stat-chip">+{stats['new_this_week']}</span></div>
             </div>
             """,
             unsafe_allow_html=True,
         )
-    with k2:
+    with s2:
         st.markdown(
             f"""
-            <div class="kpi-card">
-                <div class="kpi-label">Retencia</div>
-                <div class="kpi-value">{stats['retention_percent']}%</div>
-                <div class="kpi-foot">stabilná</div>
+            <div class="stat-card">
+                <div class="stat-top">
+                    <div class="stat-label-sm">SESSIONS TODAY</div>
+                    <div class="stat-ico">🏋️</div>
+                </div>
+                <div class="stat-value-lg">{sessions_today}</div>
             </div>
             """,
             unsafe_allow_html=True,
         )
-    with k3:
+    with s3:
         st.markdown(
             f"""
-            <div class="kpi-card">
-                <div class="kpi-label">Adherencia</div>
-                <div class="kpi-value">{stats['avg_adherence']:.0f}%</div>
-                <div class="kpi-foot">{'výborná' if stats['avg_adherence'] > 75 else 'treba zlepšiť'}</div>
+            <div class="stat-card">
+                <div class="stat-top">
+                    <div class="stat-label-sm">PENDING CHECK-INS</div>
+                    <div class="stat-ico">⏳</div>
+                </div>
+                <div class="stat-value-lg">{pending_checkins}<span class="stat-chip warn">High</span></div>
             </div>
             """,
             unsafe_allow_html=True,
         )
-    with k4:
+    with s4:
         st.markdown(
             f"""
-            <div class="kpi-card">
-                <div class="kpi-label">Príjem / mesiac</div>
-                <div class="kpi-value">€{stats['mrr_eur']}</div>
-                <div class="kpi-foot">trend ↑</div>
+            <div class="stat-card">
+                <div class="stat-top">
+                    <div class="stat-label-sm">REVENUE MTD</div>
+                    <div class="stat-ico">💳</div>
+                </div>
+                <div class="stat-value-lg">€{stats['mrr_eur']}</div>
             </div>
             """,
             unsafe_allow_html=True,

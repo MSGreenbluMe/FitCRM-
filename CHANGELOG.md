@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.2.1
+
+- Improved Inbox list UX for large volumes (paging + table-based selection + snippet + panel cards)
+- Improved Gemini free-tier stability (default flash-lite model + rate limiting/backoff + prompt caching)
+
 ## 0.2.0
 
 - Added Gmail-like Inbox page (folders, list, preview, actions)

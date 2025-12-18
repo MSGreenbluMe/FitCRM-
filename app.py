@@ -141,7 +141,7 @@ st.set_page_config(
     page_title="FIT CRM",
     page_icon="💪",
     layout="wide",
-    initial_sidebar_state="expanded"
+    initial_sidebar_state="collapsed"
 )
 
 def get_theme_css(dark_mode: bool) -> str:
@@ -209,7 +209,12 @@ st.markdown("""
     #MainMenu {visibility: hidden;}
     footer {visibility: hidden;}
     header {visibility: hidden;}
-    [data-testid="stSidebar"], [data-testid="collapsedControl"] { display: none !important; }
+    [data-testid="stSidebar"],
+    section[data-testid="stSidebar"],
+    [data-testid="stSidebarNav"],
+    [data-testid="collapsedControl"] { display: none !important; }
+    section.main { margin-left: 0 !important; }
+    [data-testid="stAppViewContainer"] { padding-left: 0 !important; }
 
     .stApp {
         background: var(--app-bg);

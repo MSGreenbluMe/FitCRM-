@@ -503,6 +503,294 @@ st.markdown("""
         border-color: rgba(245, 158, 11, 0.25);
     }
 
+    .schedule-head {
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        padding-bottom: 0.6rem;
+        border-bottom: 1px solid var(--border);
+        margin-bottom: 0.85rem;
+    }
+
+    .schedule-title {
+        color: var(--text);
+        font-size: 1.15rem;
+        font-weight: 900;
+        letter-spacing: -0.01em;
+    }
+
+    .schedule-link {
+        color: var(--accent);
+        font-size: 0.9rem;
+        font-weight: 900;
+    }
+
+    .session-card {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        background: var(--surface-1);
+        border-radius: 18px;
+        padding: 1.05rem 1.15rem;
+        border-left: 4px solid var(--accent);
+        margin-bottom: 0.85rem;
+    }
+
+    .session-card:last-child { margin-bottom: 0; }
+    .session-card.purple { border-left-color: #a855f7; }
+    .session-card.slate { border-left-color: #64748b; opacity: 0.75; }
+
+    .session-left {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        min-width: 0;
+        flex: 1;
+    }
+
+    .session-time {
+        min-width: 92px;
+        display: flex;
+        flex-direction: column;
+        gap: 0.1rem;
+    }
+
+    .session-time .t {
+        color: var(--text);
+        font-weight: 900;
+        font-size: 1.05rem;
+        line-height: 1.0;
+    }
+
+    .session-time .d {
+        color: var(--muted);
+        font-weight: 800;
+        font-size: 0.75rem;
+    }
+
+    .session-avatar {
+        width: 46px;
+        height: 46px;
+        border-radius: 999px;
+        border: 2px solid rgba(35, 72, 47, 0.55);
+        overflow: hidden;
+        flex-shrink: 0;
+        background: rgba(255,255,255,0.04);
+    }
+
+    .session-avatar img { width: 46px; height: 46px; display: block; }
+
+    .session-meta { min-width: 0; }
+
+    .session-meta .name {
+        color: var(--text);
+        font-weight: 900;
+        line-height: 1.1;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .session-tags { display: flex; align-items: center; gap: 0.5rem; margin-top: 0.25rem; flex-wrap: wrap; }
+
+    .tag {
+        font-size: 0.75rem;
+        font-weight: 900;
+        padding: 0.14rem 0.55rem;
+        border-radius: 10px;
+        color: var(--text);
+        background: rgba(255,255,255,0.10);
+    }
+
+    .tag.purple { background: rgba(168, 85, 247, 0.14); color: #d8b4fe; }
+    .tag.muted { background: transparent; color: var(--muted); font-weight: 800; padding: 0; }
+
+    .session-cta {
+        border-radius: 14px;
+        padding: 0.55rem 0.95rem;
+        font-weight: 900;
+        font-size: 0.9rem;
+        background: var(--accent);
+        color: var(--app-bg);
+        border: 1px solid rgba(19, 236, 91, 0.35);
+        white-space: nowrap;
+        user-select: none;
+    }
+
+    .session-cta.ghost {
+        background: transparent;
+        color: var(--text);
+        border: 1px solid rgba(255,255,255,0.20);
+    }
+
+    .session-cta.disabled {
+        background: transparent;
+        border: 1px solid transparent;
+        color: rgba(231, 243, 235, 0.45);
+    }
+
+    .compliance-wrap {
+        background: var(--surface-1);
+        border-radius: 18px;
+        padding: 1.25rem;
+        margin-top: 1.15rem;
+    }
+
+    .compliance-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 0.85rem;
+    }
+
+    .compliance-head .ttl { color: var(--text); font-weight: 900; font-size: 1.05rem; }
+    .compliance-head .pct { color: var(--accent); font-weight: 900; font-size: 1.4rem; }
+
+    .progress-track {
+        height: 14px;
+        width: 100%;
+        background: var(--app-bg);
+        border-radius: 999px;
+        overflow: hidden;
+        border: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .progress-fill {
+        height: 100%;
+        background: linear-gradient(90deg, rgba(19,236,91,0.45), rgba(19,236,91,1));
+        border-radius: 999px;
+        position: relative;
+    }
+
+    .progress-fill::after {
+        content: "";
+        position: absolute;
+        right: 0;
+        top: 0;
+        bottom: 0;
+        width: 4px;
+        background: rgba(255,255,255,0.9);
+        box-shadow: 0 0 10px rgba(255,255,255,0.8);
+    }
+
+    .week-labels {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 0.55rem;
+        color: var(--muted);
+        font-size: 0.75rem;
+        font-weight: 800;
+    }
+
+    .bars {
+        display: flex;
+        align-items: flex-end;
+        gap: 0.45rem;
+        height: 84px;
+        margin-top: 0.75rem;
+    }
+
+    .bar {
+        flex: 1;
+        background: rgba(19,236,91,0.18);
+        border-radius: 6px 6px 2px 2px;
+    }
+
+    .bar.hot { background: rgba(19,236,91,1.0); box-shadow: 0 0 15px rgba(19,236,91,0.18); }
+    .bar.empty { background: rgba(255,255,255,0.06); }
+
+    div[data-testid="stVerticalBlock"]:has(#qa-marker) div.stButton > button {
+        height: 86px;
+        border-radius: 16px !important;
+        background: var(--surface-2) !important;
+        border: 1px solid transparent !important;
+        color: var(--text) !important;
+        font-weight: 900 !important;
+        white-space: pre-wrap !important;
+        line-height: 1.2 !important;
+    }
+
+    div[data-testid="stVerticalBlock"]:has(#qa-marker) div.stButton > button:hover {
+        background: var(--surface-3) !important;
+        border-color: rgba(19, 236, 91, 0.25) !important;
+    }
+
+    .activity-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 0.7rem;
+    }
+
+    .activity-title {
+        color: var(--text);
+        font-weight: 900;
+        font-size: 1.05rem;
+    }
+
+    .activity-meta {
+        color: var(--muted);
+        font-weight: 800;
+        font-size: 0.75rem;
+    }
+
+    .activity-item {
+        display: flex;
+        gap: 0.75rem;
+        align-items: flex-start;
+        padding: 0.75rem;
+        border-radius: 14px;
+        background: rgba(35, 72, 47, 0.35);
+        border-left: 3px solid transparent;
+        margin-bottom: 0.65rem;
+    }
+
+    .activity-item:last-child { margin-bottom: 0; }
+    .activity-item.highlight { border-left-color: var(--accent); background: rgba(35, 72, 47, 0.50); }
+    .activity-item.danger { border-left-color: #ef4444; background: rgba(239, 68, 68, 0.10); }
+
+    .activity-avatar {
+        width: 34px;
+        height: 34px;
+        border-radius: 999px;
+        overflow: hidden;
+        flex-shrink: 0;
+        border: 1px solid rgba(255,255,255,0.10);
+    }
+
+    .activity-avatar img { width: 34px; height: 34px; display: block; }
+
+    .activity-body { min-width: 0; }
+
+    .activity-body .line {
+        color: var(--text);
+        font-size: 0.92rem;
+        line-height: 1.25;
+    }
+
+    .activity-body .line b { font-weight: 900; }
+
+    .activity-body .time {
+        margin-top: 0.35rem;
+        color: var(--muted);
+        font-size: 0.72rem;
+        font-weight: 800;
+    }
+
+    .activity-cta {
+        margin-top: 0.5rem;
+        display: inline-block;
+        font-size: 0.75rem;
+        font-weight: 900;
+        padding: 0.22rem 0.55rem;
+        border-radius: 10px;
+        color: var(--text);
+        background: rgba(239, 68, 68, 0.18);
+        border: 1px solid rgba(239, 68, 68, 0.25);
+        width: fit-content;
+    }
+
     .section-card {
         background: var(--surface-1);
         border: 1px solid var(--border);
@@ -1888,48 +2176,49 @@ def render_dashboard():
     with col_main:
         st.markdown(
             """
-            <div class="section-card">
-                <div class="section-head">
-                    <div class="title">Dnešný plán</div>
-                    <div class="meta">Najbližšie check-iny</div>
-                </div>
+            <div class="schedule-head">
+                <div class="schedule-title">Today's Schedule</div>
+                <div class="schedule-link">View Calendar</div>
+            </div>
             """,
             unsafe_allow_html=True,
         )
 
-        recent = sorted(clients, key=lambda c: c.last_checkin, reverse=True)[:4]
-        schedule_items = []
-        for c in recent:
-            schedule_items.append(
-                {
-                    "name": c.name,
-                    "sub": f"Check-in · {c.days_since_checkin}d · {c.current_weight_kg}kg",
-                    "pill": f"{c.progress_percent:.0f}%",
-                }
-            )
+        base_sessions = [
+            ("10:00 AM", "60 min", "HIIT", "In-Person", "accent", "Start Session"),
+            ("11:30 AM", "45 min", "Hypertrophy", "Virtual", "purple", "Join Call"),
+            ("02:00 PM", "60 min", "Strength", "In-Person", "slate", "Upcoming"),
+        ]
 
-        for it in schedule_items:
+        picked = sorted(active_clients, key=lambda c: c.last_checkin, reverse=True)[:3]
+        if len(picked) < 3:
+            picked = (picked + sorted(clients, key=lambda c: c.last_checkin, reverse=True))[:3]
+
+        for i, c in enumerate(picked[:3]):
+            t, dur, plan, mode, tone, cta = base_sessions[i]
+            cls = "session-card" + (" purple" if tone == "purple" else " slate" if tone == "slate" else "")
+            avatar = _portrait_data_uri(c.name)
+            tag2 = '<span class="tag purple">🎥 Virtual</span>' if mode == "Virtual" else '<span class="tag muted">In-Person</span>'
+            cta_cls = "session-cta" + (" ghost" if cta == "Join Call" else " disabled" if cta == "Upcoming" else "")
             st.markdown(
                 f"""
-                <div class="list-row">
-                    <div class="left">
-                        <div class="name">{html.escape(it['name'])}</div>
-                        <div class="sub">{html.escape(it['sub'])}</div>
+                <div class="{cls}">
+                    <div class="session-left">
+                        <div class="session-time"><div class="t">{html.escape(t)}</div><div class="d">{html.escape(dur)}</div></div>
+                        <div class="session-avatar"><img src="{avatar}" alt="avatar" /></div>
+                        <div class="session-meta">
+                            <div class="name">{html.escape(c.name)}</div>
+                            <div class="session-tags">
+                                <span class="tag">{html.escape(plan)}</span>
+                                {tag2}
+                            </div>
+                        </div>
                     </div>
-                    <span class="pill">{html.escape(it['pill'])}</span>
+                    <div class="{cta_cls}">{html.escape(cta)}</div>
                 </div>
                 """,
                 unsafe_allow_html=True,
             )
-
-        st.markdown("</div>", unsafe_allow_html=True)
-
-        st.markdown('<div style="height: 0.9rem;"></div>', unsafe_allow_html=True)
-
-        dm = st.session_state.dark_mode
-        font_color = "#e7f3eb" if dm else "#0f172a"
-        grid_color = "rgba(35, 72, 47, 0.35)" if dm else "rgba(217, 234, 223, 0.9)"
-        muted_color = "#92c9a4" if dm else "#456a55"
 
         def _adherence_at_day(c: ClientData, day: datetime) -> int | None:
             if not c.checkins:
@@ -1942,109 +2231,69 @@ def render_dashboard():
                 return None
             return int(latest.adherence_percent)
 
-        active_clients = [c for c in clients if c.status in ["active", "stagnating"]]
         days = [today - timedelta(days=i) for i in range(6, -1, -1)]
         vals = []
         for d in days:
             per = [v for v in (_adherence_at_day(c, d) for c in active_clients) if v is not None]
             vals.append(round(sum(per) / len(per)) if per else 0)
 
-        ch1, ch2 = st.columns(2)
-        with ch1:
-            st.markdown(
-                """
-                <div class="section-card">
-                    <div class="section-head">
-                        <div class="title">Zdravie & progres</div>
-                        <div class="meta">Rozdelenie klientov</div>
-                    </div>
-                """,
-                unsafe_allow_html=True,
-            )
-            fig = go.Figure(
-                data=[
-                    go.Pie(
-                        labels=["Progres", "Stagnácia", "Problém"],
-                        values=[stats["progressing"], stats["stagnating"], stats["regressing"]],
-                        hole=0.72,
-                        marker_colors=["#13ec5b", "#fbbf24", "#f87171"],
-                        textinfo="none",
-                    )
-                ]
-            )
-            fig.update_layout(
-                showlegend=True,
-                height=280,
-                margin=dict(t=10, b=10, l=10, r=10),
-                font=dict(color=font_color),
-                paper_bgcolor="rgba(0,0,0,0)",
-                plot_bgcolor="rgba(0,0,0,0)",
-                legend=dict(orientation="h", yanchor="bottom", y=-0.15, xanchor="center", x=0.5),
-            )
-            st.plotly_chart(fig, use_container_width=True, config={"displayModeBar": False})
-            st.markdown("</div>", unsafe_allow_html=True)
+        compliance_pct = round(sum(vals) / len(vals)) if vals else 0
+        pct_width = max(0, min(100, compliance_pct))
+        labels = [d.strftime("%a") for d in days]
+        max_v = max(vals) if vals else 1
+        bars_html = []
+        for i, v in enumerate(vals):
+            h = 20 + int((v / max_v) * 70) if max_v else 20
+            hot = " hot" if i == len(vals) - 2 else ""
+            empty = " empty" if v == 0 else ""
+            bars_html.append(f'<div class="bar{hot}{empty}" style="height:{h}%"></div>')
 
-        with ch2:
-            st.markdown(
-                """
-                <div class="section-card">
-                    <div class="section-head">
-                        <div class="title">Compliance</div>
-                        <div class="meta">Posledných 7 dní</div>
-                    </div>
-                """,
-                unsafe_allow_html=True,
-            )
-            x = [d.strftime("%a") for d in days]
-            fig2 = go.Figure(
-                data=[
-                    go.Scatter(
-                        x=x,
-                        y=vals,
-                        mode="lines+markers",
-                        line=dict(color="#13ec5b", width=3),
-                        marker=dict(size=7, color="#13ec5b"),
-                        fill="tozeroy",
-                        fillcolor="rgba(19, 236, 91, 0.12)",
-                        hovertemplate="%{x}<br>%{y}%<extra></extra>",
-                    )
-                ]
-            )
-            fig2.update_layout(
-                height=280,
-                margin=dict(t=10, b=10, l=10, r=10),
-                font=dict(color=font_color),
-                paper_bgcolor="rgba(0,0,0,0)",
-                plot_bgcolor="rgba(0,0,0,0)",
-                xaxis=dict(showgrid=False, tickfont=dict(color=muted_color)),
-                yaxis=dict(range=[0, 100], gridcolor=grid_color, tickfont=dict(color=muted_color), zeroline=False),
-                showlegend=False,
-            )
-            st.plotly_chart(fig2, use_container_width=True, config={"displayModeBar": False})
-            st.markdown("</div>", unsafe_allow_html=True)
+        st.markdown(
+            f"""
+            <div class="compliance-wrap">
+                <div class="compliance-head">
+                    <div class="ttl">Client Compliance Rate</div>
+                    <div class="pct">{pct_width}%</div>
+                </div>
+                <div class="progress-track"><div class="progress-fill" style="width:{pct_width}%"></div></div>
+                <div class="week-labels">{''.join([f'<span>{html.escape(x)}</span>' for x in labels])}</div>
+                <div class="bars">{''.join(bars_html)}</div>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
 
     with col_side:
         st.markdown(
             """
             <div class="section-card">
                 <div class="section-head">
-                    <div class="title">Quick actions</div>
+                    <div class="title">Quick Actions</div>
                     <div class="meta">Najčastejšie</div>
                 </div>
             """,
             unsafe_allow_html=True,
         )
-        a1 = st.button("➕ Nový klient", use_container_width=True, type="primary", key="dash_new_client")
-        a2 = st.button("📥 Inbox", use_container_width=True, key="dash_inbox")
-        a3 = st.button("👥 Klienti", use_container_width=True, key="dash_clients")
-        if a1:
+
+        st.markdown('<div id="qa-marker"></div>', unsafe_allow_html=True)
+        qa1, qa2 = st.columns(2)
+        with qa1:
+            b1 = st.button("➕\nNew Client", use_container_width=True, key="qa_new_client")
+            b3 = st.button("📣\nBroadcast", use_container_width=True, key="qa_broadcast")
+        with qa2:
+            b2 = st.button("🗓️\nCreate Plan", use_container_width=True, key="qa_create_plan")
+            b4 = st.button("📈\nReports", use_container_width=True, key="qa_reports")
+        if b1:
             st.session_state.page = "new_client"
             st.rerun()
-        if a2:
+        if b2:
+            st.session_state.page = "new_client"
+            st.rerun()
+        if b3:
             st.session_state.page = "inbox"
             st.rerun()
-        if a3:
-            st.session_state.page = "clients"
+        if b4:
+            st.session_state.page = "dashboard"
             st.rerun()
         st.markdown("</div>", unsafe_allow_html=True)
 
@@ -2053,27 +2302,65 @@ def render_dashboard():
         st.markdown(
             """
             <div class="section-card">
-                <div class="section-head">
-                    <div class="title">Aktivita</div>
-                    <div class="meta">Posledné check-iny</div>
+                <div class="activity-head">
+                    <div class="activity-title">Client Activity</div>
+                    <div class="activity-meta">Real-time</div>
                 </div>
             """,
             unsafe_allow_html=True,
         )
-        for c in sorted(clients, key=lambda x: x.last_checkin, reverse=True)[:5]:
-            status = {"active": "Aktívny", "stagnating": "Stagnuje", "problem": "Problém"}.get(c.status, c.status)
+
+        act_clients = sorted(active_clients, key=lambda x: x.last_checkin, reverse=True)[:3]
+        if len(act_clients) < 3:
+            act_clients = (act_clients + sorted(clients, key=lambda x: x.last_checkin, reverse=True))[:3]
+
+        if act_clients:
+            a0 = act_clients[0]
             st.markdown(
                 f"""
-                <div class="list-row">
-                    <div class="left">
-                        <div class="name">{html.escape(c.name)}</div>
-                        <div class="sub">{html.escape(status)} · {c.current_weight_kg}kg · {c.days_since_checkin}d</div>
+                <div class="activity-item highlight">
+                    <div class="activity-avatar"><img src="{_portrait_data_uri(a0.name)}" alt="avatar" /></div>
+                    <div class="activity-body">
+                        <div class="line"><b>{html.escape(a0.name.split(' ')[0])}.</b> logged workout: <span style="color: var(--accent); font-weight: 900;">Leg Day</span></div>
+                        <div class="line" style="color: var(--accent); font-weight: 900; font-size: 0.82rem; margin-top: 0.2rem;">🏆 Personal Record!</div>
+                        <div class="time">10 mins ago</div>
                     </div>
-                    <span class="pill">{c.weight_change:+.1f}kg</span>
                 </div>
                 """,
                 unsafe_allow_html=True,
             )
+
+        if len(act_clients) > 1:
+            a1c = act_clients[1]
+            st.markdown(
+                f"""
+                <div class="activity-item">
+                    <div class="activity-avatar"><img src="{_portrait_data_uri(a1c.name)}" alt="avatar" /></div>
+                    <div class="activity-body">
+                        <div class="line"><b>{html.escape(a1c.name.split(' ')[0])}.</b> uploaded progress photos.</div>
+                        <div class="time">45 mins ago</div>
+                    </div>
+                </div>
+                """,
+                unsafe_allow_html=True,
+            )
+
+        if len(act_clients) > 2:
+            a2c = act_clients[2]
+            st.markdown(
+                f"""
+                <div class="activity-item danger">
+                    <div class="activity-avatar"><img src="{_portrait_data_uri(a2c.name)}" alt="avatar" /></div>
+                    <div class="activity-body">
+                        <div class="line"><b>{html.escape(a2c.name.split(' ')[0])}.</b> missed nutrition log.</div>
+                        <div class="activity-cta">Send Reminder</div>
+                        <div class="time">1 hour ago</div>
+                    </div>
+                </div>
+                """,
+                unsafe_allow_html=True,
+            )
+
         st.markdown("</div>", unsafe_allow_html=True)
 
 

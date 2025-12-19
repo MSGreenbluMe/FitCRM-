@@ -840,7 +840,7 @@ st.markdown("""
         height: 86px;
         border-radius: 16px !important;
         background: var(--surface-2) !important;
-        border: 1px solid transparent !important;
+        border: 1px solid var(--border) !important;
         color: var(--text) !important;
         font-weight: 900 !important;
         white-space: pre-wrap !important;
@@ -2968,18 +2968,31 @@ def render_client_detail():
     )
 
     # Client Info Row
-    col1, col2, col3, col4 = st.columns(4)
-    with col1:
-        st.metric("Vek", f"{client.age} rokov")
-    with col2:
-        st.metric("Výška", f"{client.height_cm} cm")
-    with col3:
-        st.metric("BMI", f"{client.bmi:.1f}")
-    with col4:
-        status_text = {"active": "✅ Aktívny", "stagnating": "⚠️ Stagnuje", "problem": "🔴 Problém"}.get(client.status)
-        st.metric("Status", status_text)
-
-    st.markdown("---")
+    status_map = {"active": "✅ Aktívny", "stagnating": "⚠️ Stagnuje", "problem": "🔴 Problém"}
+    status_display = status_map.get(client.status, client.status)
+    st.markdown(
+        f"""
+        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.8rem; margin-bottom: 1.2rem;">
+            <div class="bento-card" style="padding: 0.9rem;">
+                <div class="stat-label" style="margin-bottom: 0.4rem;">VEK</div>
+                <div class="stat-value">{client.age} rokov</div>
+            </div>
+            <div class="bento-card" style="padding: 0.9rem;">
+                <div class="stat-label" style="margin-bottom: 0.4rem;">VÝŠKA</div>
+                <div class="stat-value">{client.height_cm} cm</div>
+            </div>
+            <div class="bento-card" style="padding: 0.9rem;">
+                <div class="stat-label" style="margin-bottom: 0.4rem;">BMI</div>
+                <div class="stat-value">{client.bmi:.1f}</div>
+            </div>
+            <div class="bento-card" style="padding: 0.9rem;">
+                <div class="stat-label" style="margin-bottom: 0.4rem;">STATUS</div>
+                <div class="stat-value" style="font-size: 0.95rem;">{html.escape(status_display)}</div>
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
 
     # Weight Progress Section
     col1, col2 = st.columns([2, 1])

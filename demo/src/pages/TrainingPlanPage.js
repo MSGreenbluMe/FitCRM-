@@ -236,9 +236,10 @@ export class TrainingPlanPage {
           if (res && res.plan) {
             store.setTrainingPlan({ clientId: client.id, plan: res.plan });
             if (res.fallback) {
+              const warn = res.warning ? String(res.warning) : "";
               showToast({
                 title: "Fallback plan",
-                message: "AI is unavailable. Applied a safe default plan.",
+                message: warn ? `AI unavailable (${warn}). Applied a safe default plan.` : "AI unavailable. Applied a safe default plan.",
                 variant: "success",
               });
             } else {

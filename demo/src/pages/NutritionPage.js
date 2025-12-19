@@ -204,10 +204,13 @@ export class NutritionPage {
           if (res && res.plan) {
             store.setNutritionPlan({ clientId: client.id, nutrition: res.plan });
             if (res.fallback) {
+              const warn = res.warning ? String(res.warning) : "";
               showToast({
                 title: "Fallback plan",
-                message: "Gemini failed or returned invalid JSON. Applied a safe default nutrition plan.",
-                variant: "danger",
+                message: warn
+                  ? `AI unavailable (${warn}). Applied a safe default nutrition plan.`
+                  : "AI unavailable. Applied a safe default nutrition plan.",
+                variant: "success",
               });
             } else {
               showToast({ title: "Updated", message: "AI nutrition plan applied to this client." });

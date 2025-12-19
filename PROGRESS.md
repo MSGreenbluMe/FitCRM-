@@ -9,6 +9,7 @@
 ✅ Gemini requests improved for free tier (rate-limit/backoff + cache + flash-lite default).
 ✅ UI styling unified across app (more consistent spacing/typography/cards).
 ✅ Offline sample avatars improved (portrait-style SVG avatars in Clients list + Client detail).
+✅ Added consolidated technical project summary (`docs/FITCRM_PROJECT_SUMMARY.md`).
 🚧 Dashboard redesigned toward Tailwind mockup style (hero headline + KPI stat cards + schedule cards + compliance progress + quick actions tiles + activity feed).
 ✅ Dark mode enabled by default (matches Tailwind mockups).
 ✅ Sidebar polished closer to mockup (pill items, active highlight, user block).

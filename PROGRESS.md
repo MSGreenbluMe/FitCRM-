@@ -6,9 +6,13 @@
 
 ## ✅ Completed
 
+- **API integration (Netlify Functions)**
+  - Demo UI calls `/.netlify/functions/send_email`
+  - Training Plan uses `/.netlify/functions/generate_plan` (Gemini)
+
 - **Versioned + pushed to GitHub**
   - Repo: `https://github.com/MSGreenbluMe/FitCRM-`
-  - Tag: `v0.1.2`
+  - Tag: `v0.1.3`
 
 - **Functional UI demo** (static Tailwind + vanilla JS)
   - Routing between: Dashboard / Mailbox / Clients / Training Plan / Nutrition

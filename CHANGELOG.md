@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.1.3
+
+- Connected demo UI to Netlify Functions (email sending + AI plan generation).
+- Implemented `/.netlify/functions/generate_plan` (Gemini via `GEMINI_API_KEY`).
+
 ## 0.1.2
 
 - Implemented SMTP email sending via Netlify Function `/.netlify/functions/send_email` (server-side secrets).

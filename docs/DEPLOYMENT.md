@@ -57,6 +57,26 @@ Health:
 
 - `/.netlify/functions/health`
 
+Generate plan (Gemini):
+
+- `/.netlify/functions/generate_plan`
+
+Example:
+
+```bash
+curl -X POST "https://<your-site>.netlify.app/.netlify/functions/generate_plan" \
+  -H "content-type: application/json" \
+  -d '{
+    "type": "training_plan",
+    "goal": "Hypertrophy",
+    "client": {
+      "name": "Demo Client",
+      "age": 30,
+      "goal": "Hypertrophy"
+    }
+  }'
+```
+
 Send email (SMTP):
 
 - `/.netlify/functions/send_email`

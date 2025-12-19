@@ -1,5 +1,6 @@
 import { store } from "../store.js";
 import { showToast } from "../ui/toast.js";
+import { generatePlan } from "../api.js";
 
 const EXERCISE_LIBRARY = [
   { id: "lib_bench", name: "Barbell Bench Press", sets: 4, reps: "8-10", rpe: 8 },
@@ -85,6 +86,10 @@ export class TrainingPlanPage {
               )}</span> • Goal: ${escapeHtml(client.goal)}</p>
             </div>
             <div class="flex items-center gap-3">
+              <button data-action="ai-generate" class="flex items-center gap-2 px-5 h-10 rounded-lg bg-surface-highlight text-white text-sm font-bold hover:bg-[#2f5f3e] transition-all border border-[#395c46]">
+                <span class="material-symbols-outlined text-[18px]">auto_awesome</span>
+                AI Generate
+              </button>
               <button data-action="save" class="flex items-center gap-2 px-6 h-10 rounded-lg bg-primary text-black text-sm font-bold hover:brightness-110 transition-all shadow-[0_0_15px_rgba(19,236,91,0.3)]">
                 <span class="material-symbols-outlined text-[18px]">save</span>
                 Save Plan
@@ -134,6 +139,42 @@ export class TrainingPlanPage {
     if (saveBtn) {
       saveBtn.addEventListener("click", () => {
         showToast({ title: "Saved", message: "Demo save (stored in localStorage)." });
+      });
+    }
+
+    const aiBtn = this.el.querySelector('[data-action="ai-generate"]');
+    if (aiBtn && client) {
+      aiBtn.addEventListener("click", async () => {
+        try {
+          aiBtn.disabled = true;
+          showToast({ title: "Generating", message: "Requesting AI plan from Gemini..." });
+
+          const res = await generatePlan({
+            client,
+            goal: client.goal,
+            type: "training_plan",
+            currentPlan: plan || null,
+          });
+
+          if (res && res.plan) {
+            store.setTrainingPlan({ clientId: client.id, plan: res.plan });
+            showToast({ title: "Updated", message: "AI plan applied to this client." });
+          } else {
+            showToast({
+              title: "AI response",
+              message: "Received text response (no structured plan).",
+              variant: "danger",
+            });
+          }
+        } catch (e) {
+          showToast({
+            title: "Generation failed",
+            message: e && e.message ? e.message : "Unknown error",
+            variant: "danger",
+          });
+        } finally {
+          aiBtn.disabled = false;
+        }
       });
     }
 

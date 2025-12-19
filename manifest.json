@@ -1,6 +1,6 @@
 {
   "name": "FitCRM",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "Prototype CRM for fitness trainers (UI demo + docs).",
   "demo": {
     "path": "demo/index.html"

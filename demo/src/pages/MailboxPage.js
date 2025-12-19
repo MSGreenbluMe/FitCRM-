@@ -1,5 +1,6 @@
 import { store } from "../store.js";
 import { showToast } from "../ui/toast.js";
+import { sendEmail } from "../api.js";
 
 const FOLDERS = [
   { id: "inbox", label: "Inbox", statuses: ["new"] },
@@ -145,12 +146,41 @@ export class MailboxPage {
     const composer = this.el.querySelector('[data-role="composer"]');
 
     if (selected && sendBtn && composer) {
-      sendBtn.addEventListener("click", () => {
+      sendBtn.addEventListener("click", async () => {
         const text = composer.value.trim();
         if (!text) return;
+
         store.sendMessage(selected.id, text);
         composer.value = "";
-        showToast({ title: "Message sent", message: "Demo message appended to conversation." });
+
+        try {
+          if (!selectedClient?.email) {
+            showToast({
+              title: "Missing email",
+              message: "Selected client has no email address in demo data.",
+              variant: "danger",
+            });
+            return;
+          }
+
+          sendBtn.disabled = true;
+          await sendEmail({
+            to: String(selectedClient?.email || ""),
+            subject: `FitCRM: ${selected.subject}`,
+            text,
+            fromName: "FitCRM",
+          });
+          showToast({ title: "Sent", message: "Email sent via Netlify Function." });
+        } catch (e) {
+          showToast({
+            title: "Send failed",
+            message: e && e.message ? e.message : "Unknown error",
+            variant: "danger",
+          });
+        } finally {
+          sendBtn.disabled = false;
+        }
+
         const messagesEl = this.el.querySelector('[data-role="messages"]');
         messagesEl.scrollTop = messagesEl.scrollHeight;
       });

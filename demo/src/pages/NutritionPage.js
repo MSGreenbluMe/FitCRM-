@@ -1,5 +1,6 @@
 import { store } from "../store.js";
 import { showToast } from "../ui/toast.js";
+import { sendEmail } from "../api.js";
 
 const DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
@@ -182,8 +183,45 @@ export class NutritionPage {
 
     const sendBtn = this.el.querySelector('[data-action="send"]');
     if (sendBtn) {
-      sendBtn.addEventListener("click", () => {
-        showToast({ title: "Sent", message: "Demo send (no email integration)." });
+      sendBtn.addEventListener("click", async () => {
+        if (!client?.email) {
+          showToast({
+            title: "Missing email",
+            message: "Selected client has no email address in demo data.",
+            variant: "danger",
+          });
+          return;
+        }
+
+        const summaryLines = [
+          `Client: ${client.name}`,
+          `Goal: ${client.goal}`,
+          "",
+          `Week: ${n?.weekLabel || ""}`,
+          `Totals: ${totals.kcal} kcal, P ${totals.protein}g / C ${totals.carbs}g / F ${totals.fats}g`,
+          "",
+          "Notes:",
+          String(n?.notes || "(none)"),
+        ];
+
+        try {
+          sendBtn.disabled = true;
+          await sendEmail({
+            to: String(client.email),
+            subject: `FitCRM Nutrition Plan – ${client.name}`,
+            text: summaryLines.join("\n"),
+            fromName: "FitCRM",
+          });
+          showToast({ title: "Sent", message: "Nutrition summary sent via email." });
+        } catch (e) {
+          showToast({
+            title: "Send failed",
+            message: e && e.message ? e.message : "Unknown error",
+            variant: "danger",
+          });
+        } finally {
+          sendBtn.disabled = false;
+        }
       });
     }
   }

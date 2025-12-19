@@ -332,6 +332,40 @@ export const store = {
     this._emit();
   },
 
+  setTrainingPlan({ clientId, plan }) {
+    if (!clientId || !plan) return;
+
+    const startDate = new Date().toISOString().slice(0, 10);
+    const days = {};
+    const order = ["mon", "tue", "wed", "thu"];
+
+    for (const dayKey of order) {
+      const srcDay = plan.days && plan.days[dayKey] ? plan.days[dayKey] : null;
+      const srcItems = srcDay && Array.isArray(srcDay.items) ? srcDay.items : [];
+
+      days[dayKey] = {
+        title: (srcDay && srcDay.title) || (dayKey === "wed" ? "Active Recovery" : "Workout"),
+        items: srcItems.map((it) => ({
+          id: `ex_${Math.random().toString(16).slice(2)}`,
+          name: String(it.name || "Exercise"),
+          sets: Number(it.sets || 3),
+          reps: String(it.reps || "8-12"),
+          rpe: Number(it.rpe || 8),
+        })),
+      };
+    }
+
+    this._state.trainingPlans[clientId] = {
+      name: String(plan.name || "AI Training Plan"),
+      startDate,
+      durationWeeks: Number(plan.durationWeeks || 4),
+      focus: String(plan.focus || "AI Generated"),
+      days,
+    };
+
+    this._emit();
+  },
+
   addMeal({ clientId, mealType, item }) {
     let n = this._state.nutrition[clientId];
     if (!n) {

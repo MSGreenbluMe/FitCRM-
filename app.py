@@ -2621,7 +2621,7 @@ def render_app_shell():
                 "email_connector": "Email konektor",
             }.get(st.session_state.page, "FitCRM")
 
-            c0, c1, c2, c3, c4, c5 = st.columns([1.25, 2.35, 0.20, 0.85, 0.45, 0.65])
+            c0, c1, c2, c3, c4, c5 = st.columns([1.25, 2.35, 0.20, 0.85, 0.50, 0.50])
             with c0:
                 st.markdown(f'<div class="topbar-title">{html.escape(page_label)}</div>', unsafe_allow_html=True)
                 sha = _git_sha_short()
@@ -2635,19 +2635,17 @@ def render_app_shell():
                     st.session_state.dark_mode = next_dm
                     st.rerun()
             with c4:
-                with st.container():
-                    st.markdown('<div id="topbar-notif-marker"></div>', unsafe_allow_html=True)
-                    if st.button("🔔", key="top_notif_btn"):
-                        st.session_state.show_notifications = not st.session_state.show_notifications
-                        if st.session_state.show_notifications:
-                            st.session_state.show_user_menu = False
+                st.markdown('<div id="topbar-notif-marker"></div>', unsafe_allow_html=True)
+                if st.button("🔔", key="top_notif_btn"):
+                    st.session_state.show_notifications = not st.session_state.show_notifications
+                    if st.session_state.show_notifications:
+                        st.session_state.show_user_menu = False
             with c5:
-                with st.container():
-                    st.markdown('<div id="topbar-user-marker"></div>', unsafe_allow_html=True)
-                    if st.button("👤", key="top_user_btn"):
-                        st.session_state.show_user_menu = not st.session_state.show_user_menu
-                        if st.session_state.show_user_menu:
-                            st.session_state.show_notifications = False
+                st.markdown('<div id="topbar-user-marker"></div>', unsafe_allow_html=True)
+                if st.button("👤", key="top_user_btn"):
+                    st.session_state.show_user_menu = not st.session_state.show_user_menu
+                    if st.session_state.show_user_menu:
+                        st.session_state.show_notifications = False
 
         if st.session_state.show_notifications:
             st.markdown(

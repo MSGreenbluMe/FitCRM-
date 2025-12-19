@@ -251,7 +251,8 @@ st.markdown("""
         height: calc(100vh - 2.0rem);
         position: sticky;
         top: 0.9rem;
-        overflow: hidden;
+        overflow-y: auto;
+        overflow-x: hidden;
     }
 
     div[data-testid="stVerticalBlock"]:has(#nav-rail-marker) div.stButton {
@@ -265,15 +266,15 @@ st.markdown("""
         border: 1px solid transparent !important;
         background: transparent !important;
         color: var(--muted) !important;
-        padding: 0.72rem 0.85rem !important;
+        padding: 0.55rem 0.45rem !important;
         font-weight: 700 !important;
+        font-size: 0.78rem !important;
         text-align: left !important;
         display: flex !important;
         align-items: center !important;
         justify-content: flex-start !important;
-        white-space: nowrap !important;
-        overflow: hidden !important;
-        text-overflow: ellipsis !important;
+        white-space: normal !important;
+        line-height: 1.2 !important;
     }
 
     div[data-testid="stVerticalBlock"]:has(#nav-rail-marker) div.stButton > button:hover {
@@ -2460,11 +2461,11 @@ def render_dashboard():
         st.markdown('<div id="qa-marker"></div>', unsafe_allow_html=True)
         qa1, qa2 = st.columns(2)
         with qa1:
-            b1 = st.button("➕\nNew Client", use_container_width=True, key="qa_new_client")
-            b3 = st.button("📣\nBroadcast", use_container_width=True, key="qa_broadcast")
+            b1 = st.button("➕ Nový klient", use_container_width=True, key="qa_new_client")
+            b3 = st.button("📣 Broadcast", use_container_width=True, key="qa_broadcast")
         with qa2:
-            b2 = st.button("🗓️\nCreate Plan", use_container_width=True, key="qa_create_plan")
-            b4 = st.button("📈\nReports", use_container_width=True, key="qa_reports")
+            b2 = st.button("🗓️ Plán", use_container_width=True, key="qa_create_plan")
+            b4 = st.button("📈 Reporty", use_container_width=True, key="qa_reports")
         if b1:
             st.session_state.page = "new_client"
             st.rerun()
@@ -2548,7 +2549,7 @@ def render_dashboard():
 
 def render_app_shell():
     dm = st.session_state.dark_mode
-    nav_col, content_col = st.columns([0.24, 0.76], gap="large")
+    nav_col, content_col = st.columns([0.18, 0.82], gap="small")
 
     with nav_col:
         nav = st.container()
@@ -2563,26 +2564,26 @@ def render_app_shell():
                 unsafe_allow_html=True,
             )
 
-            if st.button("📊  Prehľad", use_container_width=True, type="primary" if st.session_state.page == "dashboard" else "secondary"):
+            if st.button("📊 Prehľad", use_container_width=True, type="primary" if st.session_state.page == "dashboard" else "secondary"):
                 st.session_state.page = "dashboard"
                 st.session_state.selected_client = None
                 st.rerun()
 
-            if st.button("👥  Klienti", use_container_width=True, type="primary" if st.session_state.page == "clients" else "secondary"):
+            if st.button("👥 Klienti", use_container_width=True, type="primary" if st.session_state.page == "clients" else "secondary"):
                 st.session_state.page = "clients"
                 st.session_state.selected_client = None
                 st.rerun()
 
-            if st.button("📥  Inbox", use_container_width=True, type="primary" if st.session_state.page == "inbox" else "secondary"):
+            if st.button("📥 Inbox", use_container_width=True, type="primary" if st.session_state.page == "inbox" else "secondary"):
                 st.session_state.page = "inbox"
                 st.session_state.selected_client = None
                 st.rerun()
 
-            if st.button("➕  Nový klient", use_container_width=True, type="primary" if st.session_state.page == "new_client" else "secondary"):
+            if st.button("➕ Nový", use_container_width=True, type="primary" if st.session_state.page == "new_client" else "secondary"):
                 st.session_state.page = "new_client"
                 st.rerun()
 
-            if st.button("⚙️  Email konektor", use_container_width=True, type="primary" if st.session_state.page == "email_connector" else "secondary"):
+            if st.button("⚙️ Email", use_container_width=True, type="primary" if st.session_state.page == "email_connector" else "secondary"):
                 st.session_state.page = "email_connector"
                 st.rerun()
 

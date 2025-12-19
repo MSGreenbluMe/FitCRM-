@@ -6,7 +6,14 @@ from datetime import datetime
 from typing import Optional
 
 import markdown
-from weasyprint import HTML, CSS
+
+try:
+    from weasyprint import HTML, CSS
+    WEASYPRINT_AVAILABLE = True
+except (ImportError, OSError):
+    WEASYPRINT_AVAILABLE = False
+    HTML = None
+    CSS = None
 
 logger = logging.getLogger(__name__)
 

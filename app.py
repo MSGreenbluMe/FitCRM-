@@ -315,16 +315,32 @@ st.markdown("""
     .nav-user .utxt .n { color: var(--text); font-weight: 900; font-size: 0.92rem; line-height: 1.1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .nav-user .utxt .s { color: var(--muted); font-weight: 800; font-size: 0.75rem; margin-top: 0.1rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
+    div[data-testid="stVerticalBlock"]:has(#topbar-notif-marker) div.stButton,
+    div[data-testid="stVerticalBlock"]:has(#topbar-user-marker) div.stButton {
+        width: 38px !important;
+        min-width: 38px !important;
+        max-width: 38px !important;
+    }
+
     div[data-testid="stVerticalBlock"]:has(#topbar-notif-marker) div.stButton > button,
     div[data-testid="stVerticalBlock"]:has(#topbar-user-marker) div.stButton > button {
-        width: 38px;
-        height: 38px;
+        width: 38px !important;
+        min-width: 38px !important;
+        max-width: 38px !important;
+        height: 38px !important;
+        min-height: 38px !important;
+        max-height: 38px !important;
         border-radius: 12px !important;
         border: 1px solid var(--border) !important;
         background: var(--surface-2) !important;
         color: var(--text) !important;
         padding: 0 !important;
         font-weight: 900 !important;
+        line-height: 1 !important;
+        box-shadow: none !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
     }
 
     div[data-testid="stVerticalBlock"]:has(#topbar-notif-marker) div.stButton > button:hover,
@@ -714,13 +730,12 @@ st.markdown("""
         width: 46px;
         height: 46px;
         border-radius: 999px;
-        border: 2px solid rgba(35, 72, 47, 0.55);
-        overflow: hidden;
-        flex-shrink: 0;
+        border: 1px solid rgba(255,255,255,0.10);
         background: rgba(255,255,255,0.04);
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
-
-    .session-avatar img { width: 46px; height: 46px; display: block; }
 
     .session-meta { min-width: 0; }
 
@@ -895,12 +910,12 @@ st.markdown("""
         width: 34px;
         height: 34px;
         border-radius: 999px;
-        overflow: hidden;
-        flex-shrink: 0;
+        background: rgba(255,255,255,0.06);
         border: 1px solid rgba(255,255,255,0.10);
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
-
-    .activity-avatar img { width: 34px; height: 34px; display: block; }
 
     .activity-body { min-width: 0; }
 
@@ -1358,6 +1373,34 @@ st.markdown("""
         box-shadow: none !important;
     }
 
+    /* Re-override for topbar icon buttons (must come after global .stButton rules) */
+    div[data-testid="stVerticalBlock"]:has(#topbar-notif-marker) div.stButton,
+    div[data-testid="stVerticalBlock"]:has(#topbar-user-marker) div.stButton {
+        width: 38px !important;
+        min-width: 38px !important;
+        max-width: 38px !important;
+    }
+
+    div[data-testid="stVerticalBlock"]:has(#topbar-notif-marker) div.stButton > button,
+    div[data-testid="stVerticalBlock"]:has(#topbar-user-marker) div.stButton > button {
+        width: 38px !important;
+        min-width: 38px !important;
+        max-width: 38px !important;
+        height: 38px !important;
+        min-height: 38px !important;
+        max-height: 38px !important;
+        padding: 0 !important;
+        border-radius: 12px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        background: var(--surface-2) !important;
+        color: var(--text) !important;
+        border: 1px solid var(--border) !important;
+        box-shadow: none !important;
+        line-height: 1 !important;
+    }
+
     /* ===== SIDEBAR ===== */
     [data-testid="stSidebar"] {
         background: #ffffff;
@@ -1753,6 +1796,17 @@ def _portrait_data_uri(seed: str) -> str:
     </svg>"""
     encoded = base64.b64encode(svg.encode("utf-8")).decode("utf-8")
     return f"data:image/svg+xml;base64,{encoded}"
+
+
+def _icon_avatar_html(seed: str, size: int) -> str:
+    h = hashlib.md5((seed or "").encode("utf-8")).hexdigest()
+    bg = ["rgba(19,236,91,0.18)", "rgba(147,197,253,0.18)", "rgba(196,181,253,0.18)", "rgba(252,211,77,0.18)"][int(h[0], 16) % 4]
+    bd = "rgba(35,72,47,0.85)"
+    return (
+        f"<div class='ui-ava' style='width:{size}px;height:{size}px;border-radius:999px;"
+        f"border:1px solid {bd};background:{bg};display:flex;align-items:center;justify-content:center;'>"
+        f"<span style='font-size:{max(12, int(size*0.45))}px; line-height:1;'>👤</span></div>"
+    )
 
 
 def init_session_state():
@@ -2344,7 +2398,7 @@ def render_dashboard():
         for i, c in enumerate(picked[:3]):
             t, dur, plan, mode, tone, cta = base_sessions[i]
             cls = "session-card" + (" purple" if tone == "purple" else " slate" if tone == "slate" else "")
-            avatar = _portrait_data_uri(c.name)
+            avatar = _icon_avatar_html(c.name, 46)
             tag2 = '<span class="tag purple">🎥 Virtual</span>' if mode == "Virtual" else '<span class="tag muted">In-Person</span>'
             cta_cls = "session-cta" + (" ghost" if cta == "Join Call" else " disabled" if cta == "Upcoming" else "")
             st.markdown(
@@ -2352,7 +2406,7 @@ def render_dashboard():
                 <div class="{cls}">
                     <div class="session-left">
                         <div class="session-time"><div class="t">{html.escape(t)}</div><div class="d">{html.escape(dur)}</div></div>
-                        <div class="session-avatar"><img src="{avatar}" alt="avatar" /></div>
+                        <div class="session-avatar">{avatar}</div>
                         <div class="session-meta">
                             <div class="name">{html.escape(c.name)}</div>
                             <div class="session-tags">
@@ -2466,7 +2520,7 @@ def render_dashboard():
             st.markdown(
                 f"""
                 <div class="activity-item highlight">
-                    <div class="activity-avatar"><img src="{_portrait_data_uri(a0.name)}" alt="avatar" /></div>
+                    <div class="activity-avatar">{_icon_avatar_html(a0.name, 34)}</div>
                     <div class="activity-body">
                         <div class="line"><b>{html.escape(a0.name.split(' ')[0])}.</b> zaznamenal tréning: <span style="color: var(--accent); font-weight: 900;">Leg Day</span></div>
                         <div class="line" style="color: var(--accent); font-weight: 900; font-size: 0.82rem; margin-top: 0.2rem;">🏆 Personal Record!</div>
@@ -2482,7 +2536,7 @@ def render_dashboard():
             st.markdown(
                 f"""
                 <div class="activity-item">
-                    <div class="activity-avatar"><img src="{_portrait_data_uri(a1c.name)}" alt="avatar" /></div>
+                    <div class="activity-avatar">{_icon_avatar_html(a1c.name, 34)}</div>
                     <div class="activity-body">
                         <div class="line"><b>{html.escape(a1c.name.split(' ')[0])}.</b> nahral progres fotky.</div>
                         <div class="time">45 mins ago</div>
@@ -2497,7 +2551,7 @@ def render_dashboard():
             st.markdown(
                 f"""
                 <div class="activity-item danger">
-                    <div class="activity-avatar"><img src="{_portrait_data_uri(a2c.name)}" alt="avatar" /></div>
+                    <div class="activity-avatar">{_icon_avatar_html(a2c.name, 34)}</div>
                     <div class="activity-body">
                         <div class="line"><b>{html.escape(a2c.name.split(' ')[0])}.</b> vynechal nutričný log.</div>
                         <div class="activity-cta">Poslať reminder</div>
@@ -2551,11 +2605,11 @@ def render_app_shell():
                 st.session_state.page = "email_connector"
                 st.rerun()
 
-            trainer_avatar = _portrait_data_uri("Alex Trainer")
+            trainer_avatar = _icon_avatar_html("Alex Trainer", 40)
             st.markdown(
                 f"""
                 <div class="nav-user">
-                    <div class="uava"><img src="{trainer_avatar}" alt="avatar" /></div>
+                    <div class="uava" style="display:flex; align-items:center; justify-content:center;">{trainer_avatar}</div>
                     <div class="utxt">
                         <div class="n">Alex Trainer</div>
                         <div class="s">Pro Account</div>
@@ -2755,14 +2809,14 @@ def render_clients_list():
 
         status_raw = (client.status or "").strip().lower()
         status_label = {"active": "Aktívny", "stagnating": "Stagnuje", "problem": "Problém"}.get(status_raw, status_raw)
-        avatar = _portrait_data_uri(client.name)
+        avatar = _icon_avatar_html(client.name, 64)
 
         h1, h2 = st.columns([0.72, 0.28])
         with h1:
             st.markdown(
                 f"""
                 <div style="display:flex; gap: 0.9rem; align-items: center;">
-                    <img class="avatar-img" src="{avatar}" alt="avatar" style="width:64px; height:64px; border-radius: 18px; border: 1px solid rgba(35,72,47,0.9);" />
+                    <div style="width:64px; height:64px; border-radius: 18px; border: 1px solid rgba(35,72,47,0.9); overflow:hidden; display:flex; align-items:center; justify-content:center; background: rgba(35,72,47,0.35);">{avatar}</div>
                     <div style="min-width:0;">
                         <div style="font-size: 1.55rem; font-weight: 900; line-height: 1.1; color: var(--text);">{html.escape(client.name)}</div>
                         <div style="margin-top: 0.3rem; display:flex; gap: 0.5rem; flex-wrap: wrap;">
@@ -2903,14 +2957,14 @@ def render_client_detail():
 
     status_raw = (client.status or "").strip().lower()
     status_label = {"active": "Aktívny", "stagnating": "Stagnuje", "problem": "Problém"}.get(status_raw, status_raw)
-    avatar = _portrait_data_uri(client.name)
+    avatar = _icon_avatar_html(client.name, 44)
     chips = [f'<span class="chip {status_raw}">{html.escape(status_label)}</span>']
     chips.append(f'<span class="chip">{html.escape(client.email)}</span>')
     st.markdown(
         f"""
         <div class="bento-card" style="padding: 0.95rem; margin-bottom: 1rem;">
             <div style="display:flex; gap: 0.9rem; align-items: center;">
-                <img class="avatar-img" src="{avatar}" alt="avatar" />
+                <div style="width:44px; height:44px; border-radius: 12px; border: 1px solid rgba(35,72,47,0.9); overflow:hidden; display:flex; align-items:center; justify-content:center; background: rgba(35,72,47,0.35);">{avatar}</div>
                 <div style="min-width: 0;">
                     <div style="font-size: 1.25rem; font-weight: 800; line-height: 1.15; color: {'#f1f5f9' if st.session_state.dark_mode else '#0f172a'};">{html.escape(client.name)}</div>
                     <div style="margin-top: 0.35rem; display:flex; gap: 0.5rem; flex-wrap: wrap;">{''.join(chips)}</div>

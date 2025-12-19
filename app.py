@@ -254,8 +254,13 @@ st.markdown("""
         overflow: hidden;
     }
 
+    div[data-testid="stVerticalBlock"]:has(#nav-rail-marker) div.stButton {
+        width: 100% !important;
+    }
+
     div[data-testid="stVerticalBlock"]:has(#nav-rail-marker) div.stButton > button {
-        width: 100%;
+        width: 100% !important;
+        min-width: 100% !important;
         border-radius: 14px !important;
         border: 1px solid transparent !important;
         background: transparent !important;
@@ -263,6 +268,12 @@ st.markdown("""
         padding: 0.72rem 0.85rem !important;
         font-weight: 700 !important;
         text-align: left !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: flex-start !important;
+        white-space: nowrap !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
     }
 
     div[data-testid="stVerticalBlock"]:has(#nav-rail-marker) div.stButton > button:hover {

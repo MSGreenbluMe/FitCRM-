@@ -332,6 +332,76 @@ st.markdown("""
     .topbar-panel .ttl { color: var(--text); font-weight: 900; }
     .topbar-panel .sub { color: var(--muted); font-weight: 800; font-size: 0.85rem; margin-top: 0.15rem; }
 
+    div[data-testid="stVerticalBlock"]:has(#clients-left-marker) {
+        background: var(--surface-2);
+        border: 1px solid rgba(35, 72, 47, 0.9);
+        border-radius: 18px;
+        padding: 1.0rem;
+    }
+
+    div[data-testid="stVerticalBlock"]:has(#clients-right-marker) {
+        background: var(--app-bg);
+        border: 1px solid rgba(35, 72, 47, 0.9);
+        border-radius: 18px;
+        padding: 1.0rem;
+    }
+
+    div[data-testid="stVerticalBlock"]:has(#clients-add-marker) div.stButton > button[kind="primary"] {
+        height: 42px;
+        border-radius: 14px !important;
+        background: var(--accent) !important;
+        color: var(--app-bg) !important;
+        border: 1px solid rgba(19, 236, 91, 0.35) !important;
+        font-weight: 900 !important;
+    }
+
+    div[data-testid="stVerticalBlock"]:has(#clients-chips-marker) div.stButton > button {
+        height: 32px;
+        border-radius: 999px !important;
+        background: rgba(35, 72, 47, 0.85) !important;
+        border: 1px solid transparent !important;
+        color: var(--muted) !important;
+        font-weight: 800 !important;
+        padding: 0 0.85rem !important;
+        white-space: nowrap !important;
+    }
+
+    div[data-testid="stVerticalBlock"]:has(#clients-chips-marker) div.stButton > button[kind="primary"] {
+        background: var(--accent) !important;
+        color: var(--app-bg) !important;
+        border-color: rgba(19, 236, 91, 0.35) !important;
+    }
+
+    div[data-testid="stVerticalBlock"]:has(#clients-chips-marker) div.stButton > button:hover {
+        border-color: rgba(146, 201, 164, 0.35) !important;
+        color: var(--text) !important;
+    }
+
+    div[data-testid="stVerticalBlock"]:has(#clients-list-marker) div.stButton > button {
+        border-radius: 14px !important;
+        background: rgba(35, 72, 47, 0.40) !important;
+        border: 1px solid rgba(35, 72, 47, 0.75) !important;
+        border-left: 4px solid transparent !important;
+        color: var(--text) !important;
+        padding: 0.75rem 0.85rem !important;
+        text-align: left !important;
+        white-space: pre-line !important;
+        line-height: 1.2 !important;
+        font-weight: 800 !important;
+        margin-bottom: 0.55rem !important;
+    }
+
+    div[data-testid="stVerticalBlock"]:has(#clients-list-marker) div.stButton > button:hover {
+        background: rgba(35, 72, 47, 0.65) !important;
+        border-color: rgba(35, 72, 47, 0.95) !important;
+    }
+
+    div[data-testid="stVerticalBlock"]:has(#clients-list-marker) div.stButton > button[kind="primary"] {
+        background: rgba(35, 72, 47, 0.75) !important;
+        border-color: rgba(35, 72, 47, 0.95) !important;
+        border-left-color: var(--accent) !important;
+    }
+
     .nav-brand {
         display: flex;
         align-items: center;
@@ -1703,6 +1773,8 @@ def init_session_state():
         st.session_state.clients_page = 1
     if 'clients_page_size' not in st.session_state:
         st.session_state.clients_page_size = 25
+    if 'clients_filter' not in st.session_state:
+        st.session_state.clients_filter = 'all'
     if 'imap_settings' not in st.session_state:
         st.session_state.imap_settings = {
             "host": os.getenv("IMAP_HOST", "imap.gmail.com"),
@@ -2574,160 +2646,152 @@ def render_app_shell():
 
 
 def render_clients_list():
-    """Render client list view"""
-    st.markdown('<div class="main-header">👥 Klienti</div>', unsafe_allow_html=True)
-
+    """Render client split view (list + detail)"""
     clients = st.session_state.clients
-
-    st.markdown('<div class="bento-card" style="padding: 0.85rem 1rem; margin-bottom: 1rem;">', unsafe_allow_html=True)
-    col1, col2, col3, col4 = st.columns([2.2, 1.25, 1.25, 1.1])
-    with col1:
-        search = st.text_input("", placeholder="Hľadať klienta (meno/email)…", label_visibility="collapsed")
-    with col2:
-        status_filter = st.selectbox("Stav", ["Všetko", "Aktívny", "Stagnuje", "Problém"], label_visibility="collapsed")
-    with col3:
-        sort_by = st.selectbox("Zoradiť", ["Posledný check-in", "Meno", "Progres"], label_visibility="collapsed")
-    with col4:
-        if st.button("➕", use_container_width=True):
-            st.session_state.page = 'new_client'
-            st.rerun()
-    st.markdown('</div>', unsafe_allow_html=True)
-
-    # Filter clients
-    filtered = clients
-    if search:
-        search_lower = search.lower()
-        filtered = [c for c in filtered if search_lower in c.name.lower() or search_lower in c.email.lower()]
-
-    if status_filter == "Aktívny":
-        filtered = [c for c in filtered if c.status == "active"]
-    elif status_filter == "Stagnuje":
-        filtered = [c for c in filtered if c.status == "stagnating"]
-    elif status_filter == "Problém":
-        filtered = [c for c in filtered if c.status == "problem"]
-
-    # Sort
-    if sort_by == "Posledný check-in":
-        filtered = sorted(filtered, key=lambda c: c.last_checkin, reverse=True)
-    elif sort_by == "Meno":
-        filtered = sorted(filtered, key=lambda c: c.name)
-    elif sort_by == "Progres":
-        filtered = sorted(filtered, key=lambda c: c.progress_percent, reverse=True)
-
-    st.markdown('<div class="bento-card" style="padding: 0.9rem;">', unsafe_allow_html=True)
-    total = len(filtered)
-    st.caption(f"Klienti: {total}")
-
-    if not filtered:
-        st.info("Žiadni klienti (alebo nič nezodpovedá filtru).")
-        st.markdown('</div>', unsafe_allow_html=True)
+    if not clients:
+        st.info("Zatiaľ nemáš žiadnych klientov.")
         return
 
-    page_size = int(st.session_state.clients_page_size)
-    page_count = max(1, (total + page_size - 1) // page_size)
-    if st.session_state.clients_page > page_count:
-        st.session_state.clients_page = page_count
-    if st.session_state.clients_page < 1:
-        st.session_state.clients_page = 1
+    if not st.session_state.selected_client:
+        st.session_state.selected_client = clients[0].id
 
-    nav1, nav2, nav3, nav4 = st.columns([1, 1, 1.2, 1.8])
-    with nav1:
-        if st.button("←", use_container_width=True, disabled=st.session_state.clients_page <= 1, key="clients_prev"):
-            st.session_state.clients_page -= 1
+    active_count = len([c for c in clients if c.status == "active"])
+    risk_count = len([c for c in clients if c.status in ["stagnating", "problem"]])
+
+    left, right = st.columns([0.38, 0.62], gap="large")
+    with left:
+        st.markdown('<div id="clients-left-marker"></div>', unsafe_allow_html=True)
+        q = st.text_input("", placeholder="Hľadať klientov…", label_visibility="collapsed", key="clients_search")
+
+        st.markdown('<div id="clients-add-marker"></div>', unsafe_allow_html=True)
+        if st.button("➕  Pridať nového klienta", use_container_width=True, type="primary", key="clients_add_btn"):
+            st.session_state.page = "new_client"
             st.rerun()
-    with nav2:
-        if st.button("→", use_container_width=True, disabled=st.session_state.clients_page >= page_count, key="clients_next"):
-            st.session_state.clients_page += 1
-            st.rerun()
-    with nav3:
-        st.session_state.clients_page_size = st.selectbox(
-            "",
-            options=[25, 50, 100],
-            index=[25, 50, 100].index(st.session_state.clients_page_size) if st.session_state.clients_page_size in [25, 50, 100] else 0,
-            label_visibility="collapsed",
-            key="clients_page_size_select",
-        )
-    with nav4:
-        st.caption(f"Strana {st.session_state.clients_page} / {page_count}")
+        st.markdown('</div>', unsafe_allow_html=True)
 
-    start = (st.session_state.clients_page - 1) * page_size
-    end = start + page_size
-    visible = filtered[start:end]
+        st.markdown('<div style="height: 0.6rem;"></div>', unsafe_allow_html=True)
 
-    rows = []
-    for c in visible:
-        status_raw = (c.status or "").strip().lower()
+        st.markdown('<div id="clients-chips-marker"></div>', unsafe_allow_html=True)
+        ch1, ch2, ch3 = st.columns(3)
+        with ch1:
+            if st.button("Všetci", use_container_width=True, type="primary" if st.session_state.clients_filter == "all" else "secondary", key="clients_chip_all"):
+                st.session_state.clients_filter = "all"
+                st.rerun()
+        with ch2:
+            if st.button(f"Aktívni ({active_count})", use_container_width=True, type="primary" if st.session_state.clients_filter == "active" else "secondary", key="clients_chip_active"):
+                st.session_state.clients_filter = "active"
+                st.rerun()
+        with ch3:
+            if st.button(f"Riziko ({risk_count})", use_container_width=True, type="primary" if st.session_state.clients_filter == "risk" else "secondary", key="clients_chip_risk"):
+                st.session_state.clients_filter = "risk"
+                st.rerun()
+        st.markdown('</div>', unsafe_allow_html=True)
+
+        st.markdown('<div style="height: 0.6rem;"></div>', unsafe_allow_html=True)
+
+        filtered = clients
+        if q:
+            ql = q.lower().strip()
+            filtered = [c for c in filtered if ql in (c.name or "").lower() or ql in (c.email or "").lower()]
+        if st.session_state.clients_filter == "active":
+            filtered = [c for c in filtered if c.status == "active"]
+        elif st.session_state.clients_filter == "risk":
+            filtered = [c for c in filtered if c.status in ["stagnating", "problem"]]
+
+        filtered = sorted(filtered, key=lambda c: c.last_checkin, reverse=True)
+
+        st.markdown('<div id="clients-list-marker"></div>', unsafe_allow_html=True)
+        if not filtered:
+            st.caption("Žiadne výsledky.")
+        for c in filtered[:60]:
+            dot = {"active": "🟢", "stagnating": "🟡", "problem": "🔴"}.get(c.status, "⚪")
+            sub = f"Progres: {c.progress_percent:.0f}% · check-in {c.days_since_checkin}d"
+            label = f"{dot}  {c.name}\n{sub}"
+            is_sel = (st.session_state.selected_client == c.id)
+            if st.button(label, use_container_width=True, key=f"client_pick_{c.id}", type="primary" if is_sel else "secondary"):
+                st.session_state.selected_client = c.id
+                st.rerun()
+        st.markdown('</div>', unsafe_allow_html=True)
+
+    with right:
+        st.markdown('<div id="clients-right-marker"></div>', unsafe_allow_html=True)
+        client = next((c for c in clients if c.id == st.session_state.selected_client), None)
+        if not client:
+            st.info("Vyber klienta zo zoznamu.")
+            st.markdown('</div>', unsafe_allow_html=True)
+            return
+
+        status_raw = (client.status or "").strip().lower()
         status_label = {"active": "Aktívny", "stagnating": "Stagnuje", "problem": "Problém"}.get(status_raw, status_raw)
-        status_symbol = {"active": "●", "stagnating": "◐", "problem": "!"}.get(status_raw, "")
-        rows.append(
-            {
-                "_id": c.id,
-                "Foto": _portrait_data_uri(c.name),
-                "Meno": c.name,
-                "Email": c.email,
-                "Stav": f"{status_symbol} {status_label}".strip(),
-                "Progres": f"{c.progress_percent:.0f}%",
-                "Check-in": f"{c.days_since_checkin}d",
-            }
-        )
+        avatar = _portrait_data_uri(client.name)
 
-    df = pd.DataFrame(rows)
-    display = df.drop(columns=["_id"], errors="ignore")
+        h1, h2 = st.columns([0.72, 0.28])
+        with h1:
+            st.markdown(
+                f"""
+                <div style="display:flex; gap: 0.9rem; align-items: center;">
+                    <img class="avatar-img" src="{avatar}" alt="avatar" style="width:64px; height:64px; border-radius: 18px; border: 1px solid rgba(35,72,47,0.9);" />
+                    <div style="min-width:0;">
+                        <div style="font-size: 1.55rem; font-weight: 900; line-height: 1.1; color: var(--text);">{html.escape(client.name)}</div>
+                        <div style="margin-top: 0.3rem; display:flex; gap: 0.5rem; flex-wrap: wrap;">
+                            <span class="chip {status_raw}">{html.escape(status_label)}</span>
+                            <span class="chip">{html.escape(client.email)}</span>
+                        </div>
+                    </div>
+                </div>
+                """,
+                unsafe_allow_html=True,
+            )
+        with h2:
+            b1, b2, b3 = st.columns([1, 1, 2])
+            with b1:
+                st.button("💬", use_container_width=True, key="client_chat_demo")
+            with b2:
+                st.button("✏️", use_container_width=True, key="client_edit_demo")
+            with b3:
+                st.button("▶️  Spustiť tréning", use_container_width=True, key="client_start_demo")
 
-    try:
-        event = st.dataframe(
-            display,
-            use_container_width=True,
-            hide_index=True,
-            height=620,
-            selection_mode="single-row",
-            on_select="rerun",
-            column_config={
-                "Foto": st.column_config.ImageColumn("", width="small"),
-                "Meno": st.column_config.TextColumn("Meno", width="medium"),
-                "Email": st.column_config.TextColumn("Email", width="medium"),
-                "Stav": st.column_config.TextColumn("Stav", width="small"),
-                "Progres": st.column_config.TextColumn("Progres", width="small"),
-                "Check-in": st.column_config.TextColumn("Check-in", width="small"),
-            },
-        )
+        m1, m2, m3 = st.columns(3)
+        with m1:
+            st.metric("Váha", f"{client.current_weight_kg} kg", delta=f"{client.weight_change:+.1f} kg")
+        with m2:
+            st.metric("BMI", f"{client.bmi:.1f}")
+        with m3:
+            st.metric("Check-in", f"{client.days_since_checkin} dní")
 
-        selection_obj = getattr(event, "selection", None)
-        sel_rows = None
-        if isinstance(selection_obj, dict):
-            sel_rows = selection_obj.get("rows")
-        else:
-            sel_rows = getattr(selection_obj, "rows", None)
+        tabs = st.tabs(["Prehľad", "Tréningový plán", "Výživa", "Fotky", "História"])
+        with tabs[0]:
+            c1, c2 = st.columns([0.42, 0.58], gap="large")
+            with c1:
+                st.markdown('<div class="section-card">', unsafe_allow_html=True)
+                st.markdown('<div class="section-head"><div class="title">Osobné údaje</div><div class="meta">Edit</div></div>', unsafe_allow_html=True)
+                st.markdown(f"<div style='color: var(--muted); font-weight: 800; font-size: 0.8rem;'>Email</div><div style='color: var(--text); font-weight: 900; margin-bottom: 0.65rem;'>{html.escape(client.email)}</div>", unsafe_allow_html=True)
+                st.markdown(f"<div style='color: var(--muted); font-weight: 800; font-size: 0.8rem;'>Vek</div><div style='color: var(--text); font-weight: 900; margin-bottom: 0.65rem;'>{client.age} rokov</div>", unsafe_allow_html=True)
+                st.markdown(f"<div style='color: var(--muted); font-weight: 800; font-size: 0.8rem;'>Výška</div><div style='color: var(--text); font-weight: 900;'>{client.height_cm} cm</div>", unsafe_allow_html=True)
+                st.markdown('</div>', unsafe_allow_html=True)
+            with c2:
+                st.markdown('<div class="section-card">', unsafe_allow_html=True)
+                st.markdown('<div class="section-head"><div class="title">Vývoj váhy</div><div class="meta">Posledné check-iny</div></div>', unsafe_allow_html=True)
+                if client.checkins:
+                    dates = [c.date for c in client.checkins]
+                    weights = [c.weight_kg for c in client.checkins]
+                    fig = go.Figure()
+                    fig.add_trace(go.Scatter(x=dates, y=weights, mode='lines+markers', line=dict(color='#13ec5b', width=3), marker=dict(size=7, color='#13ec5b')))
+                    fig.update_layout(height=260, margin=dict(t=10, b=20, l=10, r=10), paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)', showlegend=False)
+                    st.plotly_chart(fig, use_container_width=True, config={"displayModeBar": False})
+                else:
+                    st.caption("Zatiaľ bez check-inov.")
+                st.markdown('</div>', unsafe_allow_html=True)
+        with tabs[1]:
+            st.info("Tréningový plán – demo (príde ďalej).")
+        with tabs[2]:
+            st.info("Výživa – demo (príde ďalej).")
+        with tabs[3]:
+            st.info("Fotky – demo (príde ďalej).")
+        with tabs[4]:
+            st.info("História – demo (príde ďalej).")
 
-        if sel_rows:
-            selected_idx = sel_rows[0]
-            selected_id = df.iloc[int(selected_idx)]["_id"]
-            st.session_state.selected_client = selected_id
-            st.session_state.page = 'client_detail'
-            st.rerun()
-    except TypeError:
-        by_id = {c.id: c for c in visible}
-        options = [c.id for c in visible]
-
-        def _fmt(client_id: str) -> str:
-            c = by_id.get(client_id)
-            if not c:
-                return client_id
-            status_label = {"active": "Aktívny", "stagnating": "Stagnuje", "problem": "Problém"}.get(c.status, c.status)
-            return f"{c.name} · {status_label} · {c.progress_percent:.0f}%"
-
-        selected_id = st.radio(
-            "",
-            options=options,
-            format_func=_fmt,
-            label_visibility="collapsed",
-            key="clients_radio",
-        )
-        st.session_state.selected_client = selected_id
-        st.session_state.page = 'client_detail'
-        st.rerun()
-
-    st.markdown('</div>', unsafe_allow_html=True)
+        st.markdown('</div>', unsafe_allow_html=True)
 
 
 def render_client_detail():

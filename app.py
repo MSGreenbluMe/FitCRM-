@@ -259,15 +259,16 @@ st.markdown("""
         border-radius: 14px !important;
         border: 1px solid transparent !important;
         background: transparent !important;
-        color: var(--text) !important;
-        padding: 0.7rem 0.8rem !important;
-        font-weight: 600 !important;
+        color: var(--muted) !important;
+        padding: 0.72rem 0.85rem !important;
+        font-weight: 700 !important;
         text-align: left !important;
     }
 
     div[data-testid="stVerticalBlock"]:has(#nav-rail-marker) div.stButton > button:hover {
-        background: var(--surface-2) !important;
-        border-color: var(--border) !important;
+        background: rgba(35, 72, 47, 0.55) !important;
+        border-color: rgba(35, 72, 47, 0.9) !important;
+        color: var(--text) !important;
     }
 
     div[data-testid="stVerticalBlock"]:has(#nav-rail-marker) div.stButton > button[kind="primary"] {
@@ -277,6 +278,59 @@ st.markdown("""
         border-left: 4px solid var(--accent) !important;
         padding-left: 0.7rem !important;
     }
+
+    .nav-user {
+        display: flex;
+        align-items: center;
+        gap: 0.7rem;
+        padding: 0.75rem 0.6rem;
+        border-top: 1px solid rgba(35, 72, 47, 0.75);
+        margin-top: 0.9rem;
+    }
+
+    .nav-user .uava {
+        width: 40px;
+        height: 40px;
+        border-radius: 999px;
+        border: 1px solid rgba(35, 72, 47, 0.9);
+        overflow: hidden;
+        background: rgba(35, 72, 47, 0.35);
+        flex-shrink: 0;
+    }
+
+    .nav-user .uava img { width: 40px; height: 40px; display: block; }
+
+    .nav-user .utxt { min-width: 0; }
+    .nav-user .utxt .n { color: var(--text); font-weight: 900; font-size: 0.92rem; line-height: 1.1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .nav-user .utxt .s { color: var(--muted); font-weight: 800; font-size: 0.75rem; margin-top: 0.1rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+    div[data-testid="stVerticalBlock"]:has(#topbar-marker) div.stButton > button {
+        width: 38px;
+        height: 38px;
+        border-radius: 12px !important;
+        border: 1px solid var(--border) !important;
+        background: var(--surface-2) !important;
+        color: var(--text) !important;
+        padding: 0 !important;
+        font-weight: 900 !important;
+    }
+
+    div[data-testid="stVerticalBlock"]:has(#topbar-marker) div.stButton > button:hover {
+        background: var(--surface-3) !important;
+        border-color: rgba(19, 236, 91, 0.18) !important;
+    }
+
+    .topbar-panel {
+        background: var(--surface-1);
+        border: 1px solid rgba(35, 72, 47, 0.9);
+        border-radius: 18px;
+        padding: 0.9rem 1.0rem;
+        margin-top: 0.55rem;
+        margin-bottom: 0.9rem;
+    }
+
+    .topbar-panel .ttl { color: var(--text); font-weight: 900; }
+    .topbar-panel .sub { color: var(--muted); font-weight: 800; font-size: 0.85rem; margin-top: 0.15rem; }
 
     .nav-brand {
         display: flex;
@@ -1669,6 +1723,10 @@ def init_session_state():
         st.session_state.editable_training_plan = None
     if 'dark_mode' not in st.session_state:
         st.session_state.dark_mode = True
+    if 'show_notifications' not in st.session_state:
+        st.session_state.show_notifications = False
+    if 'show_user_menu' not in st.session_state:
+        st.session_state.show_user_menu = False
 
 
 def render_sidebar():
@@ -2113,7 +2171,7 @@ def render_dashboard():
     st.markdown(
         f"""
         <div style="margin-top: 0.35rem; margin-bottom: 1.1rem;">
-            <h1 class="hero-h1">Good Morning, Coach.<br/><span class="accent">You have {sessions_today} sessions today.</span></h1>
+            <h1 class="hero-h1">Dobré ráno, tréner.<br/><span class="accent">Dnes máš {sessions_today} tréningy.</span></h1>
         </div>
         """,
         unsafe_allow_html=True,
@@ -2125,7 +2183,7 @@ def render_dashboard():
             f"""
             <div class="stat-card">
                 <div class="stat-top">
-                    <div class="stat-label-sm">ACTIVE CLIENTS</div>
+                    <div class="stat-label-sm">AKTÍVNI KLIENTI</div>
                     <div class="stat-ico">👥</div>
                 </div>
                 <div class="stat-value-lg">{len(active_clients)}<span class="stat-chip">+{stats['new_this_week']}</span></div>
@@ -2138,7 +2196,7 @@ def render_dashboard():
             f"""
             <div class="stat-card">
                 <div class="stat-top">
-                    <div class="stat-label-sm">SESSIONS TODAY</div>
+                    <div class="stat-label-sm">TRÉNINGY DNES</div>
                     <div class="stat-ico">🏋️</div>
                 </div>
                 <div class="stat-value-lg">{sessions_today}</div>
@@ -2151,10 +2209,10 @@ def render_dashboard():
             f"""
             <div class="stat-card">
                 <div class="stat-top">
-                    <div class="stat-label-sm">PENDING CHECK-INS</div>
+                    <div class="stat-label-sm">ČAKAJÚCE CHECK-INY</div>
                     <div class="stat-ico">⏳</div>
                 </div>
-                <div class="stat-value-lg">{pending_checkins}<span class="stat-chip warn">High</span></div>
+                <div class="stat-value-lg">{pending_checkins}<span class="stat-chip warn">Vysoké</span></div>
             </div>
             """,
             unsafe_allow_html=True,
@@ -2164,7 +2222,7 @@ def render_dashboard():
             f"""
             <div class="stat-card">
                 <div class="stat-top">
-                    <div class="stat-label-sm">REVENUE MTD</div>
+                    <div class="stat-label-sm">PRÍJEM (MESIAC)</div>
                     <div class="stat-ico">💳</div>
                 </div>
                 <div class="stat-value-lg">€{stats['mrr_eur']}</div>
@@ -2181,8 +2239,8 @@ def render_dashboard():
         st.markdown(
             """
             <div class="schedule-head">
-                <div class="schedule-title">Today's Schedule</div>
-                <div class="schedule-link">View Calendar</div>
+                <div class="schedule-title">Dnešný rozpis</div>
+                <div class="schedule-link">Kalendár</div>
             </div>
             """,
             unsafe_allow_html=True,
@@ -2256,7 +2314,7 @@ def render_dashboard():
             f"""
             <div class="compliance-wrap">
                 <div class="compliance-head">
-                    <div class="ttl">Client Compliance Rate</div>
+                    <div class="ttl">Compliance klientov</div>
                     <div class="pct">{pct_width}%</div>
                 </div>
                 <div class="progress-track"><div class="progress-fill" style="width:{pct_width}%"></div></div>
@@ -2272,7 +2330,7 @@ def render_dashboard():
             """
             <div class="section-card">
                 <div class="section-head">
-                    <div class="title">Quick Actions</div>
+                    <div class="title">Rýchle akcie</div>
                     <div class="meta">Najčastejšie</div>
                 </div>
             """,
@@ -2307,8 +2365,8 @@ def render_dashboard():
             """
             <div class="section-card">
                 <div class="activity-head">
-                    <div class="activity-title">Client Activity</div>
-                    <div class="activity-meta">Real-time</div>
+                    <div class="activity-title">Aktivita klientov</div>
+                    <div class="activity-meta">Naživo</div>
                 </div>
             """,
             unsafe_allow_html=True,
@@ -2325,7 +2383,7 @@ def render_dashboard():
                 <div class="activity-item highlight">
                     <div class="activity-avatar"><img src="{_portrait_data_uri(a0.name)}" alt="avatar" /></div>
                     <div class="activity-body">
-                        <div class="line"><b>{html.escape(a0.name.split(' ')[0])}.</b> logged workout: <span style="color: var(--accent); font-weight: 900;">Leg Day</span></div>
+                        <div class="line"><b>{html.escape(a0.name.split(' ')[0])}.</b> zaznamenal tréning: <span style="color: var(--accent); font-weight: 900;">Leg Day</span></div>
                         <div class="line" style="color: var(--accent); font-weight: 900; font-size: 0.82rem; margin-top: 0.2rem;">🏆 Personal Record!</div>
                         <div class="time">10 mins ago</div>
                     </div>
@@ -2341,7 +2399,7 @@ def render_dashboard():
                 <div class="activity-item">
                     <div class="activity-avatar"><img src="{_portrait_data_uri(a1c.name)}" alt="avatar" /></div>
                     <div class="activity-body">
-                        <div class="line"><b>{html.escape(a1c.name.split(' ')[0])}.</b> uploaded progress photos.</div>
+                        <div class="line"><b>{html.escape(a1c.name.split(' ')[0])}.</b> nahral progres fotky.</div>
                         <div class="time">45 mins ago</div>
                     </div>
                 </div>
@@ -2356,8 +2414,8 @@ def render_dashboard():
                 <div class="activity-item danger">
                     <div class="activity-avatar"><img src="{_portrait_data_uri(a2c.name)}" alt="avatar" /></div>
                     <div class="activity-body">
-                        <div class="line"><b>{html.escape(a2c.name.split(' ')[0])}.</b> missed nutrition log.</div>
-                        <div class="activity-cta">Send Reminder</div>
+                        <div class="line"><b>{html.escape(a2c.name.split(' ')[0])}.</b> vynechal nutričný log.</div>
+                        <div class="activity-cta">Poslať reminder</div>
                         <div class="time">1 hour ago</div>
                     </div>
                 </div>
@@ -2385,7 +2443,7 @@ def render_app_shell():
                 unsafe_allow_html=True,
             )
 
-            if st.button("📊  Dashboard", use_container_width=True, type="primary" if st.session_state.page == "dashboard" else "secondary"):
+            if st.button("📊  Prehľad", use_container_width=True, type="primary" if st.session_state.page == "dashboard" else "secondary"):
                 st.session_state.page = "dashboard"
                 st.session_state.selected_client = None
                 st.rerun()
@@ -2408,6 +2466,20 @@ def render_app_shell():
                 st.session_state.page = "email_connector"
                 st.rerun()
 
+            trainer_avatar = _portrait_data_uri("Alex Trainer")
+            st.markdown(
+                f"""
+                <div class="nav-user">
+                    <div class="uava"><img src="{trainer_avatar}" alt="avatar" /></div>
+                    <div class="utxt">
+                        <div class="n">Alex Trainer</div>
+                        <div class="s">Pro Account</div>
+                    </div>
+                </div>
+                """,
+                unsafe_allow_html=True,
+            )
+
             st.markdown('<div style="height: 0.7rem;"></div>', unsafe_allow_html=True)
             sha = _git_sha_short()
             sha_txt = f" · {sha}" if sha else ""
@@ -2422,7 +2494,7 @@ def render_app_shell():
             st.markdown('<div id="topbar-marker"></div>', unsafe_allow_html=True)
 
             page_label = {
-                "dashboard": "Dashboard",
+                "dashboard": "Prehľad",
                 "clients": "Klienti",
                 "client_detail": "Klient",
                 "inbox": "Inbox",
@@ -2437,17 +2509,54 @@ def render_app_shell():
                 if sha:
                     st.markdown(f'<div class="topbar-sub">{html.escape(sha)}</div>', unsafe_allow_html=True)
             with c1:
-                st.text_input("", placeholder="Search clients, emails…", label_visibility="collapsed", key="global_search")
+                st.text_input("", placeholder="Hľadať klientov, emaily…", label_visibility="collapsed", key="global_search")
             with c3:
                 next_dm = st.toggle("Dark", value=dm, key="top_dark_toggle")
                 if next_dm != dm:
                     st.session_state.dark_mode = next_dm
                     st.rerun()
             with c4:
-                st.markdown('<div class="topbar-icon">🔔</div>', unsafe_allow_html=True)
+                if st.button("🔔", key="top_notif_btn"):
+                    st.session_state.show_notifications = not st.session_state.show_notifications
+                    if st.session_state.show_notifications:
+                        st.session_state.show_user_menu = False
             with c5:
-                avatar = _portrait_data_uri("trainer")
-                st.markdown(f'<div class="topbar-avatar"><img src="{avatar}" alt="avatar" /></div>', unsafe_allow_html=True)
+                if st.button("👤", key="top_user_btn"):
+                    st.session_state.show_user_menu = not st.session_state.show_user_menu
+                    if st.session_state.show_user_menu:
+                        st.session_state.show_notifications = False
+
+        if st.session_state.show_notifications:
+            st.markdown(
+                """
+                <div class="topbar-panel">
+                    <div class="ttl">Notifikácie</div>
+                    <div class="sub">Demo – posledné udalosti</div>
+                </div>
+                """,
+                unsafe_allow_html=True,
+            )
+            st.info("Žiadne nové notifikácie (demo).")
+
+        if st.session_state.show_user_menu:
+            st.markdown(
+                """
+                <div class="topbar-panel">
+                    <div class="ttl">Účet</div>
+                    <div class="sub">Rýchle nastavenia</div>
+                </div>
+                """,
+                unsafe_allow_html=True,
+            )
+            a1, a2, a3 = st.columns(3)
+            with a1:
+                st.button("Profil", use_container_width=True, key="user_profile_btn")
+            with a2:
+                st.button("Nastavenia", use_container_width=True, key="user_settings_btn")
+            with a3:
+                if st.button("Odhlásiť", use_container_width=True, key="user_logout_btn"):
+                    st.session_state.show_user_menu = False
+                    st.success("Demo: odhlásenie")
 
         page = st.session_state.page
         if page == 'dashboard':

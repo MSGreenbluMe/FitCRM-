@@ -1,6 +1,6 @@
 import { store } from "../store.js";
 import { showToast } from "../ui/toast.js";
-import { sendEmail } from "../api.js";
+import { sendEmail, generatePlan } from "../api.js";
 
 const DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
@@ -15,6 +15,8 @@ export class NutritionPage {
     this.el = null;
     this.unsub = null;
     this.day = "Tue";
+    this.aiInFlight = false;
+    this.aiCooldownUntil = 0;
   }
 
   mount(container) {
@@ -62,6 +64,10 @@ export class NutritionPage {
             </div>
 
             <div class="flex gap-3">
+              <button data-action="ai-generate" ${this.aiInFlight ? "disabled" : ""} class="h-10 px-5 rounded-lg bg-surface-highlight text-white text-sm font-bold flex items-center gap-2 transition-colors border border-[#395c46] ${this.aiInFlight ? "opacity-60 cursor-not-allowed" : "hover:bg-[#2f5f3e]"}">
+                <span class="material-symbols-outlined text-[18px]">auto_awesome</span>
+                ${this.aiInFlight ? "Generating..." : "AI Generate"}
+              </button>
               <button data-action="send" class="h-10 px-6 rounded-lg bg-primary hover:bg-opacity-90 text-background-dark text-sm font-bold flex items-center gap-2 transition-colors shadow-[0_0_15px_rgba(19,236,91,0.3)]">
                 <span class="material-symbols-outlined text-[18px]">send</span>
                 Send to Client
@@ -146,6 +152,65 @@ export class NutritionPage {
         this.render();
       });
     });
+
+    const aiBtn = this.el.querySelector('[data-action="ai-generate"]');
+    if (aiBtn && client) {
+      aiBtn.addEventListener("click", async () => {
+        const now = Date.now();
+        if (now < this.aiCooldownUntil) {
+          const secs = Math.max(1, Math.ceil((this.aiCooldownUntil - now) / 1000));
+          showToast({
+            title: "Please wait",
+            message: `AI generation is cooling down (${secs}s).`,
+            variant: "danger",
+          });
+          return;
+        }
+        if (this.aiInFlight) return;
+
+        try {
+          this.aiInFlight = true;
+          this.render();
+          showToast({ title: "Generating", message: "Requesting AI nutrition plan..." });
+
+          const res = await generatePlan({
+            client,
+            goal: client.goal,
+            type: "nutrition_plan",
+            currentPlan: n || null,
+          });
+
+          if (res && res.plan) {
+            store.setNutritionPlan({ clientId: client.id, nutrition: res.plan });
+            if (res.fallback) {
+              showToast({
+                title: "Fallback plan",
+                message: "Gemini failed or returned invalid JSON. Applied a safe default nutrition plan.",
+                variant: "danger",
+              });
+            } else {
+              showToast({ title: "Updated", message: "AI nutrition plan applied to this client." });
+            }
+          } else {
+            showToast({
+              title: "AI response",
+              message: "Received text response (no structured plan).",
+              variant: "danger",
+            });
+          }
+        } catch (e) {
+          showToast({
+            title: "Generation failed",
+            message: e && e.message ? e.message : "Unknown error",
+            variant: "danger",
+          });
+        } finally {
+          this.aiInFlight = false;
+          this.aiCooldownUntil = Date.now() + 5000;
+          this.render();
+        }
+      });
+    }
 
     this.el.querySelectorAll('[data-action="quick-add"]').forEach((btn) => {
       btn.addEventListener("click", () => {

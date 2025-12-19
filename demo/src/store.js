@@ -297,7 +297,24 @@ export const store = {
   },
 
   addExerciseToDay({ clientId, dayKey, exercise }) {
-    if (!this._state.trainingPlans[clientId]) return;
+    if (!clientId || !dayKey || !exercise) return;
+
+    if (!this._state.trainingPlans[clientId]) {
+      const startDate = new Date().toISOString().slice(0, 10);
+      this._state.trainingPlans[clientId] = {
+        name: "Training Plan",
+        startDate,
+        durationWeeks: 4,
+        focus: "Draft",
+        days: {
+          mon: { title: "Workout", items: [] },
+          tue: { title: "Workout", items: [] },
+          wed: { title: "Active Recovery", items: [] },
+          thu: { title: "Workout", items: [] },
+        },
+      };
+    }
+
     const day = this._state.trainingPlans[clientId].days[dayKey];
     if (!day) return;
 
@@ -398,6 +415,48 @@ export const store = {
       this._state.nutrition[clientId] = n;
     }
     n.notes = notes;
+    this._emit();
+  },
+
+  setNutritionPlan({ clientId, nutrition }) {
+    if (!clientId || !nutrition) return;
+
+    const safeMeals = (meals) => {
+      const m = meals && typeof meals === "object" ? meals : {};
+      const norm = (arr) =>
+        (Array.isArray(arr) ? arr : []).map((it) => ({
+          id: `meal_${Math.random().toString(16).slice(2)}`,
+          name: String(it?.name || "Meal"),
+          desc: String(it?.desc || ""),
+          kcal: Number(it?.kcal || 0),
+          protein: Number(it?.protein || 0),
+          carbs: Number(it?.carbs || 0),
+          fats: Number(it?.fats || 0),
+        }));
+
+      return {
+        breakfast: norm(m.breakfast),
+        lunch: norm(m.lunch),
+        dinner: norm(m.dinner),
+      };
+    };
+
+    const targets = nutrition.targets && typeof nutrition.targets === "object" ? nutrition.targets : {};
+
+    this._state.nutrition[clientId] = {
+      weekLabel: String(nutrition.weekLabel || "Week"),
+      day: String(nutrition.day || "Tue"),
+      meals: safeMeals(nutrition.meals),
+      notes: String(nutrition.notes || ""),
+      targets: {
+        kcal: Number(targets.kcal || 2100),
+        protein: Number(targets.protein || 170),
+        carbs: Number(targets.carbs || 220),
+        fats: Number(targets.fats || 65),
+        waterLiters: Number(targets.waterLiters || 3.5),
+      },
+    };
+
     this._emit();
   },
 };

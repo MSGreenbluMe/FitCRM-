@@ -12,6 +12,27 @@ function json(statusCode, body) {
   };
 }
 
+function buildFallbackNutrition({ client, goal }) {
+  const g = String(goal || client?.goal || "General Fitness");
+  return {
+    weekLabel: "This Week",
+    day: "Tue",
+    meals: {
+      breakfast: [
+        { name: "Greek yogurt + berries", desc: "High protein start", kcal: 320, protein: 28, carbs: 30, fats: 8 },
+      ],
+      lunch: [
+        { name: "Chicken + rice + veggies", desc: "Balanced meal", kcal: 620, protein: 45, carbs: 70, fats: 14 },
+      ],
+      dinner: [
+        { name: "Salmon + potatoes + salad", desc: "Omega-3 + carbs", kcal: 650, protein: 42, carbs: 55, fats: 26 },
+      ],
+    },
+    notes: `Goal: ${g}. Keep it simple, hit protein target, hydrate.`,
+    targets: { kcal: 2100, protein: 170, carbs: 220, fats: 65, waterLiters: 3.5 },
+  };
+}
+
 function getRequiredEnv(name) {
   const v = process.env[name];
   if (!v) throw new Error(`Missing env var: ${name}`);
@@ -100,19 +121,29 @@ exports.handler = async (event) => {
     return json(400, { ok: false, error: "Missing 'client'" });
   }
 
-  const fallbackPlan = buildFallbackPlan({ client, goal });
+  const normalizedType = String(type || "training_plan");
+  const fallbackPlan =
+    normalizedType === "nutrition_plan" ? buildFallbackNutrition({ client, goal }) : buildFallbackPlan({ client, goal });
   const apiKey = process.env.GEMINI_API_KEY;
+
+  const schemaTraining =
+    "{\"name\":string,\"durationWeeks\":number,\"focus\":string,\"days\":{\"mon\":{\"title\":string,\"items\":[{\"name\":string,\"sets\":number,\"reps\":string,\"rpe\":number}]},\"tue\":{...},\"wed\":{...},\"thu\":{...}}}";
+  const schemaNutrition =
+    "{\"weekLabel\":string,\"day\":string,\"meals\":{\"breakfast\":[{\"name\":string,\"desc\":string,\"kcal\":number,\"protein\":number,\"carbs\":number,\"fats\":number}],\"lunch\":[...],\"dinner\":[...]},\"notes\":string,\"targets\":{\"kcal\":number,\"protein\":number,\"carbs\":number,\"fats\":number,\"waterLiters\":number}}";
 
   const prompt = [
     "You are FitCRM assistant.",
     "Return STRICT JSON only (no markdown, no extra text).",
+    normalizedType === "nutrition_plan" ? "Task: generate a simple nutrition plan." : "Task: generate a training plan.",
     "Schema:",
-    "{\"name\":string,\"durationWeeks\":number,\"days\":{\"mon\":{\"title\":string,\"items\":[{\"name\":string,\"sets\":number,\"reps\":string,\"rpe\":number}]},\"tue\":{...},\"wed\":{...},\"thu\":{...}}}",
-    "Provide 4 days (mon,tue,wed,thu). Wed can be a rest day with empty items.",
+    normalizedType === "nutrition_plan" ? schemaNutrition : schemaTraining,
+    normalizedType === "nutrition_plan"
+      ? "Provide meals for breakfast/lunch/dinner and realistic macro targets."
+      : "Provide 4 days (mon,tue,wed,thu). Wed can be a rest day with empty items.",
     "Client:",
     JSON.stringify(client),
     goal ? `Goal: ${goal}` : "",
-    type ? `Type: ${type}` : "",
+    `Type: ${normalizedType}`,
     constraints ? `Constraints: ${JSON.stringify(constraints)}` : "",
     currentPlan ? `Current plan: ${JSON.stringify(currentPlan)}` : "",
   ]

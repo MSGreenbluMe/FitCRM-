@@ -21,6 +21,8 @@ export class TrainingPlanPage {
     this.el = null;
     this.unsub = null;
     this.selectedLibId = EXERCISE_LIBRARY[0].id;
+    this.aiInFlight = false;
+    this.aiCooldownUntil = 0;
   }
 
   mount(container) {
@@ -37,6 +39,10 @@ export class TrainingPlanPage {
     const clientId = state.ui.selectedClientId;
     const client = state.clients.find((c) => c.id === clientId) || state.clients[0];
     const plan = state.trainingPlans[client.id];
+
+    const aiBtnCls = this.aiInFlight
+      ? "opacity-60 cursor-not-allowed"
+      : "hover:bg-[#2f5f3e] transition-all";
 
     this.el.innerHTML = `
       <aside class="w-[320px] flex-none flex flex-col border-r border-surface-highlight bg-background-dark z-10">
@@ -56,10 +62,18 @@ export class TrainingPlanPage {
         </div>
 
         <div class="p-4 border-t border-surface-highlight">
-          <button data-action="add-to-mon" class="w-full bg-primary text-background-dark font-bold py-3 rounded-lg shadow-lg flex justify-center items-center gap-2 hover:brightness-110 transition-all">
-            <span class="material-symbols-outlined">add_circle</span>
-            Add to Monday
-          </button>
+          <div class="grid grid-cols-2 gap-2">
+            ${DAY_ORDER.map(
+              (d) => `
+                <button data-action="add-to-day" data-day-key="${escapeAttr(
+                  d.key
+                )}" class="bg-primary text-background-dark font-bold py-2.5 rounded-lg shadow-lg flex justify-center items-center gap-2 hover:brightness-110 transition-all">
+                  <span class="material-symbols-outlined">add_circle</span>
+                  Add to ${escapeHtml(d.label)}
+                </button>
+              `
+            ).join("")}
+          </div>
         </div>
       </aside>
 
@@ -86,9 +100,9 @@ export class TrainingPlanPage {
               )}</span> • Goal: ${escapeHtml(client.goal)}</p>
             </div>
             <div class="flex items-center gap-3">
-              <button data-action="ai-generate" class="flex items-center gap-2 px-5 h-10 rounded-lg bg-surface-highlight text-white text-sm font-bold hover:bg-[#2f5f3e] transition-all border border-[#395c46]">
+              <button data-action="ai-generate" ${this.aiInFlight ? "disabled" : ""} class="flex items-center gap-2 px-5 h-10 rounded-lg bg-surface-highlight text-white text-sm font-bold border border-[#395c46] ${aiBtnCls}">
                 <span class="material-symbols-outlined text-[18px]">auto_awesome</span>
-                AI Generate
+                ${this.aiInFlight ? "Generating..." : "AI Generate"}
               </button>
               <button data-action="save" class="flex items-center gap-2 px-6 h-10 rounded-lg bg-primary text-black text-sm font-bold hover:brightness-110 transition-all shadow-[0_0_15px_rgba(19,236,91,0.3)]">
                 <span class="material-symbols-outlined text-[18px]">save</span>
@@ -125,15 +139,16 @@ export class TrainingPlanPage {
       });
     }
 
-    const addBtn = this.el.querySelector('[data-action="add-to-mon"]');
-    if (addBtn && plan) {
-      addBtn.addEventListener("click", () => {
+    this.el.querySelectorAll('[data-action="add-to-day"]').forEach((btn) => {
+      btn.addEventListener("click", () => {
         const ex = EXERCISE_LIBRARY.find((e) => e.id === this.selectedLibId);
         if (!ex) return;
-        store.addExerciseToDay({ clientId: client.id, dayKey: "mon", exercise: ex });
-        showToast({ title: "Exercise added", message: `Added ${ex.name} to Monday.` });
+        const dayKey = btn.dataset.dayKey;
+        store.addExerciseToDay({ clientId: client.id, dayKey, exercise: ex });
+        const label = (DAY_ORDER.find((d) => d.key === dayKey) || { label: dayKey }).label;
+        showToast({ title: "Exercise added", message: `Added ${ex.name} to ${label}.` });
       });
-    }
+    });
 
     const saveBtn = this.el.querySelector('[data-action="save"]');
     if (saveBtn) {
@@ -145,8 +160,20 @@ export class TrainingPlanPage {
     const aiBtn = this.el.querySelector('[data-action="ai-generate"]');
     if (aiBtn && client) {
       aiBtn.addEventListener("click", async () => {
+        const now = Date.now();
+        if (now < this.aiCooldownUntil) {
+          const secs = Math.max(1, Math.ceil((this.aiCooldownUntil - now) / 1000));
+          showToast({
+            title: "Please wait",
+            message: `AI generation is cooling down (${secs}s).`,
+            variant: "danger",
+          });
+          return;
+        }
+        if (this.aiInFlight) return;
         try {
-          aiBtn.disabled = true;
+          this.aiInFlight = true;
+          this.render();
           showToast({ title: "Generating", message: "Requesting AI plan from Gemini..." });
 
           const res = await generatePlan({
@@ -181,7 +208,9 @@ export class TrainingPlanPage {
             variant: "danger",
           });
         } finally {
-          aiBtn.disabled = false;
+          this.aiInFlight = false;
+          this.aiCooldownUntil = Date.now() + 5000;
+          this.render();
         }
       });
     }

@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.5
+
+- Training AI: prevent duplicate requests (in-flight guard + cooldown) and improve usability.
+- Training editor: add exercises to any day (Mon/Tue/Wed/Thu) and auto-create draft plan per client.
+- Nutrition: added AI Generate flow (server + UI) with fallback.
+
 ## 0.1.4
 
 - Hotfix: hardened `generate_plan` with JSON mode + fallback plan so demo always generates an editable plan.

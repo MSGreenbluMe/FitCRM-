@@ -1,6 +1,8 @@
 {
   "name": "FitCRM",
-  "version": "0.2.2",
-  "description": "FIT CRM - Streamlit web app for fitness trainers (inbox + client intake + plan generation)",
-  "entry": "app.py"
+  "version": "0.1.2",
+  "description": "Prototype CRM for fitness trainers (UI demo + docs).",
+  "demo": {
+    "path": "demo/index.html"
+  }
 }

@@ -1,12 +1,9 @@
 # Performance
 
-## Metrics to track
+## Measurements
 
-- Startup time
-- Inbox load time (demo vs IMAP)
-- Memory usage during plan generation
-- UI responsiveness (scrolling/selection)
+- (not measured yet)
 
 ## Notes
 
-- (to be measured)
+- (none)

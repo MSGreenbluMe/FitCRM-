@@ -1,37 +1,37 @@
 # Progress
 
-## Current Status
+## 🚧 In Progress
 
-✅ Inbox UI (Gmail-like 3-panel layout) + Email Connector (IMAP) are implemented in Streamlit.
-✅ Inbox list redesigned to dense Gmail-like row list (replaces dataframe; less whitespace).
-✅ App shell redesigned: Streamlit sidebar hidden; custom left navigation + topbar (with Light/Dark switch).
-✅ Inbox UX refined: folders moved into toolbar, improved empty state in detail panel.
-✅ Gemini requests improved for free tier (rate-limit/backoff + cache + flash-lite default).
-✅ UI styling unified across app (more consistent spacing/typography/cards).
-✅ Offline sample avatars improved (portrait-style SVG avatars in Clients list + Client detail).
-✅ Added consolidated technical project summary (`docs/FITCRM_PROJECT_SUMMARY.md`).
-🚧 Dashboard redesigned toward Tailwind mockup style (hero headline + KPI stat cards + schedule cards + compliance progress + quick actions tiles + activity feed).
-✅ Dark mode enabled by default (matches Tailwind mockups).
-✅ Sidebar polished closer to mockup (pill items, active highlight, user block).
-✅ Topbar actions are interactive (demo: notifications + user menu panels).
-🚧 Clients page redesigned toward mockup (split-pane list + detail with tabs).
+- (none)
 
-## Completed
+## ✅ Completed
 
-✅ Added `📥 Inbox` page (folders, search, status filters, unread state, detail preview, actions)
-✅ Added `⚙️ Email konektor` page (IMAP settings, test connection, fetch latest emails into Inbox)
-✅ Added IMAP integration layer: `src/email_connector.py`
-✅ Unified displayed app version across UI (`src.__version__`)
-✅ Added project docs & QA files (PROGRESS/CHANGELOG/TESTING/LESSONS/BUGS/PERFORMANCE + /docs)
+- **Functional UI demo** (static Tailwind + vanilla JS)
+  - Routing between: Dashboard / Mailbox / Clients / Training Plan / Nutrition
+  - Mock data + basic interactions
+  - Local persistence via `localStorage`
 
-## Coming Next
+- **Project metadata + docs**
+  - `README.md`, `CHANGELOG.md`, `TESTING.md`, `LESSONS.md`, `manifest.json`
+  - `docs/DEMO.md`
 
-🔜 Persist email connector settings securely (Streamlit secrets / encrypted storage)
-🔜 Gmail OAuth connector (instead of app-password IMAP)
-🔜 Message threading + labels (Inbox, Starred, etc.)
-🔜 Caching + rate-limit / retry policy for IMAP fetch
+- **Netlify sharing scaffolding**
+  - `netlify.toml` (publish root, redirect `/` -> `/demo/`)
+  - `netlify/functions/*` stubs
+  - `docs/DEPLOYMENT.md`
 
-🔜 Finish Dashboard translation + remove remaining English labels
-🔜 Finish Clients detail sections (upcoming schedule, history table, chips styling)
+- **SMTP email function (Netlify)**
+  - `/.netlify/functions/send_email` implemented (server-side)
+  - `package.json` includes `nodemailer`
 
+## 🔄 Needs Revision
 
+- (none)
+
+## 🔜 Coming Next
+
+- Add more realistic workflows (onboarding from inbox -> create client -> generate/send plan)
+- Add drag & drop for training plan builder
+- Implement real API layer behind the demo (server-side):
+  - Gemini generation (`/.netlify/functions/generate_plan`)
+  - Email sending (`/.netlify/functions/send_email`) with secrets stored in Netlify env vars

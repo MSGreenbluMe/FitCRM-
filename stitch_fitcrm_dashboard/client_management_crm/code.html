@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>FitCRM - Client Management</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#13ec5b",
+                        "background-light": "#f6f8f6",
+                        "background-dark": "#102216",
+                        "surface-dark": "#112217",
+                        "surface-highlight": "#23482f",
+                        "text-secondary": "#92c9a4",
+                    },
+                    fontFamily: {
+                        "display": ["Manrope", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        /* Custom scrollbar for webkit browsers */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #112217; 
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #23482f; 
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #92c9a4; 
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-white font-display h-screen flex overflow-hidden selection:bg-primary selection:text-background-dark">
+<!-- Global Sidebar -->
+<aside class="w-64 flex-shrink-0 flex flex-col bg-surface-dark border-r border-surface-highlight h-full">
+<!-- Brand -->
+<div class="h-16 flex items-center px-6 border-b border-surface-highlight gap-3">
+<div class="size-8 rounded-lg bg-primary flex items-center justify-center text-surface-dark">
+<span class="material-symbols-outlined font-bold">fitness_center</span>
+</div>
+<h1 class="text-xl font-bold tracking-tight text-white">FitCRM</h1>
+</div>
+<!-- Navigation -->
+<nav class="flex-1 flex flex-col gap-2 p-4 overflow-y-auto">
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-text-secondary hover:bg-surface-highlight hover:text-white transition-colors group" href="#">
+<span class="material-symbols-outlined group-hover:text-primary transition-colors">dashboard</span>
+<span class="font-medium text-sm">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-surface-highlight text-white transition-colors" href="#">
+<span class="material-symbols-outlined text-primary fill-1">group</span>
+<span class="font-medium text-sm">Clients</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-text-secondary hover:bg-surface-highlight hover:text-white transition-colors group" href="#">
+<span class="material-symbols-outlined group-hover:text-primary transition-colors">calendar_month</span>
+<span class="font-medium text-sm">Calendar</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-text-secondary hover:bg-surface-highlight hover:text-white transition-colors group" href="#">
+<span class="material-symbols-outlined group-hover:text-primary transition-colors">restaurant</span>
+<span class="font-medium text-sm">Nutrition</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-text-secondary hover:bg-surface-highlight hover:text-white transition-colors group" href="#">
+<span class="material-symbols-outlined group-hover:text-primary transition-colors">trending_up</span>
+<span class="font-medium text-sm">Analytics</span>
+</a>
+<div class="my-2 border-t border-surface-highlight"></div>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-text-secondary hover:bg-surface-highlight hover:text-white transition-colors group" href="#">
+<span class="material-symbols-outlined group-hover:text-primary transition-colors">settings</span>
+<span class="font-medium text-sm">Settings</span>
+</a>
+</nav>
+<!-- User Profile -->
+<div class="p-4 border-t border-surface-highlight">
+<div class="flex items-center gap-3">
+<div class="size-10 rounded-full bg-surface-highlight bg-cover bg-center border border-surface-highlight" data-alt="Portrait of the trainer user" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCLK-K6QL-18GAvhLj_aEtUeTjQPV6FUOhAqz26mHrNuqzlRItQyYi6OdUmF8xPk2iOhrNUZO2vvHQeRgpjOr1YbOEctK5zhZcZde6uo28dN3pOcdIB8aKAIa-WP9cIU4DL06TOuknqMduAO6nsIGzWeBeghjhhWL8B37E1l7J3sFLADZ4ACDXoaPUSXNpzeDQqppdL6700zFYd6M252_uqLoSvd8WuPon7Qtml7Z5--O_sURR1BkT9UdWLfUuY9cj8AwEffKkZBPS2');"></div>
+<div class="flex flex-col overflow-hidden">
+<p class="text-sm font-bold text-white truncate">Alex Trainer</p>
+<p class="text-xs text-text-secondary truncate">Pro Account</p>
+</div>
+<button class="ml-auto text-text-secondary hover:text-white">
+<span class="material-symbols-outlined text-[20px]">logout</span>
+</button>
+</div>
+</div>
+</aside>
+<!-- Main Content Area (Split Pane) -->
+<main class="flex flex-1 overflow-hidden">
+<!-- Left Panel: Client List -->
+<div class="w-[400px] flex flex-col bg-surface-dark border-r border-surface-highlight">
+<!-- Search & Actions -->
+<div class="p-4 pb-2 flex flex-col gap-4">
+<div class="relative">
+<div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+<span class="material-symbols-outlined text-text-secondary">search</span>
+</div>
+<input class="block w-full pl-10 pr-3 py-2.5 border-none rounded-lg bg-surface-highlight text-white placeholder-text-secondary focus:ring-1 focus:ring-primary text-sm" placeholder="Search clients..." type="text"/>
+</div>
+<button class="flex w-full items-center justify-center gap-2 rounded-lg h-10 px-4 bg-primary text-background-dark text-sm font-bold tracking-wide hover:bg-opacity-90 transition-opacity">
+<span class="material-symbols-outlined text-[20px]">add</span>
+<span>Add New Client</span>
+</button>
+<!-- Chips -->
+<div class="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+<button class="whitespace-nowrap px-4 py-1.5 rounded-full bg-primary text-background-dark text-xs font-bold">
+                        All Clients
+                    </button>
+<button class="whitespace-nowrap px-4 py-1.5 rounded-full bg-surface-highlight border border-transparent hover:border-text-secondary text-text-secondary hover:text-white text-xs font-medium transition-all">
+                        Active (12)
+                    </button>
+<button class="whitespace-nowrap px-4 py-1.5 rounded-full bg-surface-highlight border border-transparent hover:border-text-secondary text-text-secondary hover:text-white text-xs font-medium transition-all">
+                        Pending (3)
+                    </button>
+</div>
+</div>
+<!-- List -->
+<div class="flex-1 overflow-y-auto">
+<!-- Selected Item -->
+<div class="flex items-center gap-3 px-4 py-3 bg-surface-highlight/50 border-l-4 border-primary cursor-pointer hover:bg-surface-highlight transition-colors">
+<div class="size-12 rounded-full bg-surface-highlight bg-cover bg-center flex-shrink-0" data-alt="Portrait of Sarah Jenkins" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCvI2w1rgQe1kFzeE6ngL6wkc5cP9EjKZdDG1zSnzhS8yGkSay8z_DeWTUFhS9Kn-oFlQ690xQzcdbCoWpTgfjBT1busnlEPaU7QAkLqKyANHt7GvBF1wja6_70wli3bkt6FATmytmG4JfUpc_dSHN5PcEcLGAXbsJsaFb6Wqp1ZD7Q6ltlCyCKxREiAH1gyWOMAYdgAphAcjgPvyiiZi_jTXVW5rU1uRiabYVy7mJIDWKZQmFakRJ1kvy-OAnZVVlL5A8mh3Jutvc2');"></div>
+<div class="flex flex-col flex-1 min-w-0">
+<div class="flex justify-between items-center mb-0.5">
+<p class="text-white text-sm font-bold truncate">Sarah Jenkins</p>
+<span class="size-2 rounded-full bg-primary shadow-[0_0_8px_rgba(19,236,91,0.6)]"></span>
+</div>
+<p class="text-text-secondary text-xs truncate">Goal: Weight Loss • Last seen 2h ago</p>
+</div>
+</div>
+<!-- Regular Item -->
+<div class="flex items-center gap-3 px-4 py-3 border-l-4 border-transparent hover:bg-surface-highlight/50 transition-colors cursor-pointer border-b border-surface-highlight/50">
+<div class="size-12 rounded-full bg-surface-highlight bg-cover bg-center flex-shrink-0" data-alt="Portrait of Mike Ross" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCZ8tJJ0LvNhwpR6RV2dl7WsvujXrKjXlyHuATNJZtGwuZv7jthjp7Xy1cgQ4x-7RWRniV9iSlYd_98q-VQNPl5GOOPBqXEpbE-Pyd6X8nEbpQZ-spXTA3GrPTx_73qXELwUdlBZDcP5cHkl0wWqPIGiX7rtogIyq_WhCTjbONUiIPFiLcJL8kXsdXbxGMpUyGkzN7jDXJi8xFg1dZpQzWV4Ag32_8m_IWotxWPgGOTNPsjDQhOov6mQMQoizYIJrfPtXK1EyOWEfpn');"></div>
+<div class="flex flex-col flex-1 min-w-0">
+<div class="flex justify-between items-center mb-0.5">
+<p class="text-white text-sm font-bold truncate">Mike Ross</p>
+<span class="size-2 rounded-full bg-primary shadow-[0_0_8px_rgba(19,236,91,0.6)]"></span>
+</div>
+<p class="text-text-secondary text-xs truncate">Goal: Hypertrophy • Last seen 1d ago</p>
+</div>
+</div>
+<!-- Regular Item -->
+<div class="flex items-center gap-3 px-4 py-3 border-l-4 border-transparent hover:bg-surface-highlight/50 transition-colors cursor-pointer border-b border-surface-highlight/50">
+<div class="size-12 rounded-full bg-surface-highlight bg-cover bg-center flex-shrink-0" data-alt="Portrait of Emily Blunt" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuB49fB7soTdIZJsXm3nxc3oMzzAltYokw7Q_aELCqqbx0KgSeCDO3k4IV9yq4Ky3bkaU_n5oW7JFiyPRtd4BhLIKkrdWo5tvDmcg5jObW27PVH49BEDdipVQ1IXWnVZkS7IHGS3lwsMnGCph36I-BLCWyrjl-BRSKDv3TDzh6j3RGl885XuXNHhmbGOu5RuvSBLLu0KxYQzYAl5J14Ulvbzb7eZvy4rD_r7l8CyEt78K99IXyD7NFHof0XVv7b3popS4EYfSpOzImaL');"></div>
+<div class="flex flex-col flex-1 min-w-0">
+<div class="flex justify-between items-center mb-0.5">
+<p class="text-white text-sm font-bold truncate">Emily Blunt</p>
+<span class="size-2 rounded-full bg-yellow-500"></span>
+</div>
+<p class="text-text-secondary text-xs truncate">Goal: Endurance • Payment Pending</p>
+</div>
+</div>
+<!-- Regular Item -->
+<div class="flex items-center gap-3 px-4 py-3 border-l-4 border-transparent hover:bg-surface-highlight/50 transition-colors cursor-pointer border-b border-surface-highlight/50">
+<div class="size-12 rounded-full bg-surface-highlight bg-cover bg-center flex-shrink-0" data-alt="Portrait of John Doe" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAczov-sOBg1llKfRdv_fS2SAIq_Jk9RrdqjgJNpfO1vhs60sH7-xxWKLxy54uJjO0YQkpGSRA_SOCtfdwYtHRlPd00tx11DTfXmCjC-UOKJBfvTOLL63jDj0sTuo3OX-hxbI5VqHny5YN19-cmwtI3t83KaMzLI0lRRwGyfwDckR9BInKQZL5HY6MTWEdB0wq3PoUBGHX6BrcIubql_W6Bq0xx1fSjSqX16trdB0VRlI1HpJnUkgeQ1qeoRy70TdHheKPZfy-yra22');"></div>
+<div class="flex flex-col flex-1 min-w-0">
+<div class="flex justify-between items-center mb-0.5">
+<p class="text-white text-sm font-bold truncate">John Doe</p>
+<span class="size-2 rounded-full bg-gray-500"></span>
+</div>
+<p class="text-text-secondary text-xs truncate">Goal: Strength • Inactive</p>
+</div>
+</div>
+<!-- Regular Item -->
+<div class="flex items-center gap-3 px-4 py-3 border-l-4 border-transparent hover:bg-surface-highlight/50 transition-colors cursor-pointer border-b border-surface-highlight/50">
+<div class="size-12 rounded-full bg-surface-highlight bg-cover bg-center flex-shrink-0" data-alt="Portrait of Marcus" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCkpoQHRaU9YjUhl4Zb5X2auCX_cQPgOrfkfOz7Q11xl9veNjA1wY2jXbuKGj9-6o0RYRvx05tPA_8VsVVEtUulWGNy4VRHw-UQ88ePd1s77gPJn17PXcQCjEqWcBrH460usLrNcjfLKHEkuUwZdz3xFJEPhJZ2wdTVATU2POeoanmDOOd7fJnkEKk-hH0elLNxu9N1gu8ktFKkLmc2Ep1fUr3m8D4Kf6YX3hqbAZ9WripJn0Dt1IL8OMy7Nr22jf1v3a6uTs_LZWLr');"></div>
+<div class="flex flex-col flex-1 min-w-0">
+<div class="flex justify-between items-center mb-0.5">
+<p class="text-white text-sm font-bold truncate">Marcus Aurelius</p>
+<span class="size-2 rounded-full bg-primary shadow-[0_0_8px_rgba(19,236,91,0.6)]"></span>
+</div>
+<p class="text-text-secondary text-xs truncate">Goal: Mindfulness • Last seen 5h ago</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Right Panel: Client Details -->
+<div class="flex-1 flex flex-col bg-background-dark overflow-y-auto">
+<!-- Detail Header -->
+<div class="bg-surface-dark border-b border-surface-highlight px-8 py-6">
+<div class="flex items-start justify-between">
+<div class="flex gap-6">
+<div class="size-24 rounded-2xl bg-surface-highlight bg-cover bg-center border-2 border-primary/20" data-alt="Large portrait of Sarah Jenkins" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCGAmCuBFyVzHLFAy1JlaoZCor6JcxvcgvD1JDe6_pW5K1C8KoS_Drn5RpPY9KXC4xDDJ6PfYkwtvLtfbJCwnGRB5_akstWFiebf-vskPHyQM8XAz10FlE-1elF85Xw4AZTuENZV5UlnT4JVf-GSHucurxxlGWEJQFWYE7gCoJdhKNvo7SvSm-gJruCa_foVjeB2PIGFjC2HQXwxS6TIDURgZJ0ayLDxkxAv32kT4qyvEsY87RGXsOmbtqZN9idKE8Sr_BvjY_OexSY');"></div>
+<div class="flex flex-col justify-center">
+<div class="flex items-center gap-3 mb-1">
+<h2 class="text-2xl font-bold text-white">Sarah Jenkins</h2>
+<span class="px-2 py-0.5 rounded text-xs font-bold bg-primary/20 text-primary border border-primary/30">Active</span>
+</div>
+<p class="text-text-secondary text-sm mb-4">Joined: Jan 12, 2023 • Plan: Premium Transformation</p>
+<!-- Key Stats in Header -->
+<div class="flex gap-6">
+<div>
+<p class="text-xs text-text-secondary uppercase tracking-wider font-semibold">Weight</p>
+<p class="text-white font-bold">145 lbs <span class="text-primary text-xs ml-1">↓ 2.1</span></p>
+</div>
+<div class="w-px bg-surface-highlight"></div>
+<div>
+<p class="text-xs text-text-secondary uppercase tracking-wider font-semibold">Body Fat</p>
+<p class="text-white font-bold">22% <span class="text-primary text-xs ml-1">↓ 0.5</span></p>
+</div>
+<div class="w-px bg-surface-highlight"></div>
+<div>
+<p class="text-xs text-text-secondary uppercase tracking-wider font-semibold">Sessions</p>
+<p class="text-white font-bold">24 <span class="text-text-secondary text-xs font-normal">/ 30</span></p>
+</div>
+</div>
+</div>
+</div>
+<div class="flex gap-3">
+<button class="flex items-center justify-center size-10 rounded-lg bg-surface-highlight text-white hover:bg-surface-highlight/80 transition-colors">
+<span class="material-symbols-outlined">chat</span>
+</button>
+<button class="flex items-center justify-center size-10 rounded-lg bg-surface-highlight text-white hover:bg-surface-highlight/80 transition-colors">
+<span class="material-symbols-outlined">edit</span>
+</button>
+<button class="flex items-center justify-center gap-2 h-10 px-4 rounded-lg bg-primary text-background-dark text-sm font-bold hover:bg-opacity-90 transition-opacity">
+<span class="material-symbols-outlined text-[18px]">play_arrow</span>
+                            Start Session
+                        </button>
+</div>
+</div>
+<!-- Tabs -->
+<div class="flex gap-6 mt-8 border-b border-surface-highlight">
+<button class="pb-3 text-sm font-bold text-primary border-b-2 border-primary">Overview</button>
+<button class="pb-3 text-sm font-medium text-text-secondary hover:text-white transition-colors">Training Plan</button>
+<button class="pb-3 text-sm font-medium text-text-secondary hover:text-white transition-colors">Nutrition</button>
+<button class="pb-3 text-sm font-medium text-text-secondary hover:text-white transition-colors">Progress Photos</button>
+<button class="pb-3 text-sm font-medium text-text-secondary hover:text-white transition-colors">History</button>
+</div>
+</div>
+<!-- Dashboard Grid -->
+<div class="p-8 grid grid-cols-12 gap-6">
+<!-- Left Column (Stats & Info) -->
+<div class="col-span-12 lg:col-span-4 flex flex-col gap-6">
+<!-- Personal Details Card -->
+<div class="bg-surface-dark rounded-xl p-5 border border-surface-highlight">
+<div class="flex justify-between items-center mb-4">
+<h3 class="text-white font-bold text-lg">Personal Details</h3>
+<button class="text-primary text-sm font-medium">Edit</button>
+</div>
+<div class="space-y-4">
+<div class="flex items-center gap-3">
+<div class="size-8 rounded bg-surface-highlight flex items-center justify-center text-text-secondary">
+<span class="material-symbols-outlined text-sm">mail</span>
+</div>
+<div>
+<p class="text-xs text-text-secondary">Email</p>
+<p class="text-sm text-white">sarah.j@example.com</p>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<div class="size-8 rounded bg-surface-highlight flex items-center justify-center text-text-secondary">
+<span class="material-symbols-outlined text-sm">call</span>
+</div>
+<div>
+<p class="text-xs text-text-secondary">Phone</p>
+<p class="text-sm text-white">+1 (555) 123-4567</p>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<div class="size-8 rounded bg-surface-highlight flex items-center justify-center text-text-secondary">
+<span class="material-symbols-outlined text-sm">cake</span>
+</div>
+<div>
+<p class="text-xs text-text-secondary">Age</p>
+<p class="text-sm text-white">29 years</p>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<div class="size-8 rounded bg-surface-highlight flex items-center justify-center text-text-secondary">
+<span class="material-symbols-outlined text-sm">height</span>
+</div>
+<div>
+<p class="text-xs text-text-secondary">Height</p>
+<p class="text-sm text-white">5' 7" (170cm)</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Upcoming Schedule -->
+<div class="bg-surface-dark rounded-xl p-5 border border-surface-highlight">
+<div class="flex justify-between items-center mb-4">
+<h3 class="text-white font-bold text-lg">Next Session</h3>
+<button class="text-text-secondary hover:text-white">
+<span class="material-symbols-outlined">more_horiz</span>
+</button>
+</div>
+<div class="bg-surface-highlight/30 rounded-lg p-4 border border-surface-highlight mb-3">
+<div class="flex justify-between items-start">
+<div>
+<p class="text-primary font-bold text-sm mb-1">Tomorrow, 10:00 AM</p>
+<p class="text-white font-medium">Lower Body Power</p>
+<p class="text-text-secondary text-xs mt-1">Leg Press, Squats, Lunges</p>
+</div>
+<div class="size-10 rounded-full bg-surface-highlight flex items-center justify-center">
+<span class="material-symbols-outlined text-white">fitness_center</span>
+</div>
+</div>
+</div>
+<button class="w-full py-2 rounded-lg border border-surface-highlight text-text-secondary hover:text-white hover:bg-surface-highlight text-sm font-medium transition-colors">
+                            View Full Schedule
+                        </button>
+</div>
+</div>
+<!-- Right Column (Charts & History) -->
+<div class="col-span-12 lg:col-span-8 flex flex-col gap-6">
+<!-- Progress Chart Card -->
+<div class="bg-surface-dark rounded-xl p-6 border border-surface-highlight">
+<div class="flex justify-between items-center mb-6">
+<div>
+<h3 class="text-white font-bold text-lg">Weight Progress</h3>
+<p class="text-text-secondary text-sm">Last 6 months</p>
+</div>
+<div class="flex bg-surface-highlight rounded-lg p-0.5">
+<button class="px-3 py-1 rounded-md bg-surface-dark text-white text-xs font-medium shadow-sm">Weight</button>
+<button class="px-3 py-1 rounded-md text-text-secondary text-xs font-medium hover:text-white">Body Fat</button>
+<button class="px-3 py-1 rounded-md text-text-secondary text-xs font-medium hover:text-white">Muscle</button>
+</div>
+</div>
+<!-- CSS-only Chart Simulation -->
+<div class="w-full h-48 flex items-end justify-between gap-2 px-2">
+<!-- Bar 1 -->
+<div class="flex flex-col items-center gap-2 group w-full">
+<div class="w-full max-w-[40px] bg-surface-highlight rounded-t-sm h-[80%] relative group-hover:bg-primary/50 transition-colors">
+<div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-surface-highlight text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity">160</div>
+</div>
+<span class="text-xs text-text-secondary">Aug</span>
+</div>
+<!-- Bar 2 -->
+<div class="flex flex-col items-center gap-2 group w-full">
+<div class="w-full max-w-[40px] bg-surface-highlight rounded-t-sm h-[75%] relative group-hover:bg-primary/50 transition-colors">
+<div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-surface-highlight text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity">158</div>
+</div>
+<span class="text-xs text-text-secondary">Sep</span>
+</div>
+<!-- Bar 3 -->
+<div class="flex flex-col items-center gap-2 group w-full">
+<div class="w-full max-w-[40px] bg-surface-highlight rounded-t-sm h-[70%] relative group-hover:bg-primary/50 transition-colors">
+<div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-surface-highlight text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity">155</div>
+</div>
+<span class="text-xs text-text-secondary">Oct</span>
+</div>
+<!-- Bar 4 -->
+<div class="flex flex-col items-center gap-2 group w-full">
+<div class="w-full max-w-[40px] bg-surface-highlight rounded-t-sm h-[65%] relative group-hover:bg-primary/50 transition-colors">
+<div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-surface-highlight text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity">152</div>
+</div>
+<span class="text-xs text-text-secondary">Nov</span>
+</div>
+<!-- Bar 5 -->
+<div class="flex flex-col items-center gap-2 group w-full">
+<div class="w-full max-w-[40px] bg-surface-highlight rounded-t-sm h-[60%] relative group-hover:bg-primary/50 transition-colors">
+<div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-surface-highlight text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity">149</div>
+</div>
+<span class="text-xs text-text-secondary">Dec</span>
+</div>
+<!-- Bar 6 (Current) -->
+<div class="flex flex-col items-center gap-2 group w-full">
+<div class="w-full max-w-[40px] bg-primary rounded-t-sm h-[55%] relative shadow-[0_0_15px_rgba(19,236,91,0.3)]">
+<div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-primary text-background-dark font-bold text-xs px-2 py-1 rounded">145</div>
+</div>
+<span class="text-xs text-white font-bold">Jan</span>
+</div>
+</div>
+</div>
+<!-- Recent Activity Table -->
+<div class="bg-surface-dark rounded-xl border border-surface-highlight flex-1 overflow-hidden flex flex-col">
+<div class="p-5 border-b border-surface-highlight flex justify-between items-center">
+<h3 class="text-white font-bold text-lg">Training History</h3>
+<button class="text-primary text-sm font-medium">View All</button>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="text-text-secondary text-xs border-b border-surface-highlight">
+<th class="px-6 py-3 font-medium uppercase tracking-wider">Date</th>
+<th class="px-6 py-3 font-medium uppercase tracking-wider">Workout Name</th>
+<th class="px-6 py-3 font-medium uppercase tracking-wider">Duration</th>
+<th class="px-6 py-3 font-medium uppercase tracking-wider">Status</th>
+<th class="px-6 py-3 font-medium uppercase tracking-wider text-right">Action</th>
+</tr>
+</thead>
+<tbody class="text-sm">
+<tr class="border-b border-surface-highlight/50 hover:bg-surface-highlight/30 transition-colors">
+<td class="px-6 py-4 text-white">Jan 24, 2024</td>
+<td class="px-6 py-4 text-white font-medium">Upper Body Hypertrophy</td>
+<td class="px-6 py-4 text-text-secondary">55 min</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-green-900/40 text-green-400 border border-green-800">
+<span class="size-1.5 rounded-full bg-green-400"></span>
+                                                Completed
+                                            </span>
+</td>
+<td class="px-6 py-4 text-right">
+<button class="text-text-secondary hover:text-white">
+<span class="material-symbols-outlined text-[20px]">chevron_right</span>
+</button>
+</td>
+</tr>
+<tr class="border-b border-surface-highlight/50 hover:bg-surface-highlight/30 transition-colors">
+<td class="px-6 py-4 text-white">Jan 22, 2024</td>
+<td class="px-6 py-4 text-white font-medium">Cardio &amp; Core</td>
+<td class="px-6 py-4 text-text-secondary">40 min</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-green-900/40 text-green-400 border border-green-800">
+<span class="size-1.5 rounded-full bg-green-400"></span>
+                                                Completed
+                                            </span>
+</td>
+<td class="px-6 py-4 text-right">
+<button class="text-text-secondary hover:text-white">
+<span class="material-symbols-outlined text-[20px]">chevron_right</span>
+</button>
+</td>
+</tr>
+<tr class="border-b border-surface-highlight/50 hover:bg-surface-highlight/30 transition-colors">
+<td class="px-6 py-4 text-white">Jan 20, 2024</td>
+<td class="px-6 py-4 text-white font-medium">Leg Day</td>
+<td class="px-6 py-4 text-text-secondary">--</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-red-900/40 text-red-400 border border-red-800">
+<span class="size-1.5 rounded-full bg-red-400"></span>
+                                                Missed
+                                            </span>
+</td>
+<td class="px-6 py-4 text-right">
+<button class="text-text-secondary hover:text-white">
+<span class="material-symbols-outlined text-[20px]">chevron_right</span>
+</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+</body></html>

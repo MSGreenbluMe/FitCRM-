@@ -1,26 +1,34 @@
 # Testing
 
-## Checklist (per feature)
+## UI demo checklist
 
-### Inbox
+### Dashboard
 
-- [ ] Inbox page loads without errors
+- [ ] Page renders without errors
+- [ ] Quick Actions navigate to other pages
+
+### Mailbox
+
 - [ ] Folder switching works (Inbox/Assigned/Done/All)
-- [ ] Search filters by subject/from/content
-- [ ] Unread-only filter works
 - [ ] Selecting a message marks it as read
-- [ ] Actions work: Assign / Done / Mark unread / Create client
+- [ ] Assign/Done buttons change status
+- [ ] Sending a message appends to the conversation
 
-### Email Connector (IMAP)
+### Clients
 
-- [ ] Test connection works with valid credentials
-- [ ] Test connection shows clear error on invalid credentials
-- [ ] Fetch emails ingests messages into Inbox
-- [ ] Fetch does not duplicate existing messages
+- [ ] Client list renders
+- [ ] Selecting a client updates detail panel
+- [ ] Search filters the list
 
-### Regression
+### Training Plan
 
-- [ ] Dashboard still renders
-- [ ] Clients list/detail still renders
-- [ ] Plan generation flow still works
-- [ ] Email sending still works (SMTP)
+- [ ] Changing sets/reps/RPE persists (localStorage)
+- [ ] Remove exercise works
+- [ ] Add exercise to Monday works
+
+### Nutrition
+
+- [ ] Quick Add adds an item to Breakfast
+- [ ] Add Meal Item adds placeholder items
+- [ ] Notes persist (localStorage)
+- [ ] Totals and progress bars update

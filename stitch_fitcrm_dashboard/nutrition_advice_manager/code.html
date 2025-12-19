@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>FitCRM - Nutrition Advice Manager</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#13ec5b",
+                        "background-light": "#f6f8f6",
+                        "background-dark": "#102216",
+                        "surface-dark": "#162e20",
+                        "surface-lighter": "#23482f",
+                        "text-secondary": "#92c9a4"
+                    },
+                    fontFamily: {
+                        "display": ["Manrope", "sans-serif"]
+                    },
+                    borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" },
+                },
+            },
+        }
+    </script>
+<style>
+        /* Custom scrollbar for webkit to match theme */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #102216; 
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #23482f; 
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #13ec5b; 
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-white font-display h-screen flex overflow-hidden">
+<!-- LEFT SIDEBAR -->
+<aside class="w-64 flex-shrink-0 border-r border-[#23482f] bg-background-dark flex flex-col justify-between p-4 hidden md:flex">
+<div class="flex flex-col gap-6">
+<!-- App Brand -->
+<div class="flex items-center gap-3 px-2">
+<div class="bg-center bg-no-repeat bg-cover rounded-full size-10" data-alt="Abstract green fitness logo" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDn_6cJxZXGeXzEss48EaB10BzpsGbGRJ3iH9uuAqDzlN5cqZQOtAAi9mB_QYESR6y6BLHFR6DIAIbuEnIMo_m-5H-SXxOjFKnvlAaBAILOt3EpMfdXBjsWgy5Afpx2hpCpm6F4Y4b1AoP1hBiUqYd3Uj-UUet7BtSzMrp1Q-IOueeSXZd3uXrII8IpVCU11CT3zLogq6w1z5ulSGG7fsekWMUsJnUeQ1gWbohxQvmSKHqfk67gW8rbvawPbQ3U8PtOC_zURogoodZS");'></div>
+<div class="flex flex-col">
+<h1 class="text-white text-lg font-bold leading-none">FitCRM</h1>
+<p class="text-text-secondary text-xs font-normal">Trainer Dashboard</p>
+</div>
+</div>
+<!-- Navigation Links -->
+<nav class="flex flex-col gap-2">
+<div class="flex items-center gap-3 px-3 py-3 rounded-lg hover:bg-[#23482f] cursor-pointer transition-colors text-text-secondary hover:text-white">
+<span class="material-symbols-outlined">group</span>
+<p class="text-sm font-medium">Clients</p>
+</div>
+<!-- Active State -->
+<div class="flex items-center gap-3 px-3 py-3 rounded-lg bg-[#23482f] border-l-4 border-primary shadow-lg shadow-[#13ec5b]/10">
+<span class="material-symbols-outlined text-white">restaurant_menu</span>
+<p class="text-white text-sm font-bold">Meal Plans</p>
+</div>
+<div class="flex items-center gap-3 px-3 py-3 rounded-lg hover:bg-[#23482f] cursor-pointer transition-colors text-text-secondary hover:text-white">
+<span class="material-symbols-outlined">menu_book</span>
+<p class="text-sm font-medium">Recipes</p>
+</div>
+<div class="flex items-center gap-3 px-3 py-3 rounded-lg hover:bg-[#23482f] cursor-pointer transition-colors text-text-secondary hover:text-white">
+<span class="material-symbols-outlined">monitoring</span>
+<p class="text-sm font-medium">Progress</p>
+</div>
+<div class="flex items-center gap-3 px-3 py-3 rounded-lg hover:bg-[#23482f] cursor-pointer transition-colors text-text-secondary hover:text-white">
+<span class="material-symbols-outlined">calendar_month</span>
+<p class="text-sm font-medium">Schedule</p>
+</div>
+</nav>
+</div>
+<!-- User Profile (Bottom of sidebar) -->
+<div class="flex items-center gap-3 px-3 py-3 rounded-lg bg-[#162e20]">
+<div class="size-8 rounded-full bg-cover bg-center" data-alt="Trainer profile picture" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuD0Ee8XOzUMcciTB6cRmjOApeHCcttFPS3q-iEbMdptA-RBG0uARujp8HiJvOBZexJlhsSAihrKAt9oFJVRAVkK4FGwD4RTV2nNgHqF2qXnabJNTDi7NfKT_7JCTLScsDtS5_UNbqFwrHVA0IRZWzyCo9YPeq4joLMa3e0YxM7So3uwscWStZCb5DbtbgYiJZze83NX1TJnJWtGpGvHVDj_ZlvUCdfDK3bseU9Rd3RHrzVf91UZNBbU4KC0urkXfOtB7YDKC4EYIYGR");'></div>
+<div class="flex flex-col overflow-hidden">
+<p class="text-white text-sm font-bold truncate">Mike T.</p>
+<p class="text-text-secondary text-xs truncate">Senior Coach</p>
+</div>
+</div>
+</aside>
+<!-- CENTER WORKSPACE -->
+<main class="flex-1 flex flex-col min-w-0 overflow-hidden bg-background-dark relative">
+<!-- Top Context Bar -->
+<header class="flex-shrink-0 border-b border-[#23482f] p-6 pb-2">
+<!-- Breadcrumbs -->
+<div class="flex flex-wrap gap-2 mb-4">
+<a class="text-text-secondary text-sm font-medium hover:text-white" href="#">Clients</a>
+<span class="text-text-secondary text-sm">/</span>
+<a class="text-text-secondary text-sm font-medium hover:text-white" href="#">Sarah Jenkins</a>
+<span class="text-text-secondary text-sm">/</span>
+<span class="text-primary text-sm font-bold">Nutrition Plan</span>
+</div>
+<!-- Client Header + Action Buttons -->
+<div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+<div class="flex gap-4 items-center">
+<div class="bg-center bg-no-repeat bg-cover rounded-full h-16 w-16 ring-2 ring-[#23482f]" data-alt="Client Sarah Jenkins smiling" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDeGGC1ztoodbTTjA2ipf5iffbFyuFt8VN1YlRSxlXlkUAjN8RrtwwY60-GdYj6sdGhwH71lCs3l0ZRsb7u64Ftzci7psfMDLL8p2Oe4RC47UzXLPtYJPABtVlraFlSVmzFQTpoEoPxZ1jr5C-Rsh3283LmWa7zJCsIsDqXjKSLGMkviBNllG5GT3EammD_FD-f1AEE2Zq1SHpWj0P2wA35luxXUTxBaJpfbnfIOmV5ysw_lHw2LHUk2X0TDVlpF1WnQnYcKkJCdBbW");'></div>
+<div>
+<h2 class="text-white text-2xl font-bold tracking-tight">Sarah Jenkins</h2>
+<div class="flex items-center gap-2 mt-1">
+<span class="px-2 py-0.5 rounded bg-[#23482f] text-text-secondary text-xs">Weight Loss</span>
+<span class="px-2 py-0.5 rounded bg-[#23482f] text-text-secondary text-xs">Phase 1</span>
+</div>
+</div>
+</div>
+<div class="flex gap-3">
+<button class="h-10 px-4 rounded-lg border border-[#23482f] text-text-secondary hover:text-white hover:bg-[#23482f] text-sm font-bold transition-colors flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">content_copy</span>
+                        Duplicate Week
+                    </button>
+<button class="h-10 px-6 rounded-lg bg-primary hover:bg-opacity-90 text-background-dark text-sm font-bold flex items-center gap-2 transition-colors shadow-[0_0_15px_rgba(19,236,91,0.3)]">
+<span class="material-symbols-outlined text-[18px]">send</span>
+                        Send to Client
+                    </button>
+</div>
+</div>
+</header>
+<!-- Weekly Calendar Strip -->
+<div class="flex-shrink-0 px-6 pt-4 pb-2">
+<div class="flex items-center justify-between mb-2">
+<div class="flex items-center gap-2">
+<button class="text-text-secondary hover:text-white"><span class="material-symbols-outlined">chevron_left</span></button>
+<span class="text-white font-bold">Oct 23 - Oct 29, 2023</span>
+<button class="text-text-secondary hover:text-white"><span class="material-symbols-outlined">chevron_right</span></button>
+</div>
+</div>
+<div class="grid grid-cols-7 gap-2">
+<!-- Days -->
+<button class="flex flex-col items-center justify-center p-3 rounded-lg bg-[#23482f] text-text-secondary hover:bg-opacity-80">
+<span class="text-xs font-medium">Mon</span>
+<span class="text-lg font-bold">23</span>
+</button>
+<button class="flex flex-col items-center justify-center p-3 rounded-lg bg-primary text-background-dark shadow-lg shadow-primary/20 transform scale-105 ring-2 ring-primary ring-offset-2 ring-offset-background-dark">
+<span class="text-xs font-bold">Tue</span>
+<span class="text-lg font-bold">24</span>
+<div class="w-1 h-1 rounded-full bg-background-dark mt-1"></div>
+</button>
+<button class="flex flex-col items-center justify-center p-3 rounded-lg bg-[#23482f] text-text-secondary hover:bg-opacity-80">
+<span class="text-xs font-medium">Wed</span>
+<span class="text-lg font-bold">25</span>
+</button>
+<button class="flex flex-col items-center justify-center p-3 rounded-lg bg-[#23482f] text-text-secondary hover:bg-opacity-80">
+<span class="text-xs font-medium">Thu</span>
+<span class="text-lg font-bold">26</span>
+</button>
+<button class="flex flex-col items-center justify-center p-3 rounded-lg bg-[#23482f] text-text-secondary hover:bg-opacity-80">
+<span class="text-xs font-medium">Fri</span>
+<span class="text-lg font-bold">27</span>
+</button>
+<button class="flex flex-col items-center justify-center p-3 rounded-lg bg-[#23482f] text-text-secondary hover:bg-opacity-80">
+<span class="text-xs font-medium">Sat</span>
+<span class="text-lg font-bold">28</span>
+</button>
+<button class="flex flex-col items-center justify-center p-3 rounded-lg bg-[#23482f] text-text-secondary hover:bg-opacity-80">
+<span class="text-xs font-medium">Sun</span>
+<span class="text-lg font-bold">29</span>
+</button>
+</div>
+</div>
+<!-- Meal Planner Scrollable Area -->
+<div class="flex-1 overflow-y-auto p-6 flex flex-col gap-6">
+<!-- Breakfast Section -->
+<div class="flex flex-col gap-3">
+<div class="flex items-center justify-between">
+<h3 class="text-white text-lg font-bold flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-xl">wb_twilight</span>
+                        Breakfast
+                    </h3>
+<span class="text-text-secondary text-sm">Recommended: 400-600 kcal</span>
+</div>
+<!-- Draggable Meal Card -->
+<div class="group bg-[#162e20] p-4 rounded-xl border border-[#23482f] hover:border-primary/50 transition-all cursor-move flex items-center justify-between gap-4">
+<div class="flex items-center gap-4">
+<div class="material-symbols-outlined text-text-secondary cursor-grab opacity-50 group-hover:opacity-100">drag_indicator</div>
+<div class="size-16 rounded-lg bg-cover bg-center shrink-0" data-alt="Oatmeal with berries" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBhdai5qKtX3LUM2VBehW1KJ46MTzkegD4kTNjS87A43YlZYYaufuen41Q7gdv7M7ZT3_ZMpmxgdIKWlWB62lsYHsJDI1VOgJyOTv1eFbS_PgaDUR9n0YHB9Ftf9fbjt-NXlehLcfzPz7T4wUw8CtwjPJTbWT0jwgBEUgqNrVz6OrnW7ZzacSAl77Z-smTqa-Z0tTyaflHHVB0c7afn9o2aYx6ED0Lqmm2VcPlJX8t6NMMHjh7xQFlJ3s3DE1R7OF7PWmBBDOo3DgCZ");'></div>
+<div>
+<h4 class="text-white font-bold text-base">Overnight Oats &amp; Berries</h4>
+<p class="text-text-secondary text-xs mt-1">1 cup oats, 1/2 cup blueberries, chia seeds</p>
+<div class="flex gap-3 mt-2">
+<span class="text-[11px] font-bold text-primary bg-primary/10 px-1.5 py-0.5 rounded">350 kcal</span>
+<span class="text-[11px] text-text-secondary">12g Protein</span>
+<span class="text-[11px] text-text-secondary">45g Carbs</span>
+</div>
+</div>
+</div>
+<div class="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+<button class="p-2 hover:bg-[#23482f] rounded text-text-secondary hover:text-white"><span class="material-symbols-outlined text-[20px]">edit</span></button>
+<button class="p-2 hover:bg-[#23482f] rounded text-text-secondary hover:text-red-400"><span class="material-symbols-outlined text-[20px]">delete</span></button>
+</div>
+</div>
+<!-- Add Button -->
+<button class="w-full py-3 border-2 border-dashed border-[#23482f] rounded-xl text-text-secondary hover:text-primary hover:border-primary hover:bg-[#23482f]/50 transition-all flex items-center justify-center gap-2 font-medium">
+<span class="material-symbols-outlined">add</span> Add Meal Item
+                </button>
+</div>
+<!-- Lunch Section -->
+<div class="flex flex-col gap-3">
+<div class="flex items-center justify-between">
+<h3 class="text-white text-lg font-bold flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-xl">sunny</span>
+                        Lunch
+                    </h3>
+<span class="text-text-secondary text-sm">Recommended: 600-800 kcal</span>
+</div>
+<!-- Draggable Meal Card -->
+<div class="group bg-[#162e20] p-4 rounded-xl border border-[#23482f] hover:border-primary/50 transition-all cursor-move flex items-center justify-between gap-4">
+<div class="flex items-center gap-4">
+<div class="material-symbols-outlined text-text-secondary cursor-grab opacity-50 group-hover:opacity-100">drag_indicator</div>
+<div class="size-16 rounded-lg bg-cover bg-center shrink-0" data-alt="Grilled chicken salad" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuA7qVThZjDq2g4h1Rj4hzODfRWNkx7wKJvrrE_ixBxY4ne4ijXywEWSH9DxAXC3CX2OJ_wnV5iBQ7yl-ZkZ807NoZZDA6UFBWxwK8hmzCbmYhFYAR5x_yJ-AkzyEsVpKtvXu8c30qyLwqDHkPn3e2H6PFYkQEHeJpi7X4R5862ecTh2Nt5kTA9rByzSN4sLbnxsjq2Sdm5KxR_k78yHh7juXLy6ooT90tQ5OQavCdUCGMMXKhC-19U5KXEPHI-UX0Il1f87HkjKBOgm");'></div>
+<div>
+<h4 class="text-white font-bold text-base">Grilled Chicken Quinoa Bowl</h4>
+<p class="text-text-secondary text-xs mt-1">Chicken breast, quinoa, avocado, spinach</p>
+<div class="flex gap-3 mt-2">
+<span class="text-[11px] font-bold text-primary bg-primary/10 px-1.5 py-0.5 rounded">520 kcal</span>
+<span class="text-[11px] text-text-secondary">42g Protein</span>
+<span class="text-[11px] text-text-secondary">35g Carbs</span>
+</div>
+</div>
+</div>
+<div class="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+<button class="p-2 hover:bg-[#23482f] rounded text-text-secondary hover:text-white"><span class="material-symbols-outlined text-[20px]">edit</span></button>
+<button class="p-2 hover:bg-[#23482f] rounded text-text-secondary hover:text-red-400"><span class="material-symbols-outlined text-[20px]">delete</span></button>
+</div>
+</div>
+<button class="w-full py-3 border-2 border-dashed border-[#23482f] rounded-xl text-text-secondary hover:text-primary hover:border-primary hover:bg-[#23482f]/50 transition-all flex items-center justify-center gap-2 font-medium">
+<span class="material-symbols-outlined">add</span> Add Meal Item
+                </button>
+</div>
+<!-- Dinner Section -->
+<div class="flex flex-col gap-3">
+<div class="flex items-center justify-between">
+<h3 class="text-white text-lg font-bold flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-xl">bedtime</span>
+                        Dinner
+                    </h3>
+<span class="text-text-secondary text-sm">Recommended: 500-700 kcal</span>
+</div>
+<button class="w-full py-3 border-2 border-dashed border-[#23482f] rounded-xl text-text-secondary hover:text-primary hover:border-primary hover:bg-[#23482f]/50 transition-all flex items-center justify-center gap-2 font-medium">
+<span class="material-symbols-outlined">add</span> Add Meal Item
+                </button>
+</div>
+<!-- Notes Section -->
+<div class="mt-4 p-4 rounded-xl bg-[#162e20] border border-[#23482f]">
+<h3 class="text-white text-sm font-bold mb-2 flex items-center gap-2">
+<span class="material-symbols-outlined text-text-secondary text-lg">notes</span>
+                    Daily Notes for Sarah
+                </h3>
+<textarea class="w-full bg-[#112217] border border-[#23482f] rounded-lg p-3 text-text-secondary focus:ring-1 focus:ring-primary focus:border-primary outline-none text-sm resize-none" placeholder="Add specific instructions like 'Drink 500ml water before lunch'..." rows="3"></textarea>
+</div>
+</div>
+</main>
+<!-- RIGHT ANALYTICS & TOOLS PANEL -->
+<aside class="w-96 bg-[#112217] border-l border-[#23482f] flex-shrink-0 flex flex-col h-full">
+<!-- Search Tool -->
+<div class="p-5 border-b border-[#23482f]">
+<h3 class="text-white text-lg font-bold mb-4">Food Database</h3>
+<div class="relative">
+<input class="w-full pl-10 pr-4 py-3 rounded-lg bg-[#162e20] border border-[#23482f] text-white focus:outline-none focus:border-primary placeholder-text-secondary/50 text-sm" placeholder="Search foods, recipes..." type="text"/>
+<span class="material-symbols-outlined absolute left-3 top-3 text-text-secondary">search</span>
+</div>
+<div class="flex gap-2 mt-3 overflow-x-auto pb-1 no-scrollbar">
+<span class="whitespace-nowrap px-3 py-1 rounded-full border border-[#23482f] bg-[#162e20] text-xs text-text-secondary hover:text-white cursor-pointer hover:border-primary">High Protein</span>
+<span class="whitespace-nowrap px-3 py-1 rounded-full border border-[#23482f] bg-[#162e20] text-xs text-text-secondary hover:text-white cursor-pointer hover:border-primary">Vegan</span>
+<span class="whitespace-nowrap px-3 py-1 rounded-full border border-[#23482f] bg-[#162e20] text-xs text-text-secondary hover:text-white cursor-pointer hover:border-primary">Keto</span>
+</div>
+</div>
+<!-- Daily Stats Summary -->
+<div class="p-5 flex-1 overflow-y-auto">
+<div class="flex items-center justify-between mb-4">
+<h3 class="text-white font-bold">Daily Targets</h3>
+<span class="text-xs text-primary bg-primary/10 px-2 py-1 rounded font-bold">In Progress</span>
+</div>
+<!-- Calories Main Card -->
+<div class="bg-[#23482f] rounded-xl p-5 mb-4 relative overflow-hidden group">
+<div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+<span class="material-symbols-outlined text-6xl text-white">local_fire_department</span>
+</div>
+<p class="text-text-secondary text-sm font-medium mb-1">Calories</p>
+<div class="flex items-end gap-2 mb-2">
+<span class="text-3xl font-bold text-white tracking-tight">870</span>
+<span class="text-text-secondary text-sm mb-1.5">/ 2,150 kcal</span>
+</div>
+<!-- Progress Bar -->
+<div class="w-full h-2 bg-[#162e20] rounded-full overflow-hidden">
+<div class="h-full bg-primary w-[40%] rounded-full"></div>
+</div>
+</div>
+<!-- Macros Grid -->
+<div class="grid grid-cols-2 gap-3 mb-6">
+<!-- Protein -->
+<div class="bg-[#162e20] p-4 rounded-xl border border-[#23482f]">
+<p class="text-text-secondary text-xs mb-1">Protein</p>
+<p class="text-white text-xl font-bold">54g</p>
+<p class="text-xs text-text-secondary mb-2">Goal: 180g</p>
+<div class="w-full h-1.5 bg-[#112217] rounded-full">
+<div class="h-full bg-blue-400 w-[30%] rounded-full"></div>
+</div>
+</div>
+<!-- Carbs -->
+<div class="bg-[#162e20] p-4 rounded-xl border border-[#23482f]">
+<p class="text-text-secondary text-xs mb-1">Carbs</p>
+<p class="text-white text-xl font-bold">80g</p>
+<p class="text-xs text-text-secondary mb-2">Goal: 220g</p>
+<div class="w-full h-1.5 bg-[#112217] rounded-full">
+<div class="h-full bg-orange-400 w-[36%] rounded-full"></div>
+</div>
+</div>
+<!-- Fats -->
+<div class="bg-[#162e20] p-4 rounded-xl border border-[#23482f]">
+<p class="text-text-secondary text-xs mb-1">Fats</p>
+<p class="text-white text-xl font-bold">22g</p>
+<p class="text-xs text-text-secondary mb-2">Goal: 65g</p>
+<div class="w-full h-1.5 bg-[#112217] rounded-full">
+<div class="h-full bg-yellow-400 w-[33%] rounded-full"></div>
+</div>
+</div>
+<!-- Water -->
+<div class="bg-[#162e20] p-4 rounded-xl border border-[#23482f]">
+<p class="text-text-secondary text-xs mb-1">Water</p>
+<p class="text-white text-xl font-bold">1.2L</p>
+<p class="text-xs text-text-secondary mb-2">Goal: 3.5L</p>
+<div class="w-full h-1.5 bg-[#112217] rounded-full">
+<div class="h-full bg-cyan-400 w-[40%] rounded-full"></div>
+</div>
+</div>
+</div>
+<!-- Drag & Drop Suggestions -->
+<div class="mt-6">
+<h3 class="text-white font-bold mb-3">Quick Add</h3>
+<div class="flex flex-col gap-2">
+<div class="flex items-center gap-3 p-2 rounded-lg hover:bg-[#23482f] cursor-pointer group">
+<div class="size-10 rounded bg-cover bg-center" data-alt="Avocado Toast" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCvMwPcmdbm8zCJxyaQNroyRoLp_DMsnisDjzyStwzjxw4nZ5zaP3JN6V10EsvHlADDM1-WRBDzTrESYeXmiZv3vAMCQCeMEUDjGP3jq5ekurwrNnARQbTVuOSgdcBXkqiZJPuMGdORX6G9UqbOPmCuX8yLJmLSvh0YggOJS_8R43R7acvw0ylASzCS2vFzqGOfdrKIDN9pbPb63Q_UCtHwrnjhLRWBdsG-u6coo0fITNYlvL2aqWQ0Jj07BeiL_-0lfalFhDAblscO");'></div>
+<div class="flex-1">
+<p class="text-white text-sm font-medium">Avocado Toast</p>
+<p class="text-text-secondary text-xs">280 kcal</p>
+</div>
+<button class="text-primary opacity-0 group-hover:opacity-100 transition-opacity"><span class="material-symbols-outlined">add_circle</span></button>
+</div>
+<div class="flex items-center gap-3 p-2 rounded-lg hover:bg-[#23482f] cursor-pointer group">
+<div class="size-10 rounded bg-cover bg-center" data-alt="Protein Shake" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCM4hAnn0CV7GHlHqKy4g-sQAQqdoKMvM2996jkwCOXeNHKBmlkUl7HBa4eNZlAk0eVzDotxesXGW0XXoGql9U-bn7V3b8dkenyKPGZDYf5BI3dItoLJQuKgN4s7mFZpQWE-T4tmE7xott0MqjJ3OjEMesPTBizimxurjz2w7ontPzoNdyKMwW5z-DDKpoynHkPVrdriG1e7LFr9aLQZYku0kRSDtLJkKS_siY-j7zMFKv73_UYQ868vNLk1sQuEMsHtin5MzFc5f5y");'></div>
+<div class="flex-1">
+<p class="text-white text-sm font-medium">Whey Protein Shake</p>
+<p class="text-text-secondary text-xs">140 kcal</p>
+</div>
+<button class="text-primary opacity-0 group-hover:opacity-100 transition-opacity"><span class="material-symbols-outlined">add_circle</span></button>
+</div>
+<div class="flex items-center gap-3 p-2 rounded-lg hover:bg-[#23482f] cursor-pointer group">
+<div class="size-10 rounded bg-cover bg-center" data-alt="Greek Yogurt" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDeUWWBZbVzFo8BgMUSJX019RN02HU8AbMTVceTnnxJtKvLhtrYDXvnTD-xfDMNrrdQqTIGQCKF3R4Ac5w1_Z_UsGucIyEjOWwB3VTwzkTH4uNc_8PjzG4WJ56wLRjlibli6sdNjjl-rXJkm8mN6QLeFQquISlb0y37Zl-ywnxyyB7uktVsJ0bbvm8zCAYe9PtEBxnLZ3xzm44aDJiMF4aS9ydnAbvrCqCqokUHaMR73pAIvgzfTsezLaiv4_RYHfVpuIqI-0vKh-Y3");'></div>
+<div class="flex-1">
+<p class="text-white text-sm font-medium">Greek Yogurt Bowl</p>
+<p class="text-text-secondary text-xs">220 kcal</p>
+</div>
+<button class="text-primary opacity-0 group-hover:opacity-100 transition-opacity"><span class="material-symbols-outlined">add_circle</span></button>
+</div>
+</div>
+</div>
+</div>
+</aside>
+</body></html>

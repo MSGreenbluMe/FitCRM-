@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>FitCRM - Trainer Mailbox</title>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#13ec5b",
+                        "background-light": "#f6f8f6",
+                        "background-dark": "#102216",
+                        "surface-dark": "#172d20",
+                        "surface-darker": "#112217",
+                    },
+                    fontFamily: {
+                        "display": ["Manrope", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        /* Custom Scrollbar for dark mode fit */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #112217;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #23482f;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #2f5f3e;
+        }
+    </style>
+</head>
+<body class="font-display bg-background-light dark:bg-background-dark text-slate-900 dark:text-white h-screen overflow-hidden flex">
+<!-- Left Navigation Rail -->
+<nav class="w-64 bg-surface-darker border-r border-[#23482f] flex flex-col justify-between shrink-0 z-20">
+<div class="flex flex-col p-4 gap-6">
+<!-- Brand -->
+<div class="flex items-center gap-3 px-2">
+<div class="bg-primary/20 p-2 rounded-lg text-primary">
+<span class="material-symbols-outlined text-2xl">fitness_center</span>
+</div>
+<div class="flex flex-col">
+<h1 class="text-white text-lg font-bold leading-none">FitCRM</h1>
+<p class="text-[#92c9a4] text-xs font-normal">Trainer Dashboard</p>
+</div>
+</div>
+<!-- Navigation Links -->
+<div class="flex flex-col gap-1">
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-[#92c9a4] hover:bg-[#23482f] hover:text-white transition-colors" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="text-sm font-medium">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-[#23482f] text-primary" href="#">
+<span class="material-symbols-outlined fill-1">mail</span>
+<span class="text-sm font-medium">Mailbox</span>
+<span class="ml-auto bg-primary text-background-dark text-xs font-bold px-1.5 py-0.5 rounded-full">3</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-[#92c9a4] hover:bg-[#23482f] hover:text-white transition-colors" href="#">
+<span class="material-symbols-outlined">group</span>
+<span class="text-sm font-medium">Clients</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-[#92c9a4] hover:bg-[#23482f] hover:text-white transition-colors" href="#">
+<span class="material-symbols-outlined">calendar_month</span>
+<span class="text-sm font-medium">Calendar</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-[#92c9a4] hover:bg-[#23482f] hover:text-white transition-colors" href="#">
+<span class="material-symbols-outlined">assignment</span>
+<span class="text-sm font-medium">Plans</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-[#92c9a4] hover:bg-[#23482f] hover:text-white transition-colors" href="#">
+<span class="material-symbols-outlined">restaurant</span>
+<span class="text-sm font-medium">Nutrition</span>
+</a>
+</div>
+</div>
+<!-- User Profile (Bottom) -->
+<div class="p-4 border-t border-[#23482f]">
+<div class="flex items-center gap-3">
+<div class="h-10 w-10 rounded-full bg-cover bg-center border-2 border-[#23482f]" data-alt="Profile picture of the current logged-in trainer" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAwLRDGXr0fDxxFv0G2wNpuWd9-YmAnuffvY82r_HzN3s2D_yHGn1i2BKVsA0RK9ZSdMUv_EqpVqSPv5ZowefJTJx3Wnx97WW6Hd4fPe5mfyxDpdYVkMz1QkwA9qE87ascQt2QCfRee3mdKtdvDORN8DWwlmEZYi1iShVQJCV6TzaukoxaWZM9IXxaZnuQT0A64oXVPHD544nWqySJrXT4Ddoxyho35Xp5c2gTndiabMOrcJERFa3-jX2fFa4FxVA-Q_y6u3yOh2ghs');"></div>
+<div class="flex flex-col">
+<p class="text-sm font-bold text-white">Alex Morgan</p>
+<p class="text-xs text-[#92c9a4]">Head Trainer</p>
+</div>
+</div>
+</div>
+</nav>
+<!-- Main Content Area -->
+<main class="flex flex-1 overflow-hidden relative">
+<!-- Left Pane: Inbox List -->
+<div class="w-80 border-r border-[#23482f] bg-background-dark flex flex-col shrink-0">
+<!-- Header & Search -->
+<div class="p-4 border-b border-[#23482f] flex flex-col gap-4">
+<div class="flex justify-between items-center">
+<h2 class="text-xl font-bold text-white">Messages</h2>
+<button class="text-primary hover:bg-[#23482f] p-2 rounded-full transition-colors">
+<span class="material-symbols-outlined">edit_square</span>
+</button>
+</div>
+<!-- Search Bar -->
+<div class="relative group">
+<div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+<span class="material-symbols-outlined text-[#92c9a4] group-focus-within:text-white transition-colors">search</span>
+</div>
+<input class="block w-full pl-10 pr-3 py-2 border-none rounded-lg bg-[#23482f] text-white placeholder-[#92c9a4] focus:ring-1 focus:ring-primary focus:bg-[#2f5f3e] sm:text-sm transition-all" placeholder="Search clients..." type="text"/>
+</div>
+<!-- Chips -->
+<div class="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+<button class="px-3 py-1.5 bg-primary/20 text-primary text-xs font-bold rounded-lg whitespace-nowrap border border-primary/20 hover:bg-primary hover:text-background-dark transition-all">Unread (2)</button>
+<button class="px-3 py-1.5 bg-[#23482f] text-[#92c9a4] text-xs font-medium rounded-lg whitespace-nowrap border border-transparent hover:text-white transition-all">VIP Clients</button>
+<button class="px-3 py-1.5 bg-[#23482f] text-[#92c9a4] text-xs font-medium rounded-lg whitespace-nowrap border border-transparent hover:text-white transition-all">Leads</button>
+</div>
+</div>
+<!-- List Items -->
+<div class="flex-1 overflow-y-auto">
+<!-- Active Item -->
+<div class="p-4 border-b border-[#23482f] bg-[#1a3525] border-l-4 border-l-primary cursor-pointer hover:bg-[#1a3525]">
+<div class="flex justify-between items-start mb-1">
+<div class="flex items-center gap-3">
+<div class="relative">
+<div class="h-10 w-10 rounded-full bg-cover bg-center" data-alt="Portrait of Sarah Jenkins" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuB4bnXgBWE4hgMyhh5ZA558hUXWqzM0FJJvhHS4NK1bSgywHgDai_BOhLrA6DTKhHCBAeQV1lJkSa9n82HBkLQjjquA73dE_lnQUu-k9S424QraCvPjODp-9YcbTSV00vV-380rxsgGHGf_PBbHQk7jn1T0YsUv4BMdsCfe6-KoTM5WOjvMTt7AFxOZkoSmeIK4_uuHkwcoAWXz9B3fuDGFmD_NzG0qPmqqgJyaVRjs-aYy_7aHiFJ7QohNHnn0VstPuV15E9ou2JzE');"></div>
+<span class="absolute bottom-0 right-0 block h-2.5 w-2.5 rounded-full bg-primary ring-2 ring-background-dark"></span>
+</div>
+<div>
+<h3 class="text-white font-bold text-sm">Sarah Jenkins</h3>
+<span class="text-[#92c9a4] text-xs">Premium Plan</span>
+</div>
+</div>
+<span class="text-[#92c9a4] text-xs whitespace-nowrap">10m</span>
+</div>
+<p class="text-white text-sm mt-2 line-clamp-2">Hey, does my macros count include fiber? I'm trying to figure out the dinner...</p>
+</div>
+<!-- Regular Item -->
+<div class="p-4 border-b border-[#23482f] cursor-pointer hover:bg-[#172d20] transition-colors">
+<div class="flex justify-between items-start mb-1">
+<div class="flex items-center gap-3">
+<div class="relative">
+<div class="h-10 w-10 rounded-full bg-cover bg-center" data-alt="Portrait of Mike Ross" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuC1qfHT7MKt5cwwPeqn-hQvsrKfSoLoR7cUQ_ea23GD62AcG-YUf1chDsQ9G-a20b-YXObHR_0112pDKr1Xf9uyZcZTZo9FHxonWkcd1ucHKHHMxs_q6WqWL00n-nirJIMh9zWHLHqH4tMzNg3X0SEmzfObPiMiyA7wgcrj6ubwSeeMLN0z1U70Y2f9oSBBleAncNFaAHVUmLRsB54_49XWq_0qG3DAhks5SxAh5Mh9sKkJJA0Zuqsl6sMpSlfeZEZW4LmM39QSSR2p');"></div>
+<span class="absolute bottom-0 right-0 block h-2.5 w-2.5 rounded-full bg-gray-500 ring-2 ring-background-dark"></span>
+</div>
+<div>
+<h3 class="text-[#e2e8f0] font-bold text-sm">Mike Ross</h3>
+<span class="text-[#92c9a4] text-xs">Standard Plan</span>
+</div>
+</div>
+<span class="text-[#92c9a4] text-xs whitespace-nowrap">1h</span>
+</div>
+<p class="text-[#92c9a4] text-sm mt-2 line-clamp-2">Can we move Tuesday's session to later in the afternoon? 4pm works best.</p>
+</div>
+<!-- Regular Item -->
+<div class="p-4 border-b border-[#23482f] cursor-pointer hover:bg-[#172d20] transition-colors">
+<div class="flex justify-between items-start mb-1">
+<div class="flex items-center gap-3">
+<div class="relative">
+<div class="h-10 w-10 rounded-full bg-cover bg-center" data-alt="Portrait of Emily Chen" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAQRhzGTvfCPAyzMrU_5vIXG31q0LE3Z7l2csjlai8BVVGIfuMfbXuwEppr6anVpfndn_-2poLTO9AyHg4bB-rxEOBofmfMnQKe4tUgOVno8_G8dvqhowbfZLV8cKg4qPrcvl3pOHlVJ61bCeeVE24VB5KBB1YH6t5yF3q2Nq1phH4eUDcKIwtyRrxLokjgiqBBscvss39mah43O2aciu7lnTq0_xKOvlT49xpVcDBch5aWBEpJRQ1PNOFSwi1vI-VFM_Pq5bB4tGDg');"></div>
+<span class="absolute bottom-0 right-0 block h-2.5 w-2.5 rounded-full bg-primary ring-2 ring-background-dark"></span>
+</div>
+<div>
+<h3 class="text-[#e2e8f0] font-bold text-sm">Emily Chen</h3>
+<span class="text-[#92c9a4] text-xs">VIP Plan</span>
+</div>
+</div>
+<span class="text-[#92c9a4] text-xs whitespace-nowrap">Yesterday</span>
+</div>
+<p class="text-[#e2e8f0] font-medium text-sm mt-2 line-clamp-2"><span class="text-primary">•</span> Completed 'HIIT Cardio' check-in.</p>
+</div>
+<!-- Regular Item -->
+<div class="p-4 border-b border-[#23482f] cursor-pointer hover:bg-[#172d20] transition-colors">
+<div class="flex justify-between items-start mb-1">
+<div class="flex items-center gap-3">
+<div class="relative">
+<div class="h-10 w-10 rounded-full bg-cover bg-center" data-alt="Portrait of David Kim" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAOgOyscNpM8p_m4tuk3aRJW8OjQRcTNPav95kFd5sYzxKY5XFOkmcb8cI700xFbYsZrgjn2THRYo1vIbx9i9MO5Pv4k3qN8FQrBQH6pobYImugG90WqA8NUji1r2-MVR-ZuQnl6kn50tqjlWoyNcpcthjWnDcplYGvwt4o_tIoo1AJeOOauxXK21Ydxssz-dk8KMgYouSNJROD7xF8zx99CpO9tiHZuYW1W6n8xVkWdEL7ftjWHBn7feDjable8J5iyPNx7NnMyf85');"></div>
+<span class="absolute bottom-0 right-0 block h-2.5 w-2.5 rounded-full bg-gray-500 ring-2 ring-background-dark"></span>
+</div>
+<div>
+<h3 class="text-[#e2e8f0] font-bold text-sm">David Kim</h3>
+<span class="text-[#92c9a4] text-xs">Standard Plan</span>
+</div>
+</div>
+<span class="text-[#92c9a4] text-xs whitespace-nowrap">2d</span>
+</div>
+<p class="text-[#92c9a4] text-sm mt-2 line-clamp-2">Thanks for the new meal plan! The recipes look great.</p>
+</div>
+</div>
+</div>
+<!-- Center Pane: Conversation Area -->
+<div class="flex-1 flex flex-col bg-surface-darker relative z-10">
+<!-- Chat Header -->
+<div class="h-16 border-b border-[#23482f] flex items-center justify-between px-6 shrink-0 bg-background-dark/95 backdrop-blur">
+<div class="flex items-center gap-4">
+<div class="h-9 w-9 rounded-full bg-cover bg-center" data-alt="Portrait of Sarah Jenkins" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuApXtqGC70JcKQqWVGiaJZj0CeF_Y3pSjhC1mMqDltMEhIw2osCYT47qWuFeHyeiyv5YI2Op39WwKEx2_dU9-vN4dS_WH6_W3p093Nr537re1vyh4U56nETjQhLTeXbGYluNttidEbNHTBQDX_t3lzLEHJDPX5BpZXSg6ygJgOnRYb4-cWsZtU4iWwlTqUa1xJchk3xN5cTFNqhFsNepEmxemTPlKnugZ3xpoMdBghrRa_745SD8mpPwgz_nKctaAyDftgr1Y6yQfSq');"></div>
+<div>
+<h2 class="text-white font-bold text-base leading-tight">Sarah Jenkins</h2>
+<div class="flex items-center gap-1.5">
+<span class="w-2 h-2 rounded-full bg-primary"></span>
+<span class="text-[#92c9a4] text-xs">Online now</span>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<button class="p-2 text-[#92c9a4] hover:text-white hover:bg-[#23482f] rounded-lg transition-colors" title="Call Client">
+<span class="material-symbols-outlined">call</span>
+</button>
+<button class="p-2 text-[#92c9a4] hover:text-white hover:bg-[#23482f] rounded-lg transition-colors" title="Video Call">
+<span class="material-symbols-outlined">videocam</span>
+</button>
+<button class="p-2 text-[#92c9a4] hover:text-white hover:bg-[#23482f] rounded-lg transition-colors" title="More Options">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</div>
+</div>
+<!-- Messages Area -->
+<div class="flex-1 overflow-y-auto p-6 flex flex-col gap-6">
+<!-- Date Divider -->
+<div class="flex justify-center">
+<span class="text-[#92c9a4] text-xs bg-[#23482f] px-3 py-1 rounded-full">Today</span>
+</div>
+<!-- System Message -->
+<div class="flex justify-center w-full">
+<div class="flex items-center gap-2 bg-[#172d20] border border-[#23482f] px-4 py-2 rounded-lg max-w-md">
+<span class="material-symbols-outlined text-primary text-sm">check_circle</span>
+<p class="text-[#92c9a4] text-sm">Sarah completed <span class="text-white font-medium">'Glute Focus'</span> workout.</p>
+<span class="text-[#92c9a4] text-xs ml-auto">9:41 AM</span>
+</div>
+</div>
+<!-- Trainer Message -->
+<div class="flex justify-end">
+<div class="flex flex-col items-end max-w-[70%]">
+<div class="bg-[#23482f] text-white p-4 rounded-2xl rounded-tr-sm">
+<p class="text-sm">Great job on hitting that PR last week! For today's session, focus on form over weight. How are you feeling about the new meal prep?</p>
+</div>
+<span class="text-[#92c9a4] text-xs mt-1">10:05 AM</span>
+</div>
+</div>
+<!-- Client Message -->
+<div class="flex justify-start">
+<div class="flex flex-col items-start max-w-[70%]">
+<div class="bg-[#2f2f2f] border border-[#333] text-white p-4 rounded-2xl rounded-tl-sm">
+<p class="text-sm">Feeling good! The meal prep is easier than I thought. Quick question though...</p>
+</div>
+</div>
+</div>
+<!-- Client Message Continued -->
+<div class="flex justify-start">
+<div class="flex flex-col items-start max-w-[70%]">
+<div class="bg-[#2f2f2f] border border-[#333] text-white p-4 rounded-2xl rounded-tl-sm">
+<p class="text-sm">Hey, does my macros count include fiber? I'm trying to figure out the dinner for tonight.</p>
+</div>
+<span class="text-[#92c9a4] text-xs mt-1">10:15 AM</span>
+</div>
+</div>
+</div>
+<!-- Quick Actions Overlay (Floating) -->
+<div class="absolute bottom-24 left-1/2 -translate-x-1/2 flex gap-2">
+<button class="flex items-center gap-2 bg-[#23482f]/90 backdrop-blur border border-primary/30 hover:bg-primary/20 text-white text-xs px-4 py-2 rounded-full shadow-lg transition-all">
+<span class="material-symbols-outlined text-sm text-primary">fitness_center</span>
+                    Send Workout
+                 </button>
+<button class="flex items-center gap-2 bg-[#23482f]/90 backdrop-blur border border-primary/30 hover:bg-primary/20 text-white text-xs px-4 py-2 rounded-full shadow-lg transition-all">
+<span class="material-symbols-outlined text-sm text-primary">restaurant_menu</span>
+                    Send Meal Plan
+                 </button>
+<button class="flex items-center gap-2 bg-[#23482f]/90 backdrop-blur border border-primary/30 hover:bg-primary/20 text-white text-xs px-4 py-2 rounded-full shadow-lg transition-all">
+<span class="material-symbols-outlined text-sm text-primary">calendar_add_on</span>
+                    Schedule Check-in
+                 </button>
+</div>
+<!-- Input Area -->
+<div class="p-4 border-t border-[#23482f] bg-background-dark">
+<div class="flex flex-col gap-2 bg-[#172d20] rounded-xl p-2 border border-[#23482f] focus-within:border-primary/50 transition-colors">
+<textarea class="w-full bg-transparent border-none text-white placeholder-[#5d7d6a] text-sm focus:ring-0 resize-none h-20 px-2 py-1" placeholder="Type your message... (Press Cmd+Enter to send)"></textarea>
+<div class="flex justify-between items-center px-2 pb-1">
+<div class="flex gap-2">
+<button class="text-[#92c9a4] hover:text-white transition-colors p-1 rounded hover:bg-[#23482f]">
+<span class="material-symbols-outlined text-[20px]">attach_file</span>
+</button>
+<button class="text-[#92c9a4] hover:text-white transition-colors p-1 rounded hover:bg-[#23482f]">
+<span class="material-symbols-outlined text-[20px]">image</span>
+</button>
+<button class="text-[#92c9a4] hover:text-white transition-colors p-1 rounded hover:bg-[#23482f]">
+<span class="material-symbols-outlined text-[20px]">sentiment_satisfied</span>
+</button>
+</div>
+<button class="bg-primary hover:bg-[#0fd650] text-background-dark font-bold text-sm px-4 py-2 rounded-lg flex items-center gap-2 transition-colors">
+                            Send <span class="material-symbols-outlined text-sm">send</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Right Pane: Context Sidebar (Client 360) -->
+<div class="w-80 border-l border-[#23482f] bg-background-dark hidden xl:flex flex-col shrink-0 overflow-y-auto">
+<!-- Client Snapshot Header -->
+<div class="p-6 border-b border-[#23482f] flex flex-col items-center text-center">
+<div class="h-24 w-24 rounded-full bg-cover bg-center mb-3 ring-4 ring-[#23482f]" data-alt="Portrait of Sarah Jenkins" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBqQGZZf7sVWZRHr7iK_DqQrV8asBZ60zppoV8OXGH2XMt-rL_KK54PfmYY2DhvAMnViyVrpOGb55zVBBv33Bs3Qmxij2YVzM6-rJ04s_qrKlbWF_7nIZEAM3cRRAXaYJOPnuKomv-s5LqEJU2sObH5nXZ8PlqLswjA-3e2JlBKbxOc2BM-HGpTNbbbdyBVeFVgzQbybKj6-upBut-oeHDMx6duXb3iaTJN1EG3b6oDzpXW8MWjWO-19-vx0O5-I2nwZcjrzQuv9hCo');"></div>
+<h2 class="text-white text-xl font-bold">Sarah Jenkins</h2>
+<p class="text-[#92c9a4] text-sm">Age 28 • New York, NY</p>
+<div class="grid grid-cols-3 gap-2 w-full mt-6">
+<div class="bg-[#23482f] p-2 rounded-lg flex flex-col">
+<span class="text-[#92c9a4] text-xs uppercase">Weight</span>
+<span class="text-white font-bold text-sm">142 lbs</span>
+</div>
+<div class="bg-[#23482f] p-2 rounded-lg flex flex-col">
+<span class="text-[#92c9a4] text-xs uppercase">Height</span>
+<span class="text-white font-bold text-sm">5'7"</span>
+</div>
+<div class="bg-[#23482f] p-2 rounded-lg flex flex-col">
+<span class="text-[#92c9a4] text-xs uppercase">Fat %</span>
+<span class="text-white font-bold text-sm">22%</span>
+</div>
+</div>
+</div>
+<!-- Current Goal -->
+<div class="p-6 border-b border-[#23482f]">
+<div class="flex justify-between items-center mb-3">
+<h3 class="text-white font-bold text-sm">Current Goal</h3>
+<span class="text-primary text-xs font-bold bg-primary/20 px-2 py-0.5 rounded">Weight Loss</span>
+</div>
+<div class="flex justify-between text-xs text-[#92c9a4] mb-1">
+<span>Progress</span>
+<span>75%</span>
+</div>
+<div class="w-full bg-[#112217] rounded-full h-2">
+<div class="bg-primary h-2 rounded-full" style="width: 75%"></div>
+</div>
+<p class="text-xs text-[#92c9a4] mt-3 leading-relaxed">Target: 135 lbs by Nov 15. Maintaining a deficit of 300kcal/day.</p>
+</div>
+<!-- Next Appointment -->
+<div class="p-6 border-b border-[#23482f]">
+<h3 class="text-white font-bold text-sm mb-4">Next Session</h3>
+<div class="flex gap-4 items-start">
+<div class="bg-[#23482f] rounded-lg p-3 flex flex-col items-center justify-center min-w-[60px]">
+<span class="text-white font-bold text-lg">24</span>
+<span class="text-[#92c9a4] text-xs uppercase font-bold">Oct</span>
+</div>
+<div class="flex flex-col">
+<p class="text-white font-bold text-sm">Personal Training</p>
+<p class="text-[#92c9a4] text-sm mb-2">10:00 AM - 11:00 AM</p>
+<button class="text-primary text-xs font-bold flex items-center gap-1 hover:underline">
+                            Reschedule <span class="material-symbols-outlined text-xs">arrow_forward</span>
+</button>
+</div>
+</div>
+<button class="w-full mt-4 bg-[#23482f] text-white hover:bg-[#2f5f3e] py-2 rounded-lg text-sm font-medium transition-colors border border-[#395c46]">
+                    Book New Session
+                </button>
+</div>
+<!-- Recent Activity -->
+<div class="p-6">
+<h3 class="text-white font-bold text-sm mb-4">Recent Activity</h3>
+<div class="relative pl-4 border-l border-[#23482f] space-y-6">
+<!-- Item 1 -->
+<div class="relative">
+<div class="absolute -left-[21px] top-1 h-2.5 w-2.5 rounded-full bg-primary ring-4 ring-background-dark"></div>
+<p class="text-white text-sm font-medium">Completed Leg Day</p>
+<p class="text-[#92c9a4] text-xs">1 hour ago</p>
+</div>
+<!-- Item 2 -->
+<div class="relative">
+<div class="absolute -left-[21px] top-1 h-2.5 w-2.5 rounded-full bg-gray-600 ring-4 ring-background-dark"></div>
+<p class="text-[#e2e8f0] text-sm font-medium">Logged Weight (142 lbs)</p>
+<p class="text-[#92c9a4] text-xs">Yesterday, 8:00 AM</p>
+</div>
+<!-- Item 3 -->
+<div class="relative">
+<div class="absolute -left-[21px] top-1 h-2.5 w-2.5 rounded-full bg-gray-600 ring-4 ring-background-dark"></div>
+<p class="text-[#e2e8f0] text-sm font-medium">Plan renewed</p>
+<p class="text-[#92c9a4] text-xs">Oct 20</p>
+</div>
+</div>
+</div>
+</div>
+</main>
+</body></html>

@@ -1,23 +1,16 @@
 # Changelog
 
-## 0.2.2
+## 0.1.2
 
-- Dashboard UI refined toward Tailwind mockup (dark theme layering) + Slovak labels
-- Topbar now includes functional demo panels for notifications and user menu
-- Clients page redesigned to split-pane layout (list + detail) aligned to mockup
+- Implemented SMTP email sending via Netlify Function `/.netlify/functions/send_email` (server-side secrets).
+- Added `package.json` dependency (`nodemailer`) for functions.
 
-## 0.2.1
+## 0.1.1
 
-- Improved Inbox list UX for large volumes (paging + table-based selection + snippet + panel cards)
-- Improved Gemini free-tier stability (default flash-lite model + rate limiting/backoff + prompt caching)
-
-## 0.2.0
-
-- Added Gmail-like Inbox page (folders, list, preview, actions)
-- Added IMAP Email Connector page (test connection, fetch latest emails into Inbox)
-- Added `src/email_connector.py` for IMAP connectivity
-- Unified displayed app version to use `src.__version__`
+- Added Netlify deployment scaffolding (`netlify.toml`, `netlify/functions/*`).
+- Added deployment documentation (`docs/DEPLOYMENT.md`).
 
 ## 0.1.0
 
-- Initial FIT CRM pipeline (email parser, AI generator, PDF generator, SMTP sender)
+- Added functional static UI demo under `demo/`.
+- Added routing and mock state with basic interactions (Mailbox/Clients/Training Plan/Nutrition).

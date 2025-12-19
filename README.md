@@ -1,180 +1,46 @@
-# FIT CRM - Fitness Client Relationship Management
+# FitCRM
 
-Automatizovany system pre fitness trenerov na spracovanie klientov a generovanie personalizovanych planov.
+## Project overview
 
-## Funkcionalita
+FitCRM is a **prototype CRM for fitness trainers**.
 
-- **Email Parser**: Parsuje prijimacie emaily od klientov do strukturovanych profilov
-- **AI Generator**: Generuje personalizovane jedalnicky a treningove plany pomocou Google Gemini
-- **PDF Generator**: Konvertuje plany do profesionalnych PDF dokumentov
-- **Email Sender**: Automaticky odosiela uvitacie emaily s prilohami klientom
+This repository currently contains a **functional UI demo** (static Tailwind + vanilla JS) based on the provided Stitch/Tailwind mockups, plus technical documentation in `/docs`.
 
-## Rychly start
+## Demo (UI)
 
-### 1. Instalacia
+### What it includes
 
-```bash
-# Klonuj repozitar
-git clone <repository-url>
-cd FitCRM
+- Dashboard
+- Mailbox (Inbox-style UI) with:
+  - folders (Inbox / Assigned / Done / All)
+  - ticket status changes (Assign/Done)
+  - message composer (adds message to thread)
+- Clients (list + detail)
+- Training Plan (edit sets/reps/RPE, add exercise from library)
+- Nutrition (quick add meals, notes, daily totals)
 
-# Vytvor virtualne prostredie
-python -m venv venv
+### Run the demo
 
-# Aktivuj venv
-# Linux/Mac:
-source venv/bin/activate
-# Windows:
-venv\Scripts\activate
+Because the demo uses ES modules (`type="module"`), **open it via a local HTTP server** (not `file://`).
 
-# Instaluj zavislosti
-pip install -r requirements.txt
-```
+Option A (Python):
 
-### 2. Konfiguracia
+- From the repository root, start a server that serves the repo.
+- Then open:
+  - `http://localhost:8000/demo/`
 
-```bash
-# Skopiruj priklad konfiguracneho suboru
-cp .env.example .env
+Option B (VS Code):
 
-# Uprav .env subor s tvojimi udajmi
-nano .env
-```
+- Use the **Live Server** extension
+- Open `demo/index.html`
 
-Potrebne premenne:
-- `GEMINI_API_KEY` - API kluc z Google AI Studio
-- `EMAIL_USER` - Email ucet pre odosielanie
-- `EMAIL_PASS` - Heslo alebo App Password (pre Gmail)
-- `SMTP_HOST` - SMTP server (napr. smtp.gmail.com)
-- `SMTP_PORT` - SMTP port (zvycajne 587)
+## Docs
 
-### 3. Spustenie
-
-#### Web Demo (Streamlit) - Odporucane
-
-```bash
-# Spusti webovu aplikaciu
-streamlit run app.py
-```
-
-Aplikacia sa otvori v prehliadaci na `http://localhost:8501`
-
-#### Prikazovy riadok
-
-```bash
-# Demo mod (bez odosielania emailu)
-python src/main.py
-
-# Spracuj konkretny email
-python src/main.py tests/sample_emails/client1_weight_loss.txt
-
-# Spracuj a odosli email
-python src/main.py tests/sample_emails/client1_weight_loss.txt
-
-# Spracuj bez odoslania emailu
-python src/main.py tests/sample_emails/client1_weight_loss.txt --no-email
-```
-
-## Struktura projektu
-
-```
-FitCRM/
-├── app.py                   # Streamlit web aplikacia
-├── src/
-│   ├── __init__.py
-│   ├── email_parser.py      # Parsovanie emailov
-│   ├── ai_generator.py      # Generovanie planov s AI
-│   ├── pdf_generator.py     # Generovanie PDF
-│   ├── email_sender.py      # Odosielanie emailov
-│   └── main.py              # Hlavny pipeline
-├── prompts/
-│   ├── segmentation.txt     # Prompt pre segmentaciu klientov
-│   ├── meal_plan.txt        # Prompt pre jedalnicky
-│   └── training_plan.txt    # Prompt pre treningove plany
-├── templates/
-│   ├── styles.css           # CSS styly pre PDF
-│   └── welcome_email.html   # HTML sablona emailu
-├── tests/
-│   └── sample_emails/       # Vzorove emaily na testovanie
-├── output/                  # Vygenerovane PDF subory
-├── logs/                    # Logy a metriky
-├── config.py                # Konfiguracia
-├── requirements.txt         # Python zavislosti
-├── .env.example             # Priklad .env suboru
-└── README.md
-```
-
-## Pouzitie v kode
-
-```python
-from src.main import FitCRMPipeline
-
-# Inicializuj pipeline
-pipeline = FitCRMPipeline()
-
-# Spracuj email
-email_content = open("client_email.txt").read()
-result = pipeline.process_intake_email(email_content, send_email=True)
-
-# Vysledok
-print(f"Klient: {result['client_name']}")
-print(f"Jedalnicky PDF: {result['meal_plan_pdf']}")
-print(f"Treningovy plan PDF: {result['training_plan_pdf']}")
-print(f"Email odoslany: {result['email_sent']}")
-```
-
-## Format prijimaciaho emailu
-
-System ocakava emaily v tomto formate:
-
-```
-Novy klient z weboveho formulara:
-
-Meno: Jan Novak
-Email: jan.novak@example.com
-Vek: 30
-Pohlavie: muz
-Vaha: 85 kg
-Vyska: 180 cm
-Ciel: Chcem schudnut a zlepsit kondíciu
-Aktivita: sedave zamestnanie
-Skusenosti: zaciatocnik
-Obmedzenia: ziadne
-Motivacia: Chcem sa citit lepsie
-```
-
-## Ziskanie API klucov
-
-### Google Gemini API
-1. Chod na: https://makersuite.google.com/app/apikey
-2. Vytvor novy API kluc
-3. Pridaj do `.env`: `GEMINI_API_KEY=tvoj_kluc`
-
-### Gmail App Password
-1. Zapni 2FA na Google ucte
-2. Chod na: https://myaccount.google.com/apppasswords
-3. Vygeneruj App Password
-4. Pridaj do `.env`: `EMAIL_PASS=16_znakove_heslo`
+- `docs/FITCRM_PROJECT_SUMMARY.md` – technical overview
+- `docs/INBOX.md` – inbox UI requirements
+- `docs/DEMO.md` – demo structure and flows
 
 ## Troubleshooting
 
-### Gemini API error 429 (Rate limit)
-System ma vstavaný retry mechanizmus s exponencialnym backoff.
-
-### WeasyPrint error
-Instaluj systemove zavislosti:
-```bash
-# Ubuntu/Debian
-sudo apt-get install python3-dev libcairo2 libpango-1.0-0 libpangocairo-1.0-0 libgdk-pixbuf2.0-0
-
-# Mac
-brew install cairo pango gdk-pixbuf
-```
-
-### Email sa neodosle (SMTPAuthenticationError)
-- Pouzi App Password namiesto bezneho hesla (Gmail)
-- Over spravnost SMTP hostu a portu
-
-## Licencia
-
-MIT License
+- **Blank page / module error**: make sure you are not opening `demo/index.html` via `file://`.
+- **Reset demo state**: click `Reset demo state` in the left navigation.

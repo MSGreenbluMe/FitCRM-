@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>FitCRM - Training Plan Creator</title>
+<!-- Fonts and Icons -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Config -->
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#13ec5b",
+                        "background-light": "#f6f8f6",
+                        "background-dark": "#102216",
+                        "surface-dark": "#1c3024",
+                        "border-dark": "#2a4a36",
+                        "text-secondary": "#92c9a4"
+                    },
+                    fontFamily: {
+                        "display": ["Manrope", "sans-serif"],
+                        "body": ["Manrope", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        /* Custom scrollbar for a cleaner look */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #102216; 
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #2a4a36; 
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #13ec5b; 
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-white font-display overflow-hidden h-screen flex flex-col">
+<!-- Top Navigation -->
+<header class="flex-none flex items-center justify-between whitespace-nowrap border-b border-solid border-slate-200 dark:border-border-dark bg-white dark:bg-background-dark px-6 py-3">
+<div class="flex items-center gap-8">
+<div class="flex items-center gap-4 text-slate-900 dark:text-white">
+<div class="size-6 text-primary">
+<span class="material-symbols-outlined !text-3xl">fitness_center</span>
+</div>
+<h2 class="text-slate-900 dark:text-white text-lg font-bold leading-tight tracking-[-0.015em]">FitCRM</h2>
+</div>
+<nav class="hidden md:flex items-center gap-6">
+<a class="text-slate-500 dark:text-text-secondary hover:text-primary dark:hover:text-primary text-sm font-medium leading-normal transition-colors" href="#">Dashboard</a>
+<a class="text-slate-900 dark:text-white text-sm font-bold leading-normal border-b-2 border-primary pb-0.5" href="#">Clients</a>
+<a class="text-slate-500 dark:text-text-secondary hover:text-primary dark:hover:text-primary text-sm font-medium leading-normal transition-colors" href="#">Library</a>
+<a class="text-slate-500 dark:text-text-secondary hover:text-primary dark:hover:text-primary text-sm font-medium leading-normal transition-colors" href="#">Settings</a>
+</nav>
+</div>
+<div class="flex flex-1 justify-end gap-6 items-center">
+<label class="hidden md:flex flex-col min-w-40 !h-10 max-w-64">
+<div class="flex w-full flex-1 items-stretch rounded-lg h-full border border-slate-200 dark:border-border-dark bg-slate-50 dark:bg-surface-dark group focus-within:border-primary">
+<div class="text-slate-400 dark:text-text-secondary flex items-center justify-center pl-3">
+<span class="material-symbols-outlined text-[20px]">search</span>
+</div>
+<input class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg bg-transparent border-none text-slate-900 dark:text-white focus:ring-0 placeholder:text-slate-400 dark:placeholder:text-text-secondary px-2 text-sm" placeholder="Search" value=""/>
+</div>
+</label>
+<div class="flex items-center gap-3">
+<div class="bg-center bg-no-repeat bg-cover rounded-full size-9 ring-2 ring-primary/20" data-alt="Profile picture of trainer" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuA00kzVEJOwliNbMk7xqQiQ_crgBHua55oHUFDRa3yFFjhUlaAScBHSeLV9gSfPU5bS-XDdHouCxY6M40dVaf24Nt-VUsCaDM0C8R0cRqbYNtbV56iDNEmDvERXnH7xeOJ_bBjq-jMb6kaooDx8B5sCVo_uxgsjHHoXOQkr9ZXWbS6hDmDXnlrV8hl6sIyHBrab3AoOnVx8dvDF64LXt7m_OlyxyCE0Sz_0CXb5FOWb3gIsg7usGHw1a-GkWJmlPsb8jJjvv_g7m6sc");'></div>
+</div>
+</div>
+</header>
+<!-- Main Workspace -->
+<main class="flex-1 flex overflow-hidden">
+<!-- LEFT SIDEBAR: Exercise Library -->
+<aside class="w-[320px] flex-none flex flex-col border-r border-slate-200 dark:border-border-dark bg-white dark:bg-background-dark z-10 shadow-lg">
+<div class="p-4 border-b border-slate-200 dark:border-border-dark">
+<h3 class="text-slate-900 dark:text-white text-lg font-bold mb-3 flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">library_books</span>
+                    Exercise Library
+                </h3>
+<div class="relative mb-3">
+<span class="material-symbols-outlined absolute left-3 top-2.5 text-slate-400 dark:text-text-secondary text-[20px]">search</span>
+<input class="w-full bg-slate-100 dark:bg-surface-dark border-transparent focus:border-primary focus:ring-0 rounded-lg py-2 pl-10 pr-4 text-sm text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-text-secondary transition-colors" placeholder="Search exercises..." type="text"/>
+</div>
+<div class="flex gap-2 overflow-x-auto pb-1 no-scrollbar">
+<button class="px-3 py-1 rounded-full text-xs font-semibold bg-primary text-black whitespace-nowrap">All</button>
+<button class="px-3 py-1 rounded-full text-xs font-semibold bg-slate-100 dark:bg-surface-dark hover:bg-slate-200 dark:hover:bg-border-dark text-slate-600 dark:text-text-secondary whitespace-nowrap transition-colors">Strength</button>
+<button class="px-3 py-1 rounded-full text-xs font-semibold bg-slate-100 dark:bg-surface-dark hover:bg-slate-200 dark:hover:bg-border-dark text-slate-600 dark:text-text-secondary whitespace-nowrap transition-colors">Cardio</button>
+<button class="px-3 py-1 rounded-full text-xs font-semibold bg-slate-100 dark:bg-surface-dark hover:bg-slate-200 dark:hover:bg-border-dark text-slate-600 dark:text-text-secondary whitespace-nowrap transition-colors">Mobility</button>
+</div>
+</div>
+<div class="flex-1 overflow-y-auto p-4 space-y-3">
+<!-- Draggable Exercise Card 1 -->
+<div class="group cursor-grab active:cursor-grabbing bg-slate-50 dark:bg-surface-dark border border-slate-200 dark:border-border-dark rounded-lg p-3 hover:border-primary dark:hover:border-primary transition-all shadow-sm">
+<div class="flex gap-3">
+<div class="w-16 h-16 rounded bg-slate-200 dark:bg-black/40 flex-none bg-cover bg-center" data-alt="Thumbnail of bench press exercise" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAXQorZCsv-pc86A6OZ71QGAJyXppteh_AGI9YZFiFgViH2A75tHJzpZPscdYlMV4EhnSv8b-io5xt9Cn3umarK3bcdEXp4N5I--6TIrFcwzxmeou6jFkTFWV46roY4Qh6g1aBJfNhBewoeBEZw7T5JI2fa1wN49xrBDHRZg6toLFVKU6odnKtl2n4xWlhmEUnQ9ykenpd58j6-vO1BKwlbg6hpfAa89NDdI7vYU_zWnQI_wNAoB4cZOJwJcWsmJQv45RVIeEw0yNEq')"></div>
+<div class="flex-1 min-w-0">
+<h4 class="text-sm font-bold text-slate-900 dark:text-white truncate">Barbell Bench Press</h4>
+<p class="text-xs text-slate-500 dark:text-text-secondary mb-2">Chest • Compound</p>
+<div class="flex items-center gap-2">
+<span class="text-[10px] bg-slate-200 dark:bg-black/40 text-slate-600 dark:text-slate-400 px-1.5 py-0.5 rounded">Barbell</span>
+</div>
+</div>
+<button class="self-start text-slate-400 hover:text-primary">
+<span class="material-symbols-outlined text-[20px]">add_circle</span>
+</button>
+</div>
+</div>
+<!-- Draggable Exercise Card 2 -->
+<div class="group cursor-grab active:cursor-grabbing bg-slate-50 dark:bg-surface-dark border border-slate-200 dark:border-border-dark rounded-lg p-3 hover:border-primary dark:hover:border-primary transition-all shadow-sm">
+<div class="flex gap-3">
+<div class="w-16 h-16 rounded bg-slate-200 dark:bg-black/40 flex-none bg-cover bg-center" data-alt="Thumbnail of squat exercise" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCrT0ZCdphbom84Ow4OHebBRT_5YOPtfPGFBhFUpi3ozRv5fTMQXtKF07dIie0OYj76SWrmh7Unj34enwk22--h2YEmkNfgtcW4M5uYZED5dE42QxFMvbLu1N1kW5nAzIQ6jCcWl7Qi5KJUbq3nRSXlbblor5duQGJdWGRmlXfap9hNHnAjKb9wqroM2PfxuS9B5WsjTUGUxU7NXRx3huXOi5tcawR-87eoLGhy3rqb2O0o7ZIgrytLb6izFFVwHLUnoOLI7AzLTwOX')"></div>
+<div class="flex-1 min-w-0">
+<h4 class="text-sm font-bold text-slate-900 dark:text-white truncate">Back Squat</h4>
+<p class="text-xs text-slate-500 dark:text-text-secondary mb-2">Legs • Compound</p>
+<div class="flex items-center gap-2">
+<span class="text-[10px] bg-slate-200 dark:bg-black/40 text-slate-600 dark:text-slate-400 px-1.5 py-0.5 rounded">Barbell</span>
+</div>
+</div>
+<button class="self-start text-slate-400 hover:text-primary">
+<span class="material-symbols-outlined text-[20px]">add_circle</span>
+</button>
+</div>
+</div>
+<!-- Draggable Exercise Card 3 -->
+<div class="group cursor-grab active:cursor-grabbing bg-slate-50 dark:bg-surface-dark border border-slate-200 dark:border-border-dark rounded-lg p-3 hover:border-primary dark:hover:border-primary transition-all shadow-sm">
+<div class="flex gap-3">
+<div class="w-16 h-16 rounded bg-slate-200 dark:bg-black/40 flex-none bg-cover bg-center" data-alt="Thumbnail of pull up exercise" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCTOuEk4cLdQxiSEPKqFMjsE-PF00qSqkdj4gSLUy5Wf8_nMxULiCDJR0zNsPdaV3knMpoOty38bQ2cuW58pqbTZD-5GHtIsp9bUqc5ljHkcWuY4fd1WnUXJoE-H4mwlAl8tT7gnOaOH3Z7MO4rgfkhp-khrvlRrCWWUq4Dbnl1YoRdcV-aSEKNoZZEJOSZWKH0oGTbVn4Hxk6TV6Dp6KsHSmBBeLdMMO61JTCNfjV0Pq_Y2CIW-slOF6D57TNWrz4xuI5UxPGHm3hR')"></div>
+<div class="flex-1 min-w-0">
+<h4 class="text-sm font-bold text-slate-900 dark:text-white truncate">Pull Ups</h4>
+<p class="text-xs text-slate-500 dark:text-text-secondary mb-2">Back • Bodyweight</p>
+<div class="flex items-center gap-2">
+<span class="text-[10px] bg-slate-200 dark:bg-black/40 text-slate-600 dark:text-slate-400 px-1.5 py-0.5 rounded">Bar</span>
+</div>
+</div>
+<button class="self-start text-slate-400 hover:text-primary">
+<span class="material-symbols-outlined text-[20px]">add_circle</span>
+</button>
+</div>
+</div>
+<!-- Draggable Exercise Card 4 -->
+<div class="group cursor-grab active:cursor-grabbing bg-slate-50 dark:bg-surface-dark border border-slate-200 dark:border-border-dark rounded-lg p-3 hover:border-primary dark:hover:border-primary transition-all shadow-sm">
+<div class="flex gap-3">
+<div class="w-16 h-16 rounded bg-slate-200 dark:bg-black/40 flex-none bg-cover bg-center" data-alt="Thumbnail of dumbbell row" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCSbSQ0ULDmoAvSddZkHUVRljRn1KFDgiM6LwqZE9vXAseU84i4L-RRQcCxL-BrjaKgISDpXUj-unRFZ3SGdWrnCVUm5SFpOjlPDvhyVNhLtE_6MX3trdkGNefMPRPHEsIa3yQ42mru_P9gXgz_xsvnQDsVTlzopEPGPEMoMJnDjrH9xk__F6auYYfIqxEBZ40JMxaGYzB2kwYyFW8Iu3YZ3EnDgMqFKW_Hbo80iKvk5H2s4ZVJjqmW_8BIrhpqnJWW80St7tLTpM8u')"></div>
+<div class="flex-1 min-w-0">
+<h4 class="text-sm font-bold text-slate-900 dark:text-white truncate">Dumbbell Row</h4>
+<p class="text-xs text-slate-500 dark:text-text-secondary mb-2">Back • Unilateral</p>
+<div class="flex items-center gap-2">
+<span class="text-[10px] bg-slate-200 dark:bg-black/40 text-slate-600 dark:text-slate-400 px-1.5 py-0.5 rounded">Dumbbell</span>
+</div>
+</div>
+<button class="self-start text-slate-400 hover:text-primary">
+<span class="material-symbols-outlined text-[20px]">add_circle</span>
+</button>
+</div>
+</div>
+</div>
+</aside>
+<!-- RIGHT MAIN AREA: Weekly Planner -->
+<section class="flex-1 flex flex-col h-full overflow-hidden relative">
+<!-- Breadcrumbs & Header Actions -->
+<div class="flex-none p-6 pb-2">
+<div class="flex flex-wrap gap-2 mb-4 items-center">
+<a class="text-slate-400 dark:text-text-secondary hover:text-primary text-sm font-medium leading-normal" href="#">Dashboard</a>
+<span class="text-slate-400 dark:text-text-secondary text-sm font-medium leading-normal">/</span>
+<a class="text-slate-400 dark:text-text-secondary hover:text-primary text-sm font-medium leading-normal" href="#">Clients</a>
+<span class="text-slate-400 dark:text-text-secondary text-sm font-medium leading-normal">/</span>
+<span class="text-slate-900 dark:text-white text-sm font-medium leading-normal">John Doe</span>
+</div>
+<div class="flex flex-col xl:flex-row xl:items-end justify-between gap-6 mb-6">
+<div class="flex flex-col gap-1 w-full max-w-2xl">
+<div class="flex items-center gap-3">
+<h1 class="text-slate-900 dark:text-white text-3xl font-black leading-tight tracking-tight">Hypertrophy Block A</h1>
+<span class="px-2 py-0.5 rounded bg-green-900/40 text-primary text-xs font-bold uppercase tracking-wider border border-primary/20">Active Draft</span>
+</div>
+<p class="text-slate-500 dark:text-text-secondary text-sm">Designing for <span class="text-slate-900 dark:text-white font-bold">John Doe</span> • Goal: Muscle Gain • Phase 1/3</p>
+</div>
+<div class="flex items-center gap-3">
+<div class="hidden lg:flex items-center gap-4 mr-4 text-xs font-mono text-slate-400 dark:text-text-secondary bg-slate-100 dark:bg-surface-dark px-3 py-2 rounded-lg border border-slate-200 dark:border-border-dark">
+<span>Weekly Volume: <b class="text-slate-900 dark:text-white">45 Sets</b></span>
+<span class="w-px h-3 bg-slate-300 dark:bg-border-dark"></span>
+<span>Est. Time: <b class="text-slate-900 dark:text-white">4.5 hrs</b></span>
+</div>
+<button class="flex items-center gap-2 px-4 h-10 rounded-lg border border-slate-300 dark:border-border-dark text-slate-700 dark:text-white text-sm font-bold hover:bg-slate-100 dark:hover:bg-surface-dark transition-colors">
+<span class="material-symbols-outlined text-[18px]">switch_account</span>
+                            Switch Client
+                        </button>
+<button class="flex items-center gap-2 px-6 h-10 rounded-lg bg-primary text-black text-sm font-bold hover:brightness-110 transition-all shadow-[0_0_15px_rgba(19,236,91,0.3)]">
+<span class="material-symbols-outlined text-[18px]">save</span>
+                            Save Plan
+                        </button>
+</div>
+</div>
+<!-- Parameters Row -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4 pb-4 border-b border-slate-200 dark:border-border-dark">
+<label class="flex flex-col">
+<span class="text-xs font-semibold text-slate-500 dark:text-text-secondary mb-1.5 uppercase tracking-wide">Start Date</span>
+<input class="bg-white dark:bg-surface-dark border border-slate-300 dark:border-border-dark rounded-md h-10 px-3 text-sm text-slate-900 dark:text-white focus:ring-1 focus:ring-primary focus:border-primary w-full" type="date" value="2023-10-24"/>
+</label>
+<label class="flex flex-col">
+<span class="text-xs font-semibold text-slate-500 dark:text-text-secondary mb-1.5 uppercase tracking-wide">Duration</span>
+<select class="bg-white dark:bg-surface-dark border border-slate-300 dark:border-border-dark rounded-md h-10 px-3 text-sm text-slate-900 dark:text-white focus:ring-1 focus:ring-primary focus:border-primary w-full">
+<option>4 Weeks</option>
+<option>6 Weeks</option>
+<option>8 Weeks</option>
+<option>12 Weeks</option>
+</select>
+</label>
+<label class="flex flex-col">
+<span class="text-xs font-semibold text-slate-500 dark:text-text-secondary mb-1.5 uppercase tracking-wide">Focus</span>
+<select class="bg-white dark:bg-surface-dark border border-slate-300 dark:border-border-dark rounded-md h-10 px-3 text-sm text-slate-900 dark:text-white focus:ring-1 focus:ring-primary focus:border-primary w-full">
+<option>Hypertrophy (Muscle Growth)</option>
+<option>Strength</option>
+<option>Endurance</option>
+<option>Fat Loss</option>
+</select>
+</label>
+</div>
+</div>
+<!-- SCROLLABLE WEEK VIEW -->
+<div class="flex-1 overflow-x-auto overflow-y-hidden p-6 pt-2">
+<div class="flex h-full gap-4 min-w-[1200px]"> <!-- min-w ensures horizontal scroll if needed -->
+<!-- Day 1: Monday -->
+<div class="flex flex-col w-[340px] flex-none bg-slate-50 dark:bg-surface-dark/50 rounded-xl border border-slate-200 dark:border-border-dark h-full overflow-hidden ring-1 ring-transparent hover:ring-primary/30 transition-shadow">
+<div class="p-4 border-b border-slate-200 dark:border-border-dark bg-white dark:bg-surface-dark sticky top-0 z-10">
+<div class="flex justify-between items-center mb-2">
+<h3 class="text-slate-900 dark:text-white font-black text-lg tracking-tight">MONDAY</h3>
+<button class="text-slate-400 hover:text-primary"><span class="material-symbols-outlined text-[20px]">more_horiz</span></button>
+</div>
+<input class="w-full bg-transparent border-none p-0 text-sm font-medium text-primary placeholder:text-slate-500 focus:ring-0 mb-1" placeholder="Workout Name" type="text" value="Push Day (Chest/Triceps)"/>
+<div class="text-xs text-slate-500 dark:text-text-secondary flex justify-between">
+<span>6 Exercises</span>
+<span>Est. 65 min</span>
+</div>
+</div>
+<!-- Workout Items List -->
+<div class="flex-1 overflow-y-auto p-2 space-y-2 custom-scrollbar">
+<!-- Workout Item 1 -->
+<div class="bg-white dark:bg-[#15281e] rounded-lg p-3 border border-slate-200 dark:border-border-dark shadow-sm group">
+<div class="flex justify-between items-start mb-2">
+<h4 class="font-bold text-slate-900 dark:text-white text-sm">Barbell Bench Press</h4>
+<button class="text-slate-400 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity"><span class="material-symbols-outlined text-[16px]">close</span></button>
+</div>
+<div class="grid grid-cols-3 gap-2 mb-2">
+<label class="flex flex-col">
+<span class="text-[10px] text-slate-400 uppercase">Sets</span>
+<input class="h-7 w-full bg-slate-50 dark:bg-black/20 border border-slate-200 dark:border-border-dark rounded text-center text-sm font-mono text-slate-900 dark:text-white focus:border-primary focus:ring-0 p-0" type="number" value="4"/>
+</label>
+<label class="flex flex-col">
+<span class="text-[10px] text-slate-400 uppercase">Reps</span>
+<input class="h-7 w-full bg-slate-50 dark:bg-black/20 border border-slate-200 dark:border-border-dark rounded text-center text-sm font-mono text-slate-900 dark:text-white focus:border-primary focus:ring-0 p-0" type="text" value="8-10"/>
+</label>
+<label class="flex flex-col">
+<span class="text-[10px] text-slate-400 uppercase">RPE</span>
+<input class="h-7 w-full bg-slate-50 dark:bg-black/20 border border-slate-200 dark:border-border-dark rounded text-center text-sm font-mono text-slate-900 dark:text-white focus:border-primary focus:ring-0 p-0" type="number" value="8"/>
+</label>
+</div>
+<div class="flex justify-between items-center pt-2 border-t border-slate-100 dark:border-white/5">
+<span class="text-[10px] text-primary flex items-center gap-1"><span class="material-symbols-outlined text-[12px]">trending_up</span> PR: 225lbs</span>
+<button class="text-[10px] text-slate-400 hover:text-white flex items-center gap-1"><span class="material-symbols-outlined text-[12px]">edit_note</span> Note</button>
+</div>
+</div>
+<!-- Workout Item 2 -->
+<div class="bg-white dark:bg-[#15281e] rounded-lg p-3 border border-slate-200 dark:border-border-dark shadow-sm group">
+<div class="flex justify-between items-start mb-2">
+<h4 class="font-bold text-slate-900 dark:text-white text-sm">Incline DB Press</h4>
+<button class="text-slate-400 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity"><span class="material-symbols-outlined text-[16px]">close</span></button>
+</div>
+<div class="grid grid-cols-3 gap-2 mb-2">
+<label class="flex flex-col">
+<span class="text-[10px] text-slate-400 uppercase">Sets</span>
+<input class="h-7 w-full bg-slate-50 dark:bg-black/20 border border-slate-200 dark:border-border-dark rounded text-center text-sm font-mono text-slate-900 dark:text-white focus:border-primary focus:ring-0 p-0" type="number" value="3"/>
+</label>
+<label class="flex flex-col">
+<span class="text-[10px] text-slate-400 uppercase">Reps</span>
+<input class="h-7 w-full bg-slate-50 dark:bg-black/20 border border-slate-200 dark:border-border-dark rounded text-center text-sm font-mono text-slate-900 dark:text-white focus:border-primary focus:ring-0 p-0" type="text" value="12"/>
+</label>
+<label class="flex flex-col">
+<span class="text-[10px] text-slate-400 uppercase">RPE</span>
+<input class="h-7 w-full bg-slate-50 dark:bg-black/20 border border-slate-200 dark:border-border-dark rounded text-center text-sm font-mono text-slate-900 dark:text-white focus:border-primary focus:ring-0 p-0" type="number" value="9"/>
+</label>
+</div>
+</div>
+<!-- Add Drop Zone -->
+<div class="border-2 border-dashed border-slate-300 dark:border-border-dark rounded-lg p-4 flex flex-col items-center justify-center text-slate-400 dark:text-slate-600 min-h-[100px] transition-colors hover:border-primary hover:text-primary hover:bg-primary/5 cursor-pointer">
+<span class="material-symbols-outlined mb-1">add</span>
+<span class="text-xs font-medium">Drag exercise here</span>
+</div>
+</div>
+</div>
+<!-- Day 2: Tuesday -->
+<div class="flex flex-col w-[340px] flex-none bg-slate-50 dark:bg-surface-dark/50 rounded-xl border border-slate-200 dark:border-border-dark h-full overflow-hidden ring-1 ring-transparent hover:ring-primary/30 transition-shadow">
+<div class="p-4 border-b border-slate-200 dark:border-border-dark bg-white dark:bg-surface-dark sticky top-0 z-10">
+<div class="flex justify-between items-center mb-2">
+<h3 class="text-slate-900 dark:text-white font-black text-lg tracking-tight">TUESDAY</h3>
+<button class="text-slate-400 hover:text-primary"><span class="material-symbols-outlined text-[20px]">more_horiz</span></button>
+</div>
+<input class="w-full bg-transparent border-none p-0 text-sm font-medium text-primary placeholder:text-slate-500 focus:ring-0 mb-1" placeholder="Workout Name" type="text" value="Pull Day (Back/Biceps)"/>
+<div class="text-xs text-slate-500 dark:text-text-secondary flex justify-between">
+<span>5 Exercises</span>
+<span>Est. 55 min</span>
+</div>
+</div>
+<div class="flex-1 overflow-y-auto p-2 space-y-2 custom-scrollbar">
+<!-- Workout Item 1 -->
+<div class="bg-white dark:bg-[#15281e] rounded-lg p-3 border border-slate-200 dark:border-border-dark shadow-sm group">
+<div class="flex justify-between items-start mb-2">
+<h4 class="font-bold text-slate-900 dark:text-white text-sm">Deadlift</h4>
+<button class="text-slate-400 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity"><span class="material-symbols-outlined text-[16px]">close</span></button>
+</div>
+<div class="grid grid-cols-3 gap-2 mb-2">
+<label class="flex flex-col">
+<span class="text-[10px] text-slate-400 uppercase">Sets</span>
+<input class="h-7 w-full bg-slate-50 dark:bg-black/20 border border-slate-200 dark:border-border-dark rounded text-center text-sm font-mono text-slate-900 dark:text-white focus:border-primary focus:ring-0 p-0" type="number" value="3"/>
+</label>
+<label class="flex flex-col">
+<span class="text-[10px] text-slate-400 uppercase">Reps</span>
+<input class="h-7 w-full bg-slate-50 dark:bg-black/20 border border-slate-200 dark:border-border-dark rounded text-center text-sm font-mono text-slate-900 dark:text-white focus:border-primary focus:ring-0 p-0" type="text" value="5"/>
+</label>
+<label class="flex flex-col">
+<span class="text-[10px] text-slate-400 uppercase">RPE</span>
+<input class="h-7 w-full bg-slate-50 dark:bg-black/20 border border-slate-200 dark:border-border-dark rounded text-center text-sm font-mono text-slate-900 dark:text-white focus:border-primary focus:ring-0 p-0" type="number" value="8"/>
+</label>
+</div>
+<div class="flex justify-between items-center pt-2 border-t border-slate-100 dark:border-white/5">
+<span class="text-[10px] text-primary flex items-center gap-1"><span class="material-symbols-outlined text-[12px]">trending_up</span> PR: 315lbs</span>
+<button class="text-[10px] text-slate-400 hover:text-white flex items-center gap-1"><span class="material-symbols-outlined text-[12px]">edit_note</span> Note</button>
+</div>
+</div>
+<!-- Add Drop Zone -->
+<div class="border-2 border-dashed border-slate-300 dark:border-border-dark rounded-lg p-4 flex flex-col items-center justify-center text-slate-400 dark:text-slate-600 min-h-[100px] transition-colors hover:border-primary hover:text-primary hover:bg-primary/5 cursor-pointer">
+<span class="material-symbols-outlined mb-1">add</span>
+<span class="text-xs font-medium">Drag exercise here</span>
+</div>
+</div>
+</div>
+<!-- Day 3: Wednesday (Rest) -->
+<div class="flex flex-col w-[340px] flex-none bg-slate-50 dark:bg-surface-dark/50 rounded-xl border border-slate-200 dark:border-border-dark h-full overflow-hidden ring-1 ring-transparent hover:ring-primary/30 transition-shadow">
+<div class="p-4 border-b border-slate-200 dark:border-border-dark bg-white dark:bg-surface-dark sticky top-0 z-10">
+<div class="flex justify-between items-center mb-2">
+<h3 class="text-slate-900 dark:text-white font-black text-lg tracking-tight">WEDNESDAY</h3>
+<button class="text-slate-400 hover:text-primary"><span class="material-symbols-outlined text-[20px]">more_horiz</span></button>
+</div>
+<div class="flex items-center gap-2">
+<div class="w-2 h-2 rounded-full bg-slate-400"></div>
+<span class="text-sm font-medium text-slate-500 dark:text-slate-400">Active Recovery</span>
+</div>
+</div>
+<div class="flex-1 overflow-y-auto p-6 flex flex-col items-center justify-center text-center opacity-50">
+<div class="w-32 h-32 mb-4 bg-contain bg-center bg-no-repeat opacity-40 grayscale" data-alt="Illustration of a person stretching" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBL8MnsmG2nFzJnwin7pG7CGBQ6mXn6EdRmzQe2iUMC_9XV66eW7-8TgnNF8KzNHq8Xj_BQ9dbdIX3JFthbJRM2AQhgXWQiP7PXmZGtwbrQr4Nf5H7r7EEAYcRlQsI6SrZ7fQpDTC8ChpYBfA5HeJmMkPL6FZKU6fuKtpAZ6Cg8HVfqLbG0LCleCAlhZYK7ealaZv9kHh8YM0hwtQZ5Xns6gKZc1p1HBSXuJQ7iPSIVxo-4Fyxw-o50mx-In0EqWTRTG_CS6wQI3as2');"></div>
+<h4 class="text-slate-900 dark:text-white font-bold text-lg mb-2">Rest Day</h4>
+<p class="text-sm text-slate-500 dark:text-slate-400 mb-6">Light stretching or mobility work recommended.</p>
+<button class="text-primary text-sm font-bold hover:underline">Add Workout</button>
+</div>
+</div>
+<!-- Day 4: Thursday -->
+<div class="flex flex-col w-[340px] flex-none bg-slate-50 dark:bg-surface-dark/50 rounded-xl border border-slate-200 dark:border-border-dark h-full overflow-hidden ring-1 ring-transparent hover:ring-primary/30 transition-shadow">
+<div class="p-4 border-b border-slate-200 dark:border-border-dark bg-white dark:bg-surface-dark sticky top-0 z-10">
+<div class="flex justify-between items-center mb-2">
+<h3 class="text-slate-900 dark:text-white font-black text-lg tracking-tight">THURSDAY</h3>
+<button class="text-slate-400 hover:text-primary"><span class="material-symbols-outlined text-[20px]">more_horiz</span></button>
+</div>
+<input class="w-full bg-transparent border-none p-0 text-sm font-medium text-primary placeholder:text-slate-500 focus:ring-0 mb-1" placeholder="Workout Name" type="text" value="Leg Day"/>
+<div class="text-xs text-slate-500 dark:text-text-secondary flex justify-between">
+<span>0 Exercises</span>
+<span>Est. 0 min</span>
+</div>
+</div>
+<div class="flex-1 overflow-y-auto p-2 space-y-2 custom-scrollbar">
+<!-- Empty State Drop Zone -->
+<div class="border-2 border-dashed border-slate-300 dark:border-border-dark rounded-lg p-4 flex flex-col items-center justify-center text-slate-400 dark:text-slate-600 h-full min-h-[200px] transition-colors hover:border-primary hover:text-primary hover:bg-primary/5 cursor-pointer">
+<span class="material-symbols-outlined mb-2 text-3xl">add_circle</span>
+<span class="text-sm font-bold">Start Building</span>
+<span class="text-xs mt-1 text-center max-w-[150px]">Drag exercises from the library here</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Bottom Floating Action Bar for Mobile/Tablet or sticky footer -->
+<div class="md:hidden absolute bottom-4 left-4 right-4 z-20">
+<button class="w-full bg-primary text-black font-bold py-3 rounded-lg shadow-lg flex justify-center items-center gap-2">
+<span class="material-symbols-outlined">save</span>
+                    Save Changes
+                </button>
+</div>
+</section>
+</main>
+</body></html>

@@ -1,12 +1,13 @@
-venv/
+# Node
+node_modules/
+
+# Netlify
+.netlify/
+
+# Local env
 .env
-output/
-logs/
-__pycache__/
-*.pyc
+.env.*
+
+# OS
 .DS_Store
-*.egg-info/
-dist/
-build/
-.pytest_cache/
-.mypy_cache/
+Thumbs.db

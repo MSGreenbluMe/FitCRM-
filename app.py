@@ -1664,7 +1664,7 @@ def init_session_state():
     if 'editable_training_plan' not in st.session_state:
         st.session_state.editable_training_plan = None
     if 'dark_mode' not in st.session_state:
-        st.session_state.dark_mode = False
+        st.session_state.dark_mode = True
 
 
 def render_sidebar():

@@ -2601,17 +2601,19 @@ def render_app_shell():
                     st.session_state.dark_mode = next_dm
                     st.rerun()
             with c4:
-                st.markdown('<div id="topbar-notif-marker"></div>', unsafe_allow_html=True)
-                if st.button("🔔", key="top_notif_btn"):
-                    st.session_state.show_notifications = not st.session_state.show_notifications
-                    if st.session_state.show_notifications:
-                        st.session_state.show_user_menu = False
+                with st.container():
+                    st.markdown('<div id="topbar-notif-marker"></div>', unsafe_allow_html=True)
+                    if st.button("🔔", key="top_notif_btn"):
+                        st.session_state.show_notifications = not st.session_state.show_notifications
+                        if st.session_state.show_notifications:
+                            st.session_state.show_user_menu = False
             with c5:
-                st.markdown('<div id="topbar-user-marker"></div>', unsafe_allow_html=True)
-                if st.button("👤", key="top_user_btn"):
-                    st.session_state.show_user_menu = not st.session_state.show_user_menu
-                    if st.session_state.show_user_menu:
-                        st.session_state.show_notifications = False
+                with st.container():
+                    st.markdown('<div id="topbar-user-marker"></div>', unsafe_allow_html=True)
+                    if st.button("👤", key="top_user_btn"):
+                        st.session_state.show_user_menu = not st.session_state.show_user_menu
+                        if st.session_state.show_user_menu:
+                            st.session_state.show_notifications = False
 
         if st.session_state.show_notifications:
             st.markdown(
@@ -2736,6 +2738,21 @@ def render_clients_list():
             st.markdown('</div>', unsafe_allow_html=True)
             return
 
+        def _client_upcoming_slots(seed: str):
+            h = hashlib.md5((seed or "").encode("utf-8")).hexdigest()
+            base = datetime.now().replace(minute=0, second=0, microsecond=0)
+            offsets = [1, 3, 6]
+            hours = [8, 10, 17, 18, 19]
+            out = []
+            for i, d in enumerate(offsets):
+                dt = base + timedelta(days=d)
+                dt = dt.replace(hour=hours[int(h[i], 16) % len(hours)])
+                mode = ["Osobne", "Online"][int(h[6 + i], 16) % 2]
+                plan = ["Silový tréning", "Hypertrofia", "HIIT", "Mobilita"][int(h[10 + i], 16) % 4]
+                mins = [45, 60, 75][int(h[14 + i], 16) % 3]
+                out.append((dt, mins, plan, mode))
+            return out
+
         status_raw = (client.status or "").strip().lower()
         status_label = {"active": "Aktívny", "stagnating": "Stagnuje", "problem": "Problém"}.get(status_raw, status_raw)
         avatar = _portrait_data_uri(client.name)
@@ -2797,6 +2814,26 @@ def render_clients_list():
                 else:
                     st.caption("Zatiaľ bez check-inov.")
                 st.markdown('</div>', unsafe_allow_html=True)
+
+            st.markdown('<div style="height: 0.9rem;"></div>', unsafe_allow_html=True)
+            st.markdown('<div class="section-card">', unsafe_allow_html=True)
+            st.markdown('<div class="section-head"><div class="title">Nadchádzajúci rozpis</div><div class="meta">7 dní</div></div>', unsafe_allow_html=True)
+            slots = _client_upcoming_slots(client.id + client.name)
+            for dt, mins, plan, mode in slots:
+                when = dt.strftime("%a %d.%m %H:%M")
+                st.markdown(
+                    f"""
+                    <div style="display:flex; align-items:center; justify-content:space-between; gap: 1rem; padding: 0.7rem 0.75rem; border: 1px solid rgba(35,72,47,0.75); border-radius: 14px; background: rgba(35,72,47,0.38); margin-bottom: 0.55rem;">
+                        <div style="min-width:0;">
+                            <div style="color: var(--text); font-weight: 900;">{html.escape(plan)}</div>
+                            <div style="color: var(--muted); font-weight: 800; font-size: 0.85rem; margin-top: 0.1rem;">{html.escape(when)} · {mins} min · {html.escape(mode)}</div>
+                        </div>
+                        <div style="color: var(--accent); font-weight: 900;">Pripraviť</div>
+                    </div>
+                    """,
+                    unsafe_allow_html=True,
+                )
+            st.markdown('</div>', unsafe_allow_html=True)
         with tabs[1]:
             st.info("Tréningový plán – demo (príde ďalej).")
         with tabs[2]:
@@ -2804,7 +2841,47 @@ def render_clients_list():
         with tabs[3]:
             st.info("Fotky – demo (príde ďalej).")
         with tabs[4]:
-            st.info("História – demo (príde ďalej).")
+            st.markdown('<div class="section-card">', unsafe_allow_html=True)
+            st.markdown('<div class="section-head"><div class="title">História tréningov</div><div class="meta">z check-inov</div></div>', unsafe_allow_html=True)
+            if not client.checkins:
+                st.caption("Zatiaľ bez záznamov.")
+                st.markdown('</div>', unsafe_allow_html=True)
+            else:
+                hist = sorted(client.checkins, key=lambda x: x.date, reverse=True)[:10]
+                st.markdown(
+                    """
+                    <div style="overflow:auto; border: 1px solid rgba(35,72,47,0.75); border-radius: 14px;">
+                    <table style="width:100%; border-collapse: collapse;">
+                        <thead>
+                            <tr style="background: rgba(35,72,47,0.55);">
+                                <th style="text-align:left; padding: 0.65rem 0.7rem; color: var(--muted); font-size: 0.78rem; letter-spacing: 0.08em; text-transform: uppercase;">Dátum</th>
+                                <th style="text-align:left; padding: 0.65rem 0.7rem; color: var(--muted); font-size: 0.78rem; letter-spacing: 0.08em; text-transform: uppercase;">Váha</th>
+                                <th style="text-align:left; padding: 0.65rem 0.7rem; color: var(--muted); font-size: 0.78rem; letter-spacing: 0.08em; text-transform: uppercase;">Adherence</th>
+                                <th style="text-align:left; padding: 0.65rem 0.7rem; color: var(--muted); font-size: 0.78rem; letter-spacing: 0.08em; text-transform: uppercase;">Tréningy</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                    """,
+                    unsafe_allow_html=True,
+                )
+                for r in hist:
+                    d = r.date.strftime("%d.%m.%Y")
+                    w = f"{r.weight_kg:.1f} kg"
+                    adh = f"{r.adherence_percent}%"
+                    wo = f"{r.workouts_completed}/{r.workouts_planned}"
+                    st.markdown(
+                        f"""
+                        <tr>
+                            <td style="padding: 0.65rem 0.7rem; border-top: 1px solid rgba(35,72,47,0.65); color: var(--text); font-weight: 900;">{html.escape(d)}</td>
+                            <td style="padding: 0.65rem 0.7rem; border-top: 1px solid rgba(35,72,47,0.65); color: var(--text); font-weight: 900;">{html.escape(w)}</td>
+                            <td style="padding: 0.65rem 0.7rem; border-top: 1px solid rgba(35,72,47,0.65); color: var(--text); font-weight: 900;">{html.escape(adh)}</td>
+                            <td style="padding: 0.65rem 0.7rem; border-top: 1px solid rgba(35,72,47,0.65); color: var(--text); font-weight: 900;">{html.escape(wo)}</td>
+                        </tr>
+                        """,
+                        unsafe_allow_html=True,
+                    )
+                st.markdown("</tbody></table></div>", unsafe_allow_html=True)
+                st.markdown('</div>', unsafe_allow_html=True)
 
         st.markdown('</div>', unsafe_allow_html=True)
 

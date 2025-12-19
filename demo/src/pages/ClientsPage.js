@@ -204,11 +204,11 @@ function clientDetails(client) {
       </div>
 
       <div class="flex gap-6 mt-8 border-b border-surface-highlight">
-        <button class="pb-3 text-sm font-bold text-primary border-b-2 border-primary">Overview</button>
-        <button class="pb-3 text-sm font-medium text-text-secondary hover:text-white transition-colors">Training Plan</button>
-        <button class="pb-3 text-sm font-medium text-text-secondary hover:text-white transition-colors">Nutrition</button>
-        <button class="pb-3 text-sm font-medium text-text-secondary hover:text-white transition-colors">Progress</button>
-        <button class="pb-3 text-sm font-medium text-text-secondary hover:text-white transition-colors">History</button>
+        <a class="pb-3 text-sm font-bold text-primary border-b-2 border-primary" href="#/clients">Overview</a>
+        <a class="pb-3 text-sm font-medium text-text-secondary hover:text-white transition-colors" href="#/training-plan">Training Plan</a>
+        <a class="pb-3 text-sm font-medium text-text-secondary hover:text-white transition-colors" href="#/nutrition">Nutrition</a>
+        <a class="pb-3 text-sm font-medium text-text-secondary hover:text-white transition-colors" href="#/clients">Progress</a>
+        <a class="pb-3 text-sm font-medium text-text-secondary hover:text-white transition-colors" href="#/clients">History</a>
       </div>
     </div>
 

@@ -137,9 +137,9 @@ function sessionRow({ time, name, label, cta, disabled = false }) {
     ? `<button class="mt-3 sm:mt-0 px-4 py-2 text-white/50 text-sm font-bold rounded-lg cursor-not-allowed w-full sm:w-auto">${escapeHtml(
         cta
       )}</button>`
-    : `<button class="mt-3 sm:mt-0 px-4 py-2 bg-primary text-background-dark text-sm font-bold rounded-lg hover:bg-primary/90 transition-colors w-full sm:w-auto">${escapeHtml(
+    : `<a href="#/clients" class="mt-3 sm:mt-0 px-4 py-2 bg-primary text-background-dark text-sm font-bold rounded-lg hover:bg-primary/90 transition-colors w-full sm:w-auto text-center">${escapeHtml(
         cta
-      )}</button>`;
+      )}</a>`;
 
   return `
     <div class="flex flex-col sm:flex-row items-start sm:items-center gap-4 p-5 rounded-xl bg-background-dark border border-surface-highlight ${cls}">

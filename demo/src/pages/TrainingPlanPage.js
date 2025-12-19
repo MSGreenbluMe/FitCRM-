@@ -158,7 +158,15 @@ export class TrainingPlanPage {
 
           if (res && res.plan) {
             store.setTrainingPlan({ clientId: client.id, plan: res.plan });
-            showToast({ title: "Updated", message: "AI plan applied to this client." });
+            if (res.fallback) {
+              showToast({
+                title: "Fallback plan",
+                message: "Gemini failed or returned invalid JSON. Applied a safe default plan.",
+                variant: "danger",
+              });
+            } else {
+              showToast({ title: "Updated", message: "AI plan applied to this client." });
+            }
           } else {
             showToast({
               title: "AI response",

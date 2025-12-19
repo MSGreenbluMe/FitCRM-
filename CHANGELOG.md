@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.1.4
+
+- Hotfix: hardened `generate_plan` with JSON mode + fallback plan so demo always generates an editable plan.
+- QA: fixed several CTA buttons/links to always navigate to existing routes.
+
 ## 0.1.3
 
 - Connected demo UI to Netlify Functions (email sending + AI plan generation).

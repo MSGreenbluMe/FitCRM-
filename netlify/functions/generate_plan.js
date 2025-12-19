@@ -36,6 +36,50 @@ function extractJsonObject(text) {
   return parsed.ok ? parsed.value : null;
 }
 
+function buildFallbackPlan({ client, goal }) {
+  const g = String(goal || client?.goal || "General Fitness");
+  const name = `AI Plan (${g})`;
+
+  return {
+    name,
+    durationWeeks: 4,
+    focus: g,
+    days: {
+      mon: {
+        title: "Upper (Push/Pull)",
+        items: [
+          { name: "Barbell Bench Press", sets: 4, reps: "6-10", rpe: 8 },
+          { name: "Dumbbell Row", sets: 4, reps: "8-12", rpe: 8 },
+          { name: "Incline DB Press", sets: 3, reps: "10-12", rpe: 8 },
+          { name: "Lat Pulldown", sets: 3, reps: "10-12", rpe: 8 },
+        ],
+      },
+      tue: {
+        title: "Lower (Strength)",
+        items: [
+          { name: "Back Squat", sets: 4, reps: "5-8", rpe: 8 },
+          { name: "Romanian Deadlift", sets: 3, reps: "8-10", rpe: 8 },
+          { name: "Walking Lunges", sets: 3, reps: "10/leg", rpe: 8 },
+          { name: "Calf Raises", sets: 3, reps: "12-15", rpe: 8 },
+        ],
+      },
+      wed: {
+        title: "Active Recovery",
+        items: [],
+      },
+      thu: {
+        title: "Full Body (Hypertrophy)",
+        items: [
+          { name: "Deadlift (Technique)", sets: 3, reps: "4-6", rpe: 7 },
+          { name: "Pull Ups", sets: 3, reps: "AMRAP", rpe: 8 },
+          { name: "Leg Press", sets: 3, reps: "10-12", rpe: 8 },
+          { name: "Shoulder Press", sets: 3, reps: "8-12", rpe: 8 },
+        ],
+      },
+    },
+  };
+}
+
 exports.handler = async (event) => {
   if (event.httpMethod === "OPTIONS") {
     return json(200, { ok: true });
@@ -56,7 +100,8 @@ exports.handler = async (event) => {
     return json(400, { ok: false, error: "Missing 'client'" });
   }
 
-  const apiKey = getRequiredEnv("GEMINI_API_KEY");
+  const fallbackPlan = buildFallbackPlan({ client, goal });
+  const apiKey = process.env.GEMINI_API_KEY;
 
   const prompt = [
     "You are FitCRM assistant.",
@@ -75,7 +120,11 @@ exports.handler = async (event) => {
     .join("\n");
 
   try {
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${encodeURIComponent(
+    if (!apiKey) {
+      return json(200, { ok: true, plan: fallbackPlan, fallback: true, warning: "Missing GEMINI_API_KEY" });
+    }
+
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${encodeURIComponent(
       apiKey
     )}`;
 
@@ -83,10 +132,11 @@ exports.handler = async (event) => {
       method: "POST",
       headers: { "content-type": "application/json" },
       body: JSON.stringify({
-        contents: [{ role: "user", parts: [{ text: prompt }] }],
+        contents: [{ parts: [{ text: prompt }] }],
         generationConfig: {
           temperature: 0.4,
           maxOutputTokens: 1200,
+          responseMimeType: "application/json",
         },
       }),
     });
@@ -95,18 +145,24 @@ exports.handler = async (event) => {
     const bodyParsed = safeParseJson(text);
 
     if (!res.ok) {
-      return json(500, {
-        ok: false,
-        error: "Gemini request failed",
-        detail:
+      return json(200, {
+        ok: true,
+        plan: fallbackPlan,
+        fallback: true,
+        warning:
           bodyParsed.ok && bodyParsed.value && bodyParsed.value.error
             ? JSON.stringify(bodyParsed.value.error)
-            : `HTTP ${res.status}`,
+            : `Gemini HTTP ${res.status}`,
       });
     }
 
     if (!bodyParsed.ok) {
-      return json(500, { ok: false, error: "Invalid Gemini response" });
+      return json(200, {
+        ok: true,
+        plan: fallbackPlan,
+        fallback: true,
+        warning: "Invalid Gemini response JSON",
+      });
     }
 
     const candidate = bodyParsed.value?.candidates?.[0]?.content?.parts
@@ -114,17 +170,25 @@ exports.handler = async (event) => {
       .filter(Boolean)
       .join("\n");
 
-    const plan = extractJsonObject(candidate);
-    if (!plan) {
-      return json(200, { ok: true, planText: candidate || "", plan: null });
+    const planFromJsonMode = candidate ? safeParseJson(candidate) : { ok: false };
+    const plan = planFromJsonMode.ok ? planFromJsonMode.value : extractJsonObject(candidate);
+
+    if (!plan || typeof plan !== "object") {
+      return json(200, {
+        ok: true,
+        plan: fallbackPlan,
+        fallback: true,
+        warning: "Gemini did not return a valid plan JSON",
+      });
     }
 
     return json(200, { ok: true, plan });
   } catch (e) {
-    return json(500, {
-      ok: false,
-      error: "Plan generation failed",
-      detail: e && e.message ? e.message : String(e),
+    return json(200, {
+      ok: true,
+      plan: fallbackPlan,
+      fallback: true,
+      warning: e && e.message ? e.message : String(e),
     });
   }
 };

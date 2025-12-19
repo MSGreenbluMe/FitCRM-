@@ -12,7 +12,7 @@
 
 - **Versioned + pushed to GitHub**
   - Repo: `https://github.com/MSGreenbluMe/FitCRM-`
-  - Tag: `v0.1.3`
+  - Tag: `v0.1.4`
 
 - **Functional UI demo** (static Tailwind + vanilla JS)
   - Routing between: Dashboard / Mailbox / Clients / Training Plan / Nutrition
@@ -40,6 +40,6 @@
 
 - Add more realistic workflows (onboarding from inbox -> create client -> generate/send plan)
 - Add drag & drop for training plan builder
-- Implement real API layer behind the demo (server-side):
-  - Gemini generation (`/.netlify/functions/generate_plan`)
-  - Email sending (`/.netlify/functions/send_email`) with secrets stored in Netlify env vars
+- Extend API layer behind the demo (server-side):
+  - Improve Gemini structured output reliability (schema + validation)
+  - Add nutrition generation endpoint and connect it to Nutrition page

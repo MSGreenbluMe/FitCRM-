@@ -153,6 +153,7 @@ def get_theme_css(dark_mode: bool) -> str:
             --surface-1: #23482f;
             --surface-2: #1a3824;
             --surface-3: #2a5538;
+            --shell-bg: #102216;
             --border: #23482f;
             --text: #e7f3eb;
             --muted: #92c9a4;
@@ -187,6 +188,7 @@ def get_theme_css(dark_mode: bool) -> str:
             --app-bg: #f7fbf8;
             --surface-1: #ffffff;
             --surface-2: #f0f7f2;
+            --shell-bg: #ffffff;
             --border: #d9eadf;
             --text: #0f172a;
             --muted: #456a55;
@@ -242,7 +244,7 @@ st.markdown("""
     /* Streamlit renders widgets in its own blocks; to avoid "empty blocks",
        style the exact VerticalBlock that contains our marker. */
     div[data-testid="stVerticalBlock"]:has(#nav-rail-marker) {
-        background: var(--surface-1);
+        background: var(--shell-bg);
         border: 1px solid var(--border);
         border-radius: 18px;
         padding: 0.9rem;
@@ -269,9 +271,11 @@ st.markdown("""
     }
 
     div[data-testid="stVerticalBlock"]:has(#nav-rail-marker) div.stButton > button[kind="primary"] {
-        background: var(--accent-2) !important;
-        border-color: rgba(19, 236, 91, 0.45) !important;
+        background: var(--surface-1) !important;
+        border-color: rgba(19, 236, 91, 0.22) !important;
         color: var(--text) !important;
+        border-left: 4px solid var(--accent) !important;
+        padding-left: 0.7rem !important;
     }
 
     .nav-brand {
@@ -366,7 +370,7 @@ st.markdown("""
 
     /* Topbar wrapper (same note: style by marker) */
     div[data-testid="stVerticalBlock"]:has(#topbar-marker) {
-        background: var(--surface-1);
+        background: var(--shell-bg);
         border: 1px solid var(--border);
         border-radius: 18px;
         padding: 0.75rem 0.85rem;

@@ -304,7 +304,8 @@ st.markdown("""
     .nav-user .utxt .n { color: var(--text); font-weight: 900; font-size: 0.92rem; line-height: 1.1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .nav-user .utxt .s { color: var(--muted); font-weight: 800; font-size: 0.75rem; margin-top: 0.1rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-    div[data-testid="stVerticalBlock"]:has(#topbar-marker) div.stButton > button {
+    div[data-testid="stVerticalBlock"]:has(#topbar-notif-marker) div.stButton > button,
+    div[data-testid="stVerticalBlock"]:has(#topbar-user-marker) div.stButton > button {
         width: 38px;
         height: 38px;
         border-radius: 12px !important;
@@ -315,7 +316,8 @@ st.markdown("""
         font-weight: 900 !important;
     }
 
-    div[data-testid="stVerticalBlock"]:has(#topbar-marker) div.stButton > button:hover {
+    div[data-testid="stVerticalBlock"]:has(#topbar-notif-marker) div.stButton > button:hover,
+    div[data-testid="stVerticalBlock"]:has(#topbar-user-marker) div.stButton > button:hover {
         background: var(--surface-3) !important;
         border-color: rgba(19, 236, 91, 0.18) !important;
     }
@@ -2588,11 +2590,13 @@ def render_app_shell():
                     st.session_state.dark_mode = next_dm
                     st.rerun()
             with c4:
+                st.markdown('<div id="topbar-notif-marker"></div>', unsafe_allow_html=True)
                 if st.button("🔔", key="top_notif_btn"):
                     st.session_state.show_notifications = not st.session_state.show_notifications
                     if st.session_state.show_notifications:
                         st.session_state.show_user_menu = False
             with c5:
+                st.markdown('<div id="topbar-user-marker"></div>', unsafe_allow_html=True)
                 if st.button("👤", key="top_user_btn"):
                     st.session_state.show_user_menu = not st.session_state.show_user_menu
                     if st.session_state.show_user_menu:

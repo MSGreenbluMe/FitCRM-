@@ -1913,7 +1913,7 @@ def render_sidebar():
         sha = _git_sha_short()
         sha_txt = f" · {sha}" if sha else ""
         st.markdown('<div style="height: 0.6rem;"></div>', unsafe_allow_html=True)
-        st.markdown(f'<p style="color: #94a3b8; font-size: 0.65rem;">FIT CRM v{APP_VERSION}{sha_txt} · {"Tmavý" if dm else "Světlý"}</p>', unsafe_allow_html=True)
+        st.markdown(f'<p style="color: #94a3b8; font-size: 0.65rem;">FIT CRM v{APP_VERSION}{sha_txt} · {"Tmavý" if dm else "Svetlý"}</p>', unsafe_allow_html=True)
 
 
 def _relative_time(dt: datetime) -> str:
@@ -2556,7 +2556,7 @@ def render_app_shell():
             sha = _git_sha_short()
             sha_txt = f" · {sha}" if sha else ""
             st.markdown(
-                f'<div style="color: var(--muted); font-size: 0.75rem;">v{APP_VERSION}{sha_txt} · {"Dark" if dm else "Light"}</div>',
+                f'<div style="color: var(--muted); font-size: 0.75rem;">v{APP_VERSION}{sha_txt} · {"Tmavý" if dm else "Svetlý"}</div>',
                 unsafe_allow_html=True,
             )
 

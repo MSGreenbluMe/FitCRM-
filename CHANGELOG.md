@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.2.2
+
+- Dashboard UI refined toward Tailwind mockup (dark theme layering) + Slovak labels
+- Topbar now includes functional demo panels for notifications and user menu
+- Clients page redesigned to split-pane layout (list + detail) aligned to mockup
+
 ## 0.2.1
 
 - Improved Inbox list UX for large volumes (paging + table-based selection + snippet + panel cards)

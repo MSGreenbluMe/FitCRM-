@@ -11,6 +11,9 @@
 ✅ Offline sample avatars improved (portrait-style SVG avatars in Clients list + Client detail).
 🚧 Dashboard redesigned toward Tailwind mockup style (hero headline + KPI stat cards + schedule cards + compliance progress + quick actions tiles + activity feed).
 ✅ Dark mode enabled by default (matches Tailwind mockups).
+✅ Sidebar polished closer to mockup (pill items, active highlight, user block).
+✅ Topbar actions are interactive (demo: notifications + user menu panels).
+🚧 Clients page redesigned toward mockup (split-pane list + detail with tabs).
 
 ## Completed
 
@@ -26,5 +29,8 @@
 🔜 Gmail OAuth connector (instead of app-password IMAP)
 🔜 Message threading + labels (Inbox, Starred, etc.)
 🔜 Caching + rate-limit / retry policy for IMAP fetch
+
+🔜 Finish Dashboard translation + remove remaining English labels
+🔜 Finish Clients detail sections (upcoming schedule, history table, chips styling)
 
 

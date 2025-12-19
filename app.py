@@ -353,8 +353,8 @@ st.markdown("""
     div[data-testid="stVerticalBlock"]:has(#clients-chips-marker) div.stButton > button {
         height: 32px;
         border-radius: 999px !important;
-        background: rgba(35, 72, 47, 0.85) !important;
-        border: 1px solid transparent !important;
+        background: var(--surface-2) !important;
+        border: 1px solid var(--border) !important;
         color: var(--muted) !important;
         font-weight: 800 !important;
         padding: 0 0.85rem !important;
@@ -362,13 +362,14 @@ st.markdown("""
     }
 
     div[data-testid="stVerticalBlock"]:has(#clients-chips-marker) div.stButton > button[kind="primary"] {
-        background: var(--accent) !important;
-        color: var(--app-bg) !important;
-        border-color: rgba(19, 236, 91, 0.35) !important;
+        background: var(--surface-3) !important;
+        color: var(--text) !important;
+        border-color: var(--accent) !important;
     }
 
     div[data-testid="stVerticalBlock"]:has(#clients-chips-marker) div.stButton > button:hover {
-        border-color: rgba(146, 201, 164, 0.35) !important;
+        background: var(--surface-3) !important;
+        border-color: var(--accent) !important;
         color: var(--text) !important;
     }
 

@@ -16,6 +16,45 @@ const DAY_ORDER = [
   { key: "thu", label: "Thursday" },
 ];
 
+function buildLocalFallbackTraining({ client, goal }) {
+  const g = String(goal || client?.goal || "General Fitness");
+  return {
+    name: `AI Plan (${g})`,
+    durationWeeks: 4,
+    focus: g,
+    days: {
+      mon: {
+        title: "Upper (Push/Pull)",
+        items: [
+          { name: "Barbell Bench Press", sets: 4, reps: "6-10", rpe: 8 },
+          { name: "Dumbbell Row", sets: 4, reps: "8-12", rpe: 8 },
+          { name: "Incline DB Press", sets: 3, reps: "10-12", rpe: 8 },
+          { name: "Lat Pulldown", sets: 3, reps: "10-12", rpe: 8 },
+        ],
+      },
+      tue: {
+        title: "Lower (Strength)",
+        items: [
+          { name: "Back Squat", sets: 4, reps: "5-8", rpe: 8 },
+          { name: "Romanian Deadlift", sets: 3, reps: "8-10", rpe: 8 },
+          { name: "Walking Lunges", sets: 3, reps: "10/leg", rpe: 8 },
+          { name: "Calf Raises", sets: 3, reps: "12-15", rpe: 8 },
+        ],
+      },
+      wed: { title: "Active Recovery", items: [] },
+      thu: {
+        title: "Full Body (Hypertrophy)",
+        items: [
+          { name: "Deadlift (Technique)", sets: 3, reps: "4-6", rpe: 7 },
+          { name: "Pull Ups", sets: 3, reps: "AMRAP", rpe: 8 },
+          { name: "Leg Press", sets: 3, reps: "10-12", rpe: 8 },
+          { name: "Shoulder Press", sets: 3, reps: "8-12", rpe: 8 },
+        ],
+      },
+    },
+  };
+}
+
 export class TrainingPlanPage {
   constructor() {
     this.el = null;
@@ -23,6 +62,7 @@ export class TrainingPlanPage {
     this.selectedLibId = EXERCISE_LIBRARY[0].id;
     this.aiInFlight = false;
     this.aiCooldownUntil = 0;
+    this.addDayKey = "mon";
   }
 
   mount(container) {
@@ -62,17 +102,19 @@ export class TrainingPlanPage {
         </div>
 
         <div class="p-4 border-t border-surface-highlight">
-          <div class="grid grid-cols-2 gap-2">
-            ${DAY_ORDER.map(
-              (d) => `
-                <button data-action="add-to-day" data-day-key="${escapeAttr(
-                  d.key
-                )}" class="bg-primary text-background-dark font-bold py-2.5 rounded-lg shadow-lg flex justify-center items-center gap-2 hover:brightness-110 transition-all">
-                  <span class="material-symbols-outlined">add_circle</span>
-                  Add to ${escapeHtml(d.label)}
-                </button>
-              `
-            ).join("")}
+          <div class="flex gap-2">
+            <select data-role="add-day" class="h-11 flex-1 bg-surface-highlight border border-[#395c46] text-white text-sm font-bold rounded-lg px-3 focus:ring-0 focus:border-primary">
+              ${DAY_ORDER.map(
+                (d) =>
+                  `<option value="${escapeAttr(d.key)}" ${d.key === this.addDayKey ? "selected" : ""}>${escapeHtml(
+                    d.label
+                  )}</option>`
+              ).join("")}
+            </select>
+            <button data-action="add-to-day" class="h-11 px-4 bg-primary text-background-dark font-bold rounded-lg shadow-lg flex justify-center items-center gap-2 hover:brightness-110 transition-all">
+              <span class="material-symbols-outlined">add_circle</span>
+              Add
+            </button>
           </div>
         </div>
       </aside>
@@ -139,16 +181,24 @@ export class TrainingPlanPage {
       });
     }
 
-    this.el.querySelectorAll('[data-action="add-to-day"]').forEach((btn) => {
-      btn.addEventListener("click", () => {
+    const addDay = this.el.querySelector('[data-role="add-day"]');
+    if (addDay) {
+      addDay.addEventListener("change", () => {
+        this.addDayKey = addDay.value;
+      });
+    }
+
+    const addBtn = this.el.querySelector('[data-action="add-to-day"]');
+    if (addBtn) {
+      addBtn.addEventListener("click", () => {
         const ex = EXERCISE_LIBRARY.find((e) => e.id === this.selectedLibId);
         if (!ex) return;
-        const dayKey = btn.dataset.dayKey;
+        const dayKey = this.addDayKey || "mon";
         store.addExerciseToDay({ clientId: client.id, dayKey, exercise: ex });
         const label = (DAY_ORDER.find((d) => d.key === dayKey) || { label: dayKey }).label;
         showToast({ title: "Exercise added", message: `Added ${ex.name} to ${label}.` });
       });
-    });
+    }
 
     const saveBtn = this.el.querySelector('[data-action="save"]');
     if (saveBtn) {
@@ -188,8 +238,8 @@ export class TrainingPlanPage {
             if (res.fallback) {
               showToast({
                 title: "Fallback plan",
-                message: "Gemini failed or returned invalid JSON. Applied a safe default plan.",
-                variant: "danger",
+                message: "AI is unavailable. Applied a safe default plan.",
+                variant: "success",
               });
             } else {
               showToast({ title: "Updated", message: "AI plan applied to this client." });
@@ -202,10 +252,12 @@ export class TrainingPlanPage {
             });
           }
         } catch (e) {
+          const fallback = buildLocalFallbackTraining({ client, goal: client.goal });
+          store.setTrainingPlan({ clientId: client.id, plan: fallback });
           showToast({
-            title: "Generation failed",
-            message: e && e.message ? e.message : "Unknown error",
-            variant: "danger",
+            title: "Fallback plan",
+            message: `AI unavailable (${e && e.message ? e.message : "Unknown error"}). Applied a safe default plan.`,
+            variant: "success",
           });
         } finally {
           this.aiInFlight = false;

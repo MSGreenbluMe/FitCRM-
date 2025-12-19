@@ -10,6 +10,27 @@ const QUICK_ADD = [
   { name: "Greek Yogurt Bowl", desc: "Yogurt + fruit", kcal: 220, protein: 18, carbs: 20, fats: 6 },
 ];
 
+function buildLocalFallbackNutrition({ client, goal }) {
+  const g = String(goal || client?.goal || "General Fitness");
+  return {
+    weekLabel: "This Week",
+    day: "Tue",
+    meals: {
+      breakfast: [
+        { name: "Greek yogurt + berries", desc: "High protein start", kcal: 320, protein: 28, carbs: 30, fats: 8 },
+      ],
+      lunch: [
+        { name: "Chicken + rice + veggies", desc: "Balanced meal", kcal: 620, protein: 45, carbs: 70, fats: 14 },
+      ],
+      dinner: [
+        { name: "Salmon + potatoes + salad", desc: "Omega-3 + carbs", kcal: 650, protein: 42, carbs: 55, fats: 26 },
+      ],
+    },
+    notes: `Goal: ${g}. Keep it simple, hit protein target, hydrate.`,
+    targets: { kcal: 2100, protein: 170, carbs: 220, fats: 65, waterLiters: 3.5 },
+  };
+}
+
 export class NutritionPage {
   constructor() {
     this.el = null;
@@ -199,10 +220,12 @@ export class NutritionPage {
             });
           }
         } catch (e) {
+          const fallback = buildLocalFallbackNutrition({ client, goal: client.goal });
+          store.setNutritionPlan({ clientId: client.id, nutrition: fallback });
           showToast({
-            title: "Generation failed",
-            message: e && e.message ? e.message : "Unknown error",
-            variant: "danger",
+            title: "Fallback plan",
+            message: `AI unavailable (${e && e.message ? e.message : "Unknown error"}). Applied a safe default nutrition plan.`,
+            variant: "success",
           });
         } finally {
           this.aiInFlight = false;

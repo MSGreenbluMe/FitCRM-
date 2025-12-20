@@ -282,6 +282,16 @@ export class TrainingPlanPage {
           }
         } catch (e) {
           const isQuota = Boolean(e && (e.status === 429 || isQuotaExhaustedMessage(e.message)));
+          const retrySecs = Number(e && e.retryAfterSeconds ? e.retryAfterSeconds : 0);
+          if (isQuota && retrySecs > 0 && String(e && e.message ? e.message : "").includes("cooldown")) {
+            this.aiCooldownUntil = Math.max(this.aiCooldownUntil || 0, Date.now() + retrySecs * 1000);
+            showToast({
+              title: "Please wait",
+              message: `AI generation is cooling down (${retrySecs}s).`,
+              variant: "danger",
+            });
+            return;
+          }
           if (isQuota) {
             this.aiCooldownUntil = Math.max(this.aiCooldownUntil || 0, Date.now() + 10 * 60 * 1000);
           }

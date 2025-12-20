@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.9
+
+- AI: global request queue (serialize `generatePlan` calls) to prevent parallel bursts.
+- AI: global cooldown persisted in localStorage; during cooldown UI shows "Please wait" without overwriting plans.
+- AI: add minimum gap between AI requests and set cooldown immediately on HTTP 429.
+
 ## 0.1.8
 
 - AI: stabilize client-side cache key to avoid cache misses (prevents repeated Gemini calls from volatile plan/client payload).

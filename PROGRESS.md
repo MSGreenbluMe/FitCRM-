@@ -41,6 +41,7 @@
 - **AI quota hardening**
   - Stable client-side caching for `generate_plan` (avoid cache misses and repeated Gemini calls)
   - Quota (429) cooldown fallback (~10 min) with clear UI messaging
+  - Global AI request queue + cooldown persisted in localStorage (prevents parallel bursts / TooManyRequests)
 
 ## 🔄 Needs Revision
 

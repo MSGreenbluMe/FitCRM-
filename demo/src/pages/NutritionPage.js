@@ -208,10 +208,15 @@ export class NutritionPage {
               showToast({
                 title: "Fallback plan",
                 message: warn
-                  ? `AI unavailable (${warn}). Applied a safe default nutrition plan.`
+                  ? `AI unavailable (${truncate(warn)}). Applied a safe default nutrition plan.`
                   : "AI unavailable. Applied a safe default nutrition plan.",
                 variant: "success",
               });
+
+              const retry = Number(res.retryAfterSeconds || 0);
+              if (retry > 0) {
+                this.aiCooldownUntil = Date.now() + retry * 1000;
+              }
             } else {
               showToast({ title: "Updated", message: "AI nutrition plan applied to this client." });
             }

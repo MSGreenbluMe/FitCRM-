@@ -1,6 +1,6 @@
 {
   "name": "fitcrm",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "private": true,
   "dependencies": {
     "nodemailer": "^6.9.8"

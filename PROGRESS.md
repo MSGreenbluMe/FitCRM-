@@ -12,7 +12,7 @@
 
 - **Versioned + pushed to GitHub**
   - Repo: `https://github.com/MSGreenbluMe/FitCRM-`
-  - Tag: `v0.1.4`
+  - Tag: `v0.1.6`
 
 - **Functional UI demo** (static Tailwind + vanilla JS)
   - Routing between: Dashboard / Mailbox / Clients / Training Plan / Nutrition

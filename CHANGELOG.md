@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.1.6
+
+- Gemini quota: improved handling of 429 RESOURCE_EXHAUSTED (compact warning + retryAfterSeconds).
+- Demo: cache AI generate responses (10 min) and apply retryAfter-based cooldown.
+
 ## 0.1.5
 
 - Training AI: prevent duplicate requests (in-flight guard + cooldown) and improve usability.

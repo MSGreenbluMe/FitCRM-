@@ -47,6 +47,31 @@ function safeParseJson(raw) {
   }
 }
 
+function extractRetryAfterSeconds(errObj) {
+  if (!errObj) return null;
+  try {
+    if (typeof errObj.retryDelay === "string") {
+      const m = errObj.retryDelay.match(/(\d+)s/);
+      return m ? Number(m[1]) : null;
+    }
+
+    const s = JSON.stringify(errObj);
+    const m = s.match(/"retryDelay"\s*:\s*"(\d+)s"/);
+    if (m) return Number(m[1]);
+    return null;
+  } catch {
+    return null;
+  }
+}
+
+function compactGeminiError(errObj, statusCode) {
+  if (!errObj || typeof errObj !== "object") return `Gemini HTTP ${statusCode}`;
+  const msg = errObj.message ? String(errObj.message) : "Gemini error";
+  const code = errObj.code ? String(errObj.code) : String(statusCode || "");
+  const status = errObj.status ? String(errObj.status) : "";
+  return [code ? `code:${code}` : "", status ? `status:${status}` : "", msg].filter(Boolean).join(" ");
+}
+
 function extractJsonObject(text) {
   const s = String(text || "");
   const start = s.indexOf("{");
@@ -166,7 +191,7 @@ exports.handler = async (event) => {
         contents: [{ parts: [{ text: prompt }] }],
         generationConfig: {
           temperature: 0.4,
-          maxOutputTokens: 1200,
+          maxOutputTokens: 700,
           responseMimeType: "application/json",
         },
       }),
@@ -176,14 +201,14 @@ exports.handler = async (event) => {
     const bodyParsed = safeParseJson(text);
 
     if (!res.ok) {
+      const errObj = bodyParsed.ok && bodyParsed.value ? bodyParsed.value.error : null;
+      const retryAfterSeconds = extractRetryAfterSeconds(errObj);
       return json(200, {
         ok: true,
         plan: fallbackPlan,
         fallback: true,
-        warning:
-          bodyParsed.ok && bodyParsed.value && bodyParsed.value.error
-            ? JSON.stringify(bodyParsed.value.error)
-            : `Gemini HTTP ${res.status}`,
+        warning: compactGeminiError(errObj, res.status),
+        retryAfterSeconds,
       });
     }
 

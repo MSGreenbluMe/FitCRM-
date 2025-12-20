@@ -239,9 +239,16 @@ export class TrainingPlanPage {
               const warn = res.warning ? String(res.warning) : "";
               showToast({
                 title: "Fallback plan",
-                message: warn ? `AI unavailable (${warn}). Applied a safe default plan.` : "AI unavailable. Applied a safe default plan.",
+                message: warn
+                  ? `AI unavailable (${truncate(warn)}). Applied a safe default plan.`
+                  : "AI unavailable. Applied a safe default plan.",
                 variant: "success",
               });
+
+              const retry = Number(res.retryAfterSeconds || 0);
+              if (retry > 0) {
+                this.aiCooldownUntil = Date.now() + retry * 1000;
+              }
             } else {
               showToast({ title: "Updated", message: "AI plan applied to this client." });
             }

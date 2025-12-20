@@ -6,6 +6,33 @@ function safeParseJson(raw) {
   }
 }
 
+const AI_CACHE_STORAGE_KEY = "fitcrm_ai_cache_v1";
+const inFlight = new Map();
+const memCache = new Map();
+
+function makeCacheKey(url, body) {
+  return `${url}::${JSON.stringify(body)}`;
+}
+
+function loadAiCache() {
+  try {
+    const raw = localStorage.getItem(AI_CACHE_STORAGE_KEY);
+    if (!raw) return {};
+    const parsed = JSON.parse(raw);
+    return parsed && typeof parsed === "object" ? parsed : {};
+  } catch {
+    return {};
+  }
+}
+
+function saveAiCache(obj) {
+  try {
+    localStorage.setItem(AI_CACHE_STORAGE_KEY, JSON.stringify(obj));
+  } catch {
+    // ignore
+  }
+}
+
 async function postJson(url, body) {
   const res = await fetch(url, {
     method: "POST",
@@ -37,5 +64,35 @@ export async function sendEmail(payload) {
 }
 
 export async function generatePlan(payload) {
-  return postJson("/.netlify/functions/generate_plan", payload);
+  const url = "/.netlify/functions/generate_plan";
+  const ttlMs = 10 * 60 * 1000;
+  const key = makeCacheKey(url, payload);
+  const now = Date.now();
+
+  const mem = memCache.get(key);
+  if (mem && now - mem.ts < ttlMs) return mem.value;
+
+  const disk = loadAiCache();
+  const hit = disk[key];
+  if (hit && hit.ts && now - hit.ts < ttlMs && hit.value) {
+    memCache.set(key, { ts: hit.ts, value: hit.value });
+    return hit.value;
+  }
+
+  if (inFlight.has(key)) return inFlight.get(key);
+
+  const p = postJson(url, payload)
+    .then((val) => {
+      memCache.set(key, { ts: Date.now(), value: val });
+      const next = loadAiCache();
+      next[key] = { ts: Date.now(), value: val };
+      saveAiCache(next);
+      return val;
+    })
+    .finally(() => {
+      inFlight.delete(key);
+    });
+
+  inFlight.set(key, p);
+  return p;
 }

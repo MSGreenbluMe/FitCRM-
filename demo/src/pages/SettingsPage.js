@@ -1,6 +1,5 @@
 import { store } from "../store.js";
 import { showToast } from "../ui/toast.js";
-import backend from "../api/backend.js";
 
 export class SettingsPage {
   constructor() {
@@ -11,7 +10,7 @@ export class SettingsPage {
   }
 
   loadSettings() {
-    // Load from localStorage for now
+    // Load from localStorage
     const saved = localStorage.getItem('fitcrm-settings');
     return saved ? JSON.parse(saved) : this.getDefaultSettings();
   }
@@ -19,13 +18,14 @@ export class SettingsPage {
   getDefaultSettings() {
     return {
       profile: {
-        name: '',
-        email: '',
-        phone: '',
-        bio: '',
-        certifications: '',
-        yearsExperience: '',
-        specialties: '',
+        name: 'Alex Trainer',
+        email: 'alex@fitcoach.pro',
+        phone: '+421 900 123 456',
+        avatar: '', // base64 or URL
+        bio: 'Certified fitness coach with passion for helping clients reach their goals.',
+        certifications: 'NASM CPT, Precision Nutrition L1',
+        yearsExperience: '5',
+        specialties: 'Weight Loss, Strength Training, Nutrition',
         timezone: 'Europe/Bratislava',
         language: 'sk'
       },
@@ -61,35 +61,29 @@ export class SettingsPage {
       business: {
         businessName: 'FitCoach Pro',
         currency: 'EUR',
-        sessionPrice: '',
-        planPrice: '',
-        nutritionPrice: '',
-        taxRate: ''
+        sessionPrice: '50',
+        planPrice: '120',
+        nutritionPrice: '80',
+        taxRate: '20'
       }
     };
   }
 
   async saveSettings() {
     try {
-      // Save to localStorage (for offline support)
+      // Save to localStorage
       localStorage.setItem('fitcrm-settings', JSON.stringify(this.settings));
 
-      // Try to save to backend
-      try {
-        await backend.settings.update(this.settings);
-        showToast({
-          title: 'Úspech',
-          message: 'Nastavenia boli uložené',
-          variant: 'success'
-        });
-      } catch (backendError) {
-        console.warn('Backend save failed, using localStorage only:', backendError);
-        showToast({
-          title: 'Upozornenie',
-          message: 'Nastavenia uložené lokálne (backend nedostupný)',
-          variant: 'info'
-        });
-      }
+      // Trigger UI update (update user name in header/sidebar)
+      window.dispatchEvent(new CustomEvent('settings-updated', {
+        detail: this.settings
+      }));
+
+      showToast({
+        title: 'Úspech',
+        message: 'Nastavenia boli uložené',
+        variant: 'success'
+      });
     } catch (error) {
       console.error('Failed to save settings:', error);
       showToast({
@@ -98,6 +92,46 @@ export class SettingsPage {
         variant: 'danger'
       });
     }
+  }
+
+  handleAvatarUpload(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      showToast({
+        title: 'Chyba',
+        message: 'Vyber obrázok (JPG, PNG, atď.)',
+        variant: 'danger'
+      });
+      return;
+    }
+
+    // Validate file size (max 2MB)
+    if (file.size > 2 * 1024 * 1024) {
+      showToast({
+        title: 'Chyba',
+        message: 'Obrázok je príliš veľký (max 2MB)',
+        variant: 'danger'
+      });
+      return;
+    }
+
+    // Read as base64
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      this.settings.profile.avatar = event.target.result;
+      this.render();
+      this.attachEventListeners();
+
+      showToast({
+        title: 'Úspech',
+        message: 'Profilová fotka nahraná',
+        variant: 'success'
+      });
+    };
+    reader.readAsDataURL(file);
   }
 
   mount(container) {
@@ -124,7 +158,7 @@ export class SettingsPage {
             <h1 class="text-white text-3xl lg:text-4xl font-extrabold">Nastavenia</h1>
             <p class="text-gray-400 mt-2">Spravuj svoj profil a konfiguráciu systému</p>
           </div>
-          <button id="save-settings-btn" class="btn-primary flex items-center gap-2">
+          <button id="save-settings-btn" class="flex items-center gap-2 px-6 py-3 bg-primary hover:bg-primary/90 text-white font-bold rounded-lg transition-colors">
             <span class="material-symbols-outlined">save</span>
             Uložiť
           </button>
@@ -142,19 +176,8 @@ export class SettingsPage {
         </div>
 
         <!-- Tab Content -->
-        <div class="bg-surface-highlight rounded-xl p-6 border border-gray-700">
+        <div class="bg-gray-800/50 rounded-xl p-6 border border-gray-700">
           ${this.renderTabContent()}
-        </div>
-
-        <!-- Info Box -->
-        <div class="bg-blue-950/30 border border-blue-500/30 rounded-lg p-4">
-          <div class="flex items-start gap-3">
-            <span class="material-symbols-outlined text-blue-400 text-xl">info</span>
-            <div class="flex-1 text-sm text-gray-300">
-              <p class="font-semibold text-white mb-1">Tip:</p>
-              <p>Pre plnú funkcionalitu email automatizácie nastav IMAP/SMTP prihlasovacie údaje. Pre Gmail použi "App Password" namiesto bežného hesla.</p>
-            </div>
-          </div>
         </div>
       </div>
     `;
@@ -196,8 +219,30 @@ export class SettingsPage {
 
   renderProfileTab() {
     const { profile } = this.settings;
+    const avatarUrl = profile.avatar || '';
+
     return `
       <div class="flex flex-col gap-6">
+        <!-- Avatar Upload -->
+        <div class="flex items-center gap-6">
+          <div class="relative">
+            <div class="h-24 w-24 rounded-full bg-gray-700 border-2 border-gray-600 flex items-center justify-center overflow-hidden">
+              ${avatarUrl
+                ? `<img src="${avatarUrl}" alt="Avatar" class="w-full h-full object-cover" />`
+                : `<span class="material-symbols-outlined text-4xl text-gray-400">person</span>`
+              }
+            </div>
+            <label class="absolute bottom-0 right-0 bg-primary hover:bg-primary/90 rounded-full p-2 cursor-pointer transition-colors">
+              <span class="material-symbols-outlined text-white text-sm">photo_camera</span>
+              <input type="file" id="avatar-upload" accept="image/*" class="hidden" />
+            </label>
+          </div>
+          <div>
+            <h3 class="text-white font-semibold mb-1">Profilová fotka</h3>
+            <p class="text-sm text-gray-400">JPG, PNG alebo GIF. Max 2MB.</p>
+          </div>
+        </div>
+
         <div>
           <h3 class="text-white text-xl font-bold mb-4">Osobné informácie</h3>
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -239,7 +284,7 @@ export class SettingsPage {
     return `
       <div class="flex flex-col gap-6">
         <!-- Enable Toggle -->
-        <div class="flex items-center justify-between p-4 bg-surface rounded-lg">
+        <div class="flex items-center justify-between p-4 bg-gray-700/50 rounded-lg">
           <div class="flex items-center gap-3">
             <span class="material-symbols-outlined text-2xl text-primary">mail</span>
             <div>
@@ -251,7 +296,6 @@ export class SettingsPage {
         </div>
 
         ${email.imapEnabled ? `
-          <!-- IMAP Settings -->
           <div>
             <h3 class="text-white text-lg font-semibold mb-3 flex items-center gap-2">
               <span class="material-symbols-outlined">download</span>
@@ -265,7 +309,6 @@ export class SettingsPage {
             </div>
           </div>
 
-          <!-- SMTP Settings -->
           <div>
             <h3 class="text-white text-lg font-semibold mb-3 flex items-center gap-2">
               <span class="material-symbols-outlined">upload</span>
@@ -279,18 +322,7 @@ export class SettingsPage {
             </div>
           </div>
 
-          <!-- Email Options -->
-          <div>
-            <h3 class="text-white text-lg font-semibold mb-3">Možnosti</h3>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-              ${this.renderInput('email.fromName', 'Odosielateľské meno', email.fromName, 'text', 'badge')}
-              ${this.renderInput('email.replyTo', 'Reply-To Email', email.replyTo, 'email', 'reply')}
-              ${this.renderInput('email.checkInterval', 'Interval kontroly (minúty)', email.checkInterval, 'number', 'schedule')}
-            </div>
-          </div>
-
-          <!-- Help Box -->
-          <div class="bg-amber-950/30 border border-amber-500/30 rounded-lg p-4">
+          <div class="bg-amber-900/30 border border-amber-600/30 rounded-lg p-4">
             <div class="flex items-start gap-3">
               <span class="material-symbols-outlined text-amber-400">help</span>
               <div class="text-sm text-gray-300">
@@ -325,8 +357,7 @@ export class SettingsPage {
           </h3>
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             ${this.renderSelect('ai.provider', 'Provider', ai.provider, [
-              { value: 'gemini', label: 'Google Gemini' },
-              { value: 'openai', label: 'OpenAI (budúce)' }
+              { value: 'gemini', label: 'Google Gemini' }
             ], 'cloud')}
             ${this.renderSelect('ai.model', 'Model', ai.model, [
               { value: 'gemini-2.0-flash', label: 'Gemini 2.0 Flash' },
@@ -349,7 +380,7 @@ export class SettingsPage {
           </div>
         </div>
 
-        <div class="bg-green-950/30 border border-green-500/30 rounded-lg p-4">
+        <div class="bg-green-900/30 border border-green-600/30 rounded-lg p-4">
           <div class="flex items-start gap-3">
             <span class="material-symbols-outlined text-green-400">lightbulb</span>
             <div class="text-sm text-gray-300">
@@ -456,13 +487,13 @@ export class SettingsPage {
           ${label}
         </label>
         <div class="relative">
-          ${icon ? `<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-xl">${icon}</span>` : ''}
+          ${icon ? `<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xl">${icon}</span>` : ''}
           <input
             type="${type}"
             name="${name}"
             value="${value || ''}"
             placeholder="${placeholder || label}"
-            class="w-full bg-surface border border-gray-600 rounded-lg px-4 py-2.5 ${icon ? 'pl-11' : ''} text-white placeholder-gray-500 focus:outline-none focus:border-primary transition-colors"
+            class="w-full bg-gray-900 border border-gray-600 rounded-lg px-4 py-2.5 ${icon ? 'pl-11' : ''} text-white placeholder-gray-500 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors"
           />
         </div>
       </div>
@@ -479,7 +510,7 @@ export class SettingsPage {
           name="${name}"
           rows="4"
           placeholder="${placeholder || label}"
-          class="w-full bg-surface border border-gray-600 rounded-lg px-4 py-2.5 text-white placeholder-gray-500 focus:outline-none focus:border-primary transition-colors resize-none"
+          class="w-full bg-gray-900 border border-gray-600 rounded-lg px-4 py-2.5 text-white placeholder-gray-500 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors resize-none"
         >${value || ''}</textarea>
       </div>
     `;
@@ -492,10 +523,10 @@ export class SettingsPage {
           ${label}
         </label>
         <div class="relative">
-          ${icon ? `<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-xl">${icon}</span>` : ''}
+          ${icon ? `<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xl">${icon}</span>` : ''}
           <select
             name="${name}"
-            class="w-full bg-surface border border-gray-600 rounded-lg px-4 py-2.5 ${icon ? 'pl-11' : ''} text-white focus:outline-none focus:border-primary transition-colors appearance-none"
+            class="w-full bg-gray-900 border border-gray-600 rounded-lg px-4 py-2.5 ${icon ? 'pl-11' : ''} pr-10 text-white focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors appearance-none"
           >
             ${options.map(opt => `
               <option value="${opt.value}" ${value === opt.value ? 'selected' : ''}>
@@ -503,7 +534,7 @@ export class SettingsPage {
               </option>
             `).join('')}
           </select>
-          <span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none">expand_more</span>
+          <span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none">expand_more</span>
         </div>
       </div>
     `;
@@ -520,7 +551,7 @@ export class SettingsPage {
 
   renderToggleOption(name, checked, title, description, icon) {
     return `
-      <div class="flex items-center justify-between p-4 bg-surface rounded-lg border border-gray-700 hover:border-gray-600 transition-colors">
+      <div class="flex items-center justify-between p-4 bg-gray-700/50 rounded-lg border border-gray-600 hover:border-gray-500 transition-colors">
         <div class="flex items-start gap-3 flex-1">
           <span class="material-symbols-outlined text-2xl ${checked ? 'text-primary' : 'text-gray-500'}">${icon}</span>
           <div>
@@ -549,8 +580,15 @@ export class SettingsPage {
       saveBtn.addEventListener('click', () => this.handleSave());
     }
 
+    // Avatar upload
+    const avatarInput = this.el.querySelector('#avatar-upload');
+    if (avatarInput) {
+      avatarInput.addEventListener('change', (e) => this.handleAvatarUpload(e));
+    }
+
     // Form inputs - update settings on change
     this.el.querySelectorAll('input, select, textarea').forEach(input => {
+      if (input.id === 'avatar-upload') return; // Skip avatar input
       input.addEventListener('change', (e) => this.handleInputChange(e));
     });
   }
@@ -561,8 +599,6 @@ export class SettingsPage {
 
     if (type === 'checkbox') {
       this.settings[section][key] = checked;
-    } else if (type === 'number') {
-      this.settings[section][key] = value;
     } else {
       this.settings[section][key] = value;
     }

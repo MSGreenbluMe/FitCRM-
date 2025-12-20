@@ -140,7 +140,7 @@ exports.handler = async (event) => {
     return json(400, { ok: false, error: "Invalid JSON body" });
   }
 
-  const { client, goal, constraints, type, currentPlan, apiKey: userApiKey } = parsed.value || {};
+  const { client, goal, constraints, type, currentPlan, apiKey: userApiKey, model: userModel } = parsed.value || {};
 
   if (!client || typeof client !== "object") {
     return json(400, { ok: false, error: "Missing 'client'" });
@@ -152,6 +152,9 @@ exports.handler = async (event) => {
 
   // Use API key from Settings if provided, fallback to environment variable
   const apiKey = userApiKey || process.env.GEMINI_API_KEY;
+
+  // Use model from Settings if provided, fallback to gemini-2.5-flash
+  const model = userModel || 'gemini-2.5-flash';
 
   const schemaTraining =
     "{\"name\":string,\"durationWeeks\":number,\"focus\":string,\"days\":{\"mon\":{\"title\":string,\"items\":[{\"name\":string,\"sets\":number,\"reps\":string,\"rpe\":number}]},\"tue\":{...},\"wed\":{...},\"thu\":{...}}}";
@@ -182,7 +185,7 @@ exports.handler = async (event) => {
       return json(200, { ok: true, plan: fallbackPlan, fallback: true, warning: "Missing GEMINI_API_KEY" });
     }
 
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${encodeURIComponent(
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${encodeURIComponent(
       apiKey
     )}`;
 

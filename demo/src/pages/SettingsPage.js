@@ -45,8 +45,8 @@ export class SettingsPage {
       },
       ai: {
         provider: 'gemini',
-        model: 'gemini-2.0-flash',
-        apiKey: '',
+        model: 'gemini-2.5-flash',
+        geminiApiKey: '',
         maxRetries: '3',
         timeout: '30000',
         cacheDuration: '600'
@@ -360,15 +360,16 @@ export class SettingsPage {
               { value: 'gemini', label: 'Google Gemini' }
             ], 'cloud')}
             ${this.renderSelect('ai.model', 'Model', ai.model, [
-              { value: 'gemini-2.0-flash', label: 'Gemini 2.0 Flash' },
-              { value: 'gemini-1.5-pro', label: 'Gemini 1.5 Pro' }
+              { value: 'gemini-2.5-flash', label: 'Gemini 2.5 Flash (odporúčaný)' },
+              { value: 'gemini-2.5-flash-lite', label: 'Gemini 2.5 Flash Lite' },
+              { value: 'gemini-3-flash', label: 'Gemini 3 Flash' }
             ], 'model_training')}
           </div>
         </div>
 
         <div>
           <h3 class="text-white text-lg font-semibold mb-3">API Kľúč</h3>
-          ${this.renderInput('ai.apiKey', 'Gemini API Key', ai.apiKey, 'password', 'key', 'Získaj na https://aistudio.google.com/app/apikey')}
+          ${this.renderInput('ai.geminiApiKey', 'Gemini API Key', ai.geminiApiKey, 'password', 'key', 'Získaj na https://aistudio.google.com/app/apikey')}
         </div>
 
         <div>
@@ -385,7 +386,7 @@ export class SettingsPage {
             <span class="material-symbols-outlined text-green-400">lightbulb</span>
             <div class="text-sm text-gray-300">
               <p class="font-semibold text-white mb-1">Tip:</p>
-              <p>Gemini 2.0 Flash je najrýchlejší a najlacnejší. Pre komplexnejšie plány použi Gemini 1.5 Pro.</p>
+              <p>Gemini 2.5 Flash je vyvážený model s dobrým pomerom cena/výkon (odporúčaný). Flash Lite je najrýchlejší a najlacnejší. Gemini 3 Flash je najnovší model s pokročilými schopnosťami.</p>
             </div>
           </div>
         </div>

@@ -152,6 +152,28 @@ export const system = {
 };
 
 /**
+ * Settings Management
+ */
+export const settings = {
+  /**
+   * Get current settings
+   */
+  async get() {
+    return await apiCall('settings');
+  },
+
+  /**
+   * Update settings
+   */
+  async update(updates) {
+    return await apiCall('settings', {
+      method: 'PUT',
+      body: JSON.stringify(updates)
+    });
+  }
+};
+
+/**
  * Migration helper - sync localStorage data to backend
  */
 export async function migrateLocalStorageToBackend() {
@@ -229,5 +251,6 @@ export default {
   emails,
   plans,
   system,
+  settings,
   migrateLocalStorageToBackend
 };

@@ -14,6 +14,7 @@ const NAV_ITEMS = [
   navItem({ icon: "group", label: "Clients", path: "/clients" }),
   navItem({ icon: "assignment", label: "Plans", path: "/training-plan" }),
   navItem({ icon: "restaurant", label: "Nutrition", path: "/nutrition" }),
+  navItem({ icon: "settings", label: "Settings", path: "/settings" }),
 ];
 
 export class Layout {

@@ -222,6 +222,13 @@ export class NutritionPage {
             if (res.fallback) {
               const warn = res.warning ? String(res.warning) : "";
               const isQuota = isQuotaExhaustedMessage(warn);
+
+              // Log debug info to console if available
+              if (res.debug) {
+                console.error('[FitCRM] AI Error Debug Info:', res.debug);
+                console.error('[FitCRM] Warning:', warn);
+              }
+
               showToast({
                 title: "Fallback plan",
                 message: warn

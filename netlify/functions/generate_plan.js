@@ -208,21 +208,27 @@ exports.handler = async (event) => {
     if (!res.ok) {
       const errObj = bodyParsed.ok && bodyParsed.value ? bodyParsed.value.error : null;
       const retryAfterSeconds = extractRetryAfterSeconds(errObj);
+      // Include response preview for debugging
+      const responsePreview = text.length > 200 ? text.slice(0, 200) + '...' : text;
       return json(200, {
         ok: true,
         plan: fallbackPlan,
         fallback: true,
         warning: compactGeminiError(errObj, res.status),
         retryAfterSeconds,
+        debug: { status: res.status, responsePreview }
       });
     }
 
     if (!bodyParsed.ok) {
+      // Include raw response for debugging
+      const responsePreview = text.length > 200 ? text.slice(0, 200) + '...' : text;
       return json(200, {
         ok: true,
         plan: fallbackPlan,
         fallback: true,
         warning: "Invalid Gemini response JSON",
+        debug: { responsePreview }
       });
     }
 
@@ -235,11 +241,14 @@ exports.handler = async (event) => {
     const plan = planFromJsonMode.ok ? planFromJsonMode.value : extractJsonObject(candidate);
 
     if (!plan || typeof plan !== "object") {
+      // Include what we actually got for debugging
+      const candidatePreview = candidate?.length > 200 ? candidate.slice(0, 200) + '...' : candidate;
       return json(200, {
         ok: true,
         plan: fallbackPlan,
         fallback: true,
         warning: "Gemini did not return a valid plan JSON",
+        debug: { candidatePreview }
       });
     }
 

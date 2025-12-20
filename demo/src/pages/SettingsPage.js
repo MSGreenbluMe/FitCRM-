@@ -77,14 +77,26 @@ export class SettingsPage {
       // Try to save to backend
       try {
         await backend.settings.update(this.settings);
-        showToast('✅ Nastavenia uložené', 'success');
+        showToast({
+          title: 'Úspech',
+          message: 'Nastavenia boli uložené',
+          variant: 'success'
+        });
       } catch (backendError) {
         console.warn('Backend save failed, using localStorage only:', backendError);
-        showToast('⚠️ Nastavenia uložené lokálne (backend nedostupný)', 'warning');
+        showToast({
+          title: 'Upozornenie',
+          message: 'Nastavenia uložené lokálne (backend nedostupný)',
+          variant: 'info'
+        });
       }
     } catch (error) {
       console.error('Failed to save settings:', error);
-      showToast('❌ Chyba pri ukladaní nastavení', 'error');
+      showToast({
+        title: 'Chyba',
+        message: 'Nepodarilo sa uložiť nastavenia',
+        variant: 'danger'
+      });
     }
   }
 

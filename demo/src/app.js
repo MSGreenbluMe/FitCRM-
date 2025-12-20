@@ -6,6 +6,7 @@ import { MailboxPage } from "./pages/MailboxPage.js";
 import { ClientsPage } from "./pages/ClientsPage.js";
 import { TrainingPlanPage } from "./pages/TrainingPlanPage.js";
 import { NutritionPage } from "./pages/NutritionPage.js";
+import { SettingsPage } from "./pages/SettingsPage.js";
 
 const appEl = document.getElementById("app");
 
@@ -32,6 +33,7 @@ router.register("/mailbox", () => layout.setPage(new MailboxPage()));
 router.register("/clients", () => layout.setPage(new ClientsPage()));
 router.register("/training-plan", () => layout.setPage(new TrainingPlanPage()));
 router.register("/nutrition", () => layout.setPage(new NutritionPage()));
+router.register("/settings", () => layout.setPage(new SettingsPage()));
 
 router.register("/", () => {
   window.location.hash = "#/dashboard";

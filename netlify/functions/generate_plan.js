@@ -140,7 +140,7 @@ exports.handler = async (event) => {
     return json(400, { ok: false, error: "Invalid JSON body" });
   }
 
-  const { client, goal, constraints, type, currentPlan } = parsed.value || {};
+  const { client, goal, constraints, type, currentPlan, apiKey: userApiKey } = parsed.value || {};
 
   if (!client || typeof client !== "object") {
     return json(400, { ok: false, error: "Missing 'client'" });
@@ -149,7 +149,9 @@ exports.handler = async (event) => {
   const normalizedType = String(type || "training_plan");
   const fallbackPlan =
     normalizedType === "nutrition_plan" ? buildFallbackNutrition({ client, goal }) : buildFallbackPlan({ client, goal });
-  const apiKey = process.env.GEMINI_API_KEY;
+
+  // Use API key from Settings if provided, fallback to environment variable
+  const apiKey = userApiKey || process.env.GEMINI_API_KEY;
 
   const schemaTraining =
     "{\"name\":string,\"durationWeeks\":number,\"focus\":string,\"days\":{\"mon\":{\"title\":string,\"items\":[{\"name\":string,\"sets\":number,\"reps\":string,\"rpe\":number}]},\"tue\":{...},\"wed\":{...},\"thu\":{...}}}";

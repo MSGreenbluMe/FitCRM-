@@ -156,9 +156,24 @@ export async function generatePlan(payload) {
       await new Promise((r) => setTimeout(r, minGapMs - gap));
     }
 
+    // Load Gemini API key from Settings
+    let apiKey;
+    try {
+      const settingsRaw = localStorage.getItem('fitcrm-settings');
+      if (settingsRaw) {
+        const settings = JSON.parse(settingsRaw);
+        apiKey = settings?.ai?.geminiApiKey;
+      }
+    } catch {
+      // Ignore parse errors
+    }
+
+    // Add API key to payload if available
+    const payloadWithKey = apiKey ? { ...payload, apiKey } : payload;
+
     let val;
     try {
-      val = await postJson(url, payload);
+      val = await postJson(url, payloadWithKey);
     } catch (e) {
       if (e && e.status === 429) {
         setCooldownUntil(Math.max(getCooldownUntil() || 0, Date.now() + 10 * 60 * 1000));

@@ -14,7 +14,6 @@ const NAV_ITEMS = [
   navItem({ icon: "group", label: "Clients", path: "/clients" }),
   navItem({ icon: "assignment", label: "Plans", path: "/training-plan" }),
   navItem({ icon: "restaurant", label: "Nutrition", path: "/nutrition" }),
-  navItem({ icon: "settings", label: "Settings", path: "/settings" }),
 ];
 
 export class Layout {
@@ -54,15 +53,16 @@ export class Layout {
         </div>
 
         <div class="p-4 border-t border-surface-highlight">
-          <div class="flex items-center gap-3">
+          <button data-action="open-settings" class="w-full flex items-center gap-3 p-2 rounded-lg hover:bg-surface-highlight transition-colors cursor-pointer">
             <div class="h-10 w-10 rounded-full bg-surface-highlight border border-surface-highlight flex items-center justify-center">
               <span class="material-symbols-outlined text-white">person</span>
             </div>
-            <div class="flex flex-col overflow-hidden">
+            <div class="flex flex-col overflow-hidden flex-1 text-left">
               <p class="text-sm font-bold text-white truncate">Alex Trainer</p>
               <p class="text-xs text-text-secondary truncate">Pro Account</p>
             </div>
-          </div>
+            <span class="material-symbols-outlined text-gray-400 text-xl">settings</span>
+          </button>
         </div>
       </nav>
 
@@ -81,7 +81,7 @@ export class Layout {
             <div class="flex items-center gap-4 ml-4">
               <a class="text-text-secondary hover:text-white text-sm font-bold" href="../docs/FITCRM_PROJECT_SUMMARY.md" target="_blank" rel="noreferrer">Docs</a>
               <div class="h-8 w-px bg-surface-highlight mx-1"></div>
-              <div class="flex items-center gap-3">
+              <button data-action="open-settings-header" class="flex items-center gap-3 hover:opacity-80 transition-opacity cursor-pointer">
                 <div class="text-right hidden sm:block">
                   <p class="text-sm font-bold text-white leading-tight">Coach Mike</p>
                   <p class="text-xs text-text-secondary">Demo User</p>
@@ -89,7 +89,7 @@ export class Layout {
                 <div class="bg-surface-highlight rounded-full size-10 border-2 border-surface-highlight flex items-center justify-center">
                   <span class="material-symbols-outlined text-white">person</span>
                 </div>
-              </div>
+              </button>
             </div>
           </header>
 
@@ -125,6 +125,22 @@ export class Layout {
       store.reset();
       window.location.hash = "#/dashboard";
     });
+
+    // Settings buttons - sidebar and header
+    const settingsSidebarBtn = this.el.querySelector('[data-action="open-settings"]');
+    const settingsHeaderBtn = this.el.querySelector('[data-action="open-settings-header"]');
+
+    if (settingsSidebarBtn) {
+      settingsSidebarBtn.addEventListener("click", () => {
+        this.onNavigate("/settings");
+      });
+    }
+
+    if (settingsHeaderBtn) {
+      settingsHeaderBtn.addEventListener("click", () => {
+        this.onNavigate("/settings");
+      });
+    }
 
     this.unsub = store.subscribe(() => {
       this.renderNavActive();

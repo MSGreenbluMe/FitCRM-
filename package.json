@@ -1,8 +1,12 @@
 {
   "name": "fitcrm",
-  "version": "0.1.9",
+  "version": "0.2.0",
   "private": true,
+  "type": "module",
   "dependencies": {
-    "nodemailer": "^6.9.8"
+    "nodemailer": "^6.9.8",
+    "imap": "^0.8.19",
+    "mailparser": "^3.6.5",
+    "@netlify/blobs": "^7.1.0"
   }
 }

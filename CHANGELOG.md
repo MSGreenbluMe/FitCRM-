@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.1.8
+
+- AI: stabilize client-side cache key to avoid cache misses (prevents repeated Gemini calls from volatile plan/client payload).
+- UX: if Gemini quota is exhausted (429) and no retryAfterSeconds is provided, apply conservative ~10 min cooldown and surface it in the UI.
+
 ## 0.1.7
 
 - Training editor: per-day Rest/Training toggle (`day.isRest`) + editable day title.

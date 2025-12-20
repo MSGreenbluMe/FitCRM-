@@ -38,6 +38,10 @@
   - Auto-convert rest day to training day when adding exercises
   - Normalization/migration for older localStorage plans
 
+- **AI quota hardening**
+  - Stable client-side caching for `generate_plan` (avoid cache misses and repeated Gemini calls)
+  - Quota (429) cooldown fallback (~10 min) with clear UI messaging
+
 ## 🔄 Needs Revision
 
 - (none)

@@ -10,6 +10,16 @@ function truncate(s, max = 160) {
   return `${str.slice(0, Math.max(0, max - 1))}…`;
 }
 
+function isQuotaExhaustedMessage(s) {
+  const msg = String(s || "").toLowerCase();
+  return (
+    msg.includes("resource_exhausted") ||
+    msg.includes("quota") ||
+    msg.includes("exceeded") ||
+    msg.includes("429")
+  );
+}
+
 const QUICK_ADD = [
   { name: "Avocado Toast", desc: "Simple snack", kcal: 280, protein: 8, carbs: 26, fats: 14 },
   { name: "Whey Protein Shake", desc: "Fast protein", kcal: 140, protein: 25, carbs: 4, fats: 2 },
@@ -211,17 +221,22 @@ export class NutritionPage {
             store.setNutritionPlan({ clientId: client.id, nutrition: res.plan });
             if (res.fallback) {
               const warn = res.warning ? String(res.warning) : "";
+              const isQuota = isQuotaExhaustedMessage(warn);
               showToast({
                 title: "Fallback plan",
                 message: warn
-                  ? `AI unavailable (${truncate(warn)}). Applied a safe default nutrition plan.`
-                  : "AI unavailable. Applied a safe default nutrition plan.",
+                  ? `AI unavailable (${truncate(warn)}). Applied a safe default nutrition plan.${
+                      isQuota ? " (Quota exceeded: cooling down ~10 min.)" : ""
+                    }`
+                  : `AI unavailable. Applied a safe default nutrition plan.${isQuota ? " (Quota exceeded: cooling down ~10 min.)" : ""}`,
                 variant: "success",
               });
 
               const retry = Number(res.retryAfterSeconds || 0);
               if (retry > 0) {
                 this.aiCooldownUntil = Date.now() + retry * 1000;
+              } else if (isQuotaExhaustedMessage(warn)) {
+                this.aiCooldownUntil = Math.max(this.aiCooldownUntil || 0, Date.now() + 10 * 60 * 1000);
               }
             } else {
               showToast({ title: "Updated", message: "AI nutrition plan applied to this client." });
@@ -234,11 +249,17 @@ export class NutritionPage {
             });
           }
         } catch (e) {
+          const isQuota = Boolean(e && (e.status === 429 || isQuotaExhaustedMessage(e.message)));
+          if (isQuota) {
+            this.aiCooldownUntil = Math.max(this.aiCooldownUntil || 0, Date.now() + 10 * 60 * 1000);
+          }
           const fallback = buildLocalFallbackNutrition({ client, goal: client.goal });
           store.setNutritionPlan({ clientId: client.id, nutrition: fallback });
           showToast({
             title: "Fallback plan",
-            message: `AI unavailable (${e && e.message ? e.message : "Unknown error"}). Applied a safe default nutrition plan.`,
+            message: `AI unavailable (${e && e.message ? e.message : "Unknown error"}). Applied a safe default nutrition plan.${
+              isQuota ? " (Quota exceeded: cooling down ~10 min.)" : ""
+            }`,
             variant: "success",
           });
         } finally {

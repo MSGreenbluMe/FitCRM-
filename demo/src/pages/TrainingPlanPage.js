@@ -15,6 +15,16 @@ function truncate(s, max = 160) {
   return `${str.slice(0, Math.max(0, max - 1))}…`;
 }
 
+function isQuotaExhaustedMessage(s) {
+  const msg = String(s || "").toLowerCase();
+  return (
+    msg.includes("resource_exhausted") ||
+    msg.includes("quota") ||
+    msg.includes("exceeded") ||
+    msg.includes("429")
+  );
+}
+
 const DAY_ORDER = [
   { key: "mon", label: "Monday" },
   { key: "tue", label: "Tuesday" },
@@ -243,17 +253,22 @@ export class TrainingPlanPage {
             store.setTrainingPlan({ clientId: client.id, plan: res.plan });
             if (res.fallback) {
               const warn = res.warning ? String(res.warning) : "";
+              const isQuota = isQuotaExhaustedMessage(warn);
               showToast({
                 title: "Fallback plan",
                 message: warn
-                  ? `AI unavailable (${truncate(warn)}). Applied a safe default plan.`
-                  : "AI unavailable. Applied a safe default plan.",
+                  ? `AI unavailable (${truncate(warn)}). Applied a safe default plan.${
+                      isQuota ? " (Quota exceeded: cooling down ~10 min.)" : ""
+                    }`
+                  : `AI unavailable. Applied a safe default plan.${isQuota ? " (Quota exceeded: cooling down ~10 min.)" : ""}`,
                 variant: "success",
               });
 
               const retry = Number(res.retryAfterSeconds || 0);
               if (retry > 0) {
                 this.aiCooldownUntil = Date.now() + retry * 1000;
+              } else if (isQuotaExhaustedMessage(warn)) {
+                this.aiCooldownUntil = Math.max(this.aiCooldownUntil || 0, Date.now() + 10 * 60 * 1000);
               }
             } else {
               showToast({ title: "Updated", message: "AI plan applied to this client." });
@@ -266,11 +281,17 @@ export class TrainingPlanPage {
             });
           }
         } catch (e) {
+          const isQuota = Boolean(e && (e.status === 429 || isQuotaExhaustedMessage(e.message)));
+          if (isQuota) {
+            this.aiCooldownUntil = Math.max(this.aiCooldownUntil || 0, Date.now() + 10 * 60 * 1000);
+          }
           const fallback = buildLocalFallbackTraining({ client, goal: client.goal });
           store.setTrainingPlan({ clientId: client.id, plan: fallback });
           showToast({
             title: "Fallback plan",
-            message: `AI unavailable (${e && e.message ? e.message : "Unknown error"}). Applied a safe default plan.`,
+            message: `AI unavailable (${e && e.message ? e.message : "Unknown error"}). Applied a safe default plan.${
+              isQuota ? " (Quota exceeded: cooling down ~10 min.)" : ""
+            }`,
             variant: "success",
           });
         } finally {

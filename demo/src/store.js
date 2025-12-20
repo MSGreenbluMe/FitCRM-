@@ -148,6 +148,7 @@ function createDemoState() {
       days: {
         mon: {
           title: "Push Day (Chest/Triceps)",
+          isRest: false,
           items: [
             { id: "ex_bench", name: "Barbell Bench Press", sets: 4, reps: "8-10", rpe: 8 },
             { id: "ex_incline", name: "Incline DB Press", sets: 3, reps: "12", rpe: 9 },
@@ -155,14 +156,17 @@ function createDemoState() {
         },
         tue: {
           title: "Pull Day (Back/Biceps)",
+          isRest: false,
           items: [{ id: "ex_deadlift", name: "Deadlift", sets: 3, reps: "5", rpe: 8 }],
         },
         wed: {
           title: "Active Recovery",
+          isRest: true,
           items: [],
         },
         thu: {
           title: "Leg Day",
+          isRest: false,
           items: [],
         },
       },
@@ -232,6 +236,44 @@ function saveState(state) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
 }
 
+function normalizeTrainingPlans(state) {
+  const s = state && typeof state === "object" ? state : null;
+  if (!s || !s.trainingPlans || typeof s.trainingPlans !== "object") return;
+
+  const order = ["mon", "tue", "wed", "thu"];
+
+  for (const clientId of Object.keys(s.trainingPlans)) {
+    const plan = s.trainingPlans[clientId];
+    if (!plan || typeof plan !== "object") continue;
+    if (!plan.days || typeof plan.days !== "object") plan.days = {};
+
+    for (const dayKey of order) {
+      const day = plan.days[dayKey] && typeof plan.days[dayKey] === "object" ? plan.days[dayKey] : { items: [] };
+      const items = Array.isArray(day.items) ? day.items : [];
+      const srcIsRest = typeof day.isRest === "boolean" ? day.isRest : null;
+      const isRest = srcIsRest !== null ? srcIsRest : dayKey === "wed" && items.length === 0;
+
+      day.isRest = isRest;
+      day.title = String(day.title || (isRest ? "Active Recovery" : "Workout"));
+
+      if (isRest) {
+        day.items = [];
+      } else {
+        day.items = items.map((it) => ({
+          ...it,
+          id: String(it?.id || `ex_${Math.random().toString(16).slice(2)}`),
+          name: String(it?.name || "Exercise"),
+          sets: Number(it?.sets || 3),
+          reps: String(it?.reps || "8-12"),
+          rpe: Number(it?.rpe || 8),
+        }));
+      }
+
+      plan.days[dayKey] = day;
+    }
+  }
+}
+
 export const store = {
   _state: null,
   _listeners: new Set(),
@@ -239,6 +281,7 @@ export const store = {
   init() {
     const loaded = loadState();
     this._state = loaded || createDemoState();
+    normalizeTrainingPlans(this._state);
     saveState(this._state);
   },
 
@@ -307,16 +350,23 @@ export const store = {
         durationWeeks: 4,
         focus: "Draft",
         days: {
-          mon: { title: "Workout", items: [] },
-          tue: { title: "Workout", items: [] },
-          wed: { title: "Active Recovery", items: [] },
-          thu: { title: "Workout", items: [] },
+          mon: { title: "Workout", isRest: false, items: [] },
+          tue: { title: "Workout", isRest: false, items: [] },
+          wed: { title: "Active Recovery", isRest: true, items: [] },
+          thu: { title: "Workout", isRest: false, items: [] },
         },
       };
     }
 
     const day = this._state.trainingPlans[clientId].days[dayKey];
     if (!day) return;
+
+    if (day.isRest) {
+      day.isRest = false;
+      if (!day.title || day.title === "Active Recovery") {
+        day.title = "Workout";
+      }
+    }
 
     day.items.push({
       id: `ex_${Math.random().toString(16).slice(2)}`,
@@ -325,6 +375,38 @@ export const store = {
       reps: exercise.reps,
       rpe: exercise.rpe,
     });
+
+    this._emit();
+  },
+
+  updateTrainingDayTitle({ clientId, dayKey, title }) {
+    const plan = this._state.trainingPlans[clientId];
+    if (!plan) return;
+    const day = plan.days[dayKey];
+    if (!day) return;
+    day.title = String(title || "");
+    this._emit();
+  },
+
+  setTrainingDayRest({ clientId, dayKey, isRest }) {
+    const plan = this._state.trainingPlans[clientId];
+    if (!plan) return;
+    const day = plan.days[dayKey];
+    if (!day) return;
+
+    const nextIsRest = Boolean(isRest);
+    day.isRest = nextIsRest;
+
+    if (nextIsRest) {
+      day.items = [];
+      if (!day.title || day.title === "Workout") {
+        day.title = "Active Recovery";
+      }
+    } else {
+      if (!day.title || day.title === "Active Recovery") {
+        day.title = "Workout";
+      }
+    }
 
     this._emit();
   },
@@ -360,15 +442,21 @@ export const store = {
       const srcDay = plan.days && plan.days[dayKey] ? plan.days[dayKey] : null;
       const srcItems = srcDay && Array.isArray(srcDay.items) ? srcDay.items : [];
 
+      const srcIsRest = srcDay && typeof srcDay.isRest === "boolean" ? srcDay.isRest : null;
+      const isRest = srcIsRest !== null ? srcIsRest : dayKey === "wed" && srcItems.length === 0;
+
       days[dayKey] = {
-        title: (srcDay && srcDay.title) || (dayKey === "wed" ? "Active Recovery" : "Workout"),
-        items: srcItems.map((it) => ({
-          id: `ex_${Math.random().toString(16).slice(2)}`,
-          name: String(it.name || "Exercise"),
-          sets: Number(it.sets || 3),
-          reps: String(it.reps || "8-12"),
-          rpe: Number(it.rpe || 8),
-        })),
+        title: (srcDay && srcDay.title) || (isRest ? "Active Recovery" : "Workout"),
+        isRest,
+        items: isRest
+          ? []
+          : srcItems.map((it) => ({
+              id: `ex_${Math.random().toString(16).slice(2)}`,
+              name: String(it.name || "Exercise"),
+              sets: Number(it.sets || 3),
+              reps: String(it.reps || "8-12"),
+              rpe: Number(it.rpe || 8),
+            })),
       };
     }
 

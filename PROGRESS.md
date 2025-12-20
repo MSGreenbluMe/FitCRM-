@@ -32,6 +32,12 @@
   - `/.netlify/functions/send_email` implemented (server-side)
   - `package.json` includes `nodemailer`
 
+- **Training plan editor improvements**
+  - Day title is editable
+  - Per-day Rest/Training toggle (`isRest`) instead of hard-coded Wednesday
+  - Auto-convert rest day to training day when adding exercises
+  - Normalization/migration for older localStorage plans
+
 ## 🔄 Needs Revision
 
 - (none)

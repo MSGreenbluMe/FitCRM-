@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.1.7
+
+- Training editor: per-day Rest/Training toggle (`day.isRest`) + editable day title.
+- Training editor: auto-convert rest day to training day when adding an exercise.
+- Fix: define missing `truncate()` helper (prevent UI runtime error in fallback toasts).
+- Data: normalize/migrate legacy training plans from localStorage to include `isRest`.
+
 ## 0.1.6
 
 - Gemini quota: improved handling of 429 RESOURCE_EXHAUSTED (compact warning + retryAfterSeconds).

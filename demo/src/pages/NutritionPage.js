@@ -4,6 +4,12 @@ import { sendEmail, generatePlan } from "../api.js";
 
 const DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
+function truncate(s, max = 160) {
+  const str = String(s || "");
+  if (str.length <= max) return str;
+  return `${str.slice(0, Math.max(0, max - 1))}…`;
+}
+
 const QUICK_ADD = [
   { name: "Avocado Toast", desc: "Simple snack", kcal: 280, protein: 8, carbs: 26, fats: 14 },
   { name: "Whey Protein Shake", desc: "Fast protein", kcal: 140, protein: 25, carbs: 4, fats: 2 },
@@ -237,7 +243,7 @@ export class NutritionPage {
           });
         } finally {
           this.aiInFlight = false;
-          this.aiCooldownUntil = Date.now() + 5000;
+          this.aiCooldownUntil = Math.max(this.aiCooldownUntil || 0, Date.now() + 5000);
           this.render();
         }
       });

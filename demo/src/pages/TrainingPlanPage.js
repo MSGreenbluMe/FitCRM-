@@ -9,6 +9,12 @@ const EXERCISE_LIBRARY = [
   { id: "lib_row", name: "Dumbbell Row", sets: 3, reps: "10-12", rpe: 9 },
 ];
 
+function truncate(s, max = 160) {
+  const str = String(s || "");
+  if (str.length <= max) return str;
+  return `${str.slice(0, Math.max(0, max - 1))}…`;
+}
+
 const DAY_ORDER = [
   { key: "mon", label: "Monday" },
   { key: "tue", label: "Tuesday" },
@@ -269,7 +275,7 @@ export class TrainingPlanPage {
           });
         } finally {
           this.aiInFlight = false;
-          this.aiCooldownUntil = Date.now() + 5000;
+          this.aiCooldownUntil = Math.max(this.aiCooldownUntil || 0, Date.now() + 5000);
           this.render();
         }
       });
@@ -289,6 +295,21 @@ export class TrainingPlanPage {
         const { clientId: cId, dayKey, exId } = btn.dataset;
         store.removeExercise({ clientId: cId, dayKey, exerciseId: exId });
         showToast({ title: "Removed", message: "Exercise removed from day." });
+      });
+    });
+
+    this.el.querySelectorAll('[data-action="day-title"]').forEach((input) => {
+      input.addEventListener("input", () => {
+        const { clientId: cId, dayKey } = input.dataset;
+        store.updateTrainingDayTitle({ clientId: cId, dayKey, title: input.value });
+      });
+    });
+
+    this.el.querySelectorAll('[data-action="toggle-rest"]').forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const { clientId: cId, dayKey, isRest } = btn.dataset;
+        const nextIsRest = String(isRest) === "true";
+        store.setTrainingDayRest({ clientId: cId, dayKey, isRest: nextIsRest });
       });
     });
   }
@@ -330,7 +351,7 @@ function dayColumn({ clientId, dayKey, label, plan }) {
   const title = day?.title || "Workout";
   const items = day?.items || [];
 
-  const isRest = dayKey === "wed";
+  const isRest = Boolean(day?.isRest);
 
   return `
     <div class="flex flex-col w-[340px] flex-none bg-surface-dark/50 rounded-xl border border-border-dark h-full overflow-hidden ring-1 ring-transparent hover:ring-primary/30 transition-shadow">
@@ -339,9 +360,20 @@ function dayColumn({ clientId, dayKey, label, plan }) {
           <h3 class="text-white font-black text-lg tracking-tight">${escapeHtml(label).toUpperCase()}</h3>
           <button class="text-text-secondary hover:text-primary"><span class="material-symbols-outlined text-[20px]">more_horiz</span></button>
         </div>
-        <input class="w-full bg-transparent border-none p-0 text-sm font-medium text-primary placeholder:text-text-secondary focus:ring-0 mb-1" value="${escapeAttr(
-          title
-        )}" disabled />
+        <div class="flex items-center gap-2 mb-1">
+          <input data-action="day-title" data-client-id="${escapeAttr(clientId)}" data-day-key="${escapeAttr(
+            dayKey
+          )}" class="flex-1 w-full bg-transparent border-none p-0 text-sm font-medium text-primary placeholder:text-text-secondary focus:ring-0" value="${escapeAttr(
+            title
+          )}" />
+          <button data-action="toggle-rest" data-client-id="${escapeAttr(clientId)}" data-day-key="${escapeAttr(
+            dayKey
+          )}" data-is-rest="${escapeAttr(String(!isRest))}" class="h-7 px-2 rounded border border-border-dark text-[11px] font-bold ${
+            isRest ? "text-text-secondary hover:text-primary" : "text-primary hover:brightness-110"
+          } bg-black/20">
+            ${isRest ? "Set Training" : "Set Rest"}
+          </button>
+        </div>
         <div class="text-xs text-text-secondary flex justify-between">
           <span>${items.length} Exercises</span>
           <span>Est. ${Math.max(0, items.length * 12)} min</span>

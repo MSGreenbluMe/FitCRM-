@@ -241,14 +241,19 @@ exports.handler = async (event) => {
     const plan = planFromJsonMode.ok ? planFromJsonMode.value : extractJsonObject(candidate);
 
     if (!plan || typeof plan !== "object") {
-      // Include what we actually got for debugging
-      const candidatePreview = candidate?.length > 200 ? candidate.slice(0, 200) + '...' : candidate;
+      // Include what we actually got for debugging - show full text (or first 2000 chars)
+      const candidatePreview = candidate?.length > 2000 ? candidate.slice(0, 2000) + '...[truncated]' : candidate;
       return json(200, {
         ok: true,
         plan: fallbackPlan,
         fallback: true,
         warning: "Gemini did not return a valid plan JSON",
-        debug: { candidatePreview }
+        debug: {
+          candidatePreview,
+          candidateLength: candidate?.length,
+          planFromJsonModeOk: planFromJsonMode.ok,
+          extractedPlan: plan
+        }
       });
     }
 

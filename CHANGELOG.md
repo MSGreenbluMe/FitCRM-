@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.2.2
+
+- **Security:** gated the unauthenticated backend data endpoints (`clients`, `settings`, `setup`, `submit_progress`, `check_emails`) behind `FITCRM_API_TOKEN`. They are now disabled by default (503) so a fresh deploy doesn't expose an open CRUD API over client PII. (See `SECURITY.md`.)
+- **Security:** escaped user-controlled settings values (name, avatar) in `Layout.js` and `SettingsPage.js` to prevent self-XSS. Verified in-browser that injected markup is rendered as inert text.
+- **Security:** stopped leaking `error.stack` from the `setup` function.
+- Fixed `settings` function: mask both `ai.apiKey` and `ai.geminiApiKey`, and read sections defensively.
+- Cleanup: removed dead `getRequiredEnv` in `generate_plan`; aligned default Gemini model to `gemini-2.5-flash` across the backend.
+- UX: clarified in Settings → Email how email sending actually works on the deployed demo (Netlify env vars).
+- Docs: added `SECURITY.md`; documented `FITCRM_API_TOKEN` in `docs/DEPLOYMENT.md`.
+
 ## 0.2.1
 
 - **Fix (deploy-blocking):** Netlify Functions failed to load because the repo root `package.json` declares `"type": "module"`, but `health.js`, `generate_plan.js`, and `send_email.js` were written in CommonJS (`exports.handler` / `require`). Under ESM these export nothing, so the functions would 500 on Netlify. Converted those three functions to ESM so the whole `netlify/functions/` tree is consistent ESM.

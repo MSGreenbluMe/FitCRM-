@@ -270,7 +270,7 @@ export class AutomationEngine {
       startDate: result.plan.startDate,
       days: result.plan.days,
       generatedBy: 'ai',
-      aiModel: 'gemini-2.0-flash',
+      aiModel: 'gemini-2.5-flash',
       status: params.activate ? 'active' : 'draft'
     });
 
@@ -326,7 +326,7 @@ export class AutomationEngine {
       targets: result.plan.targets,
       days: result.plan.days,
       generatedBy: 'ai',
-      aiModel: 'gemini-2.0-flash',
+      aiModel: 'gemini-2.5-flash',
       status: params.activate ? 'active' : 'draft'
     });
 

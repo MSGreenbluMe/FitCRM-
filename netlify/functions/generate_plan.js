@@ -33,12 +33,6 @@ function buildFallbackNutrition({ client, goal }) {
   };
 }
 
-function getRequiredEnv(name) {
-  const v = process.env[name];
-  if (!v) throw new Error(`Missing env var: ${name}`);
-  return v;
-}
-
 function safeParseJson(raw) {
   try {
     return { ok: true, value: JSON.parse(raw) };

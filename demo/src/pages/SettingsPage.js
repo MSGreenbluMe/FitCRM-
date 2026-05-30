@@ -1,6 +1,15 @@
 import { store } from "../store.js";
 import { showToast } from "../ui/toast.js";
 
+function escapeHtml(s) {
+  return String(s ?? "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+
 export class SettingsPage {
   constructor() {
     this.el = null;
@@ -228,7 +237,7 @@ export class SettingsPage {
           <div class="relative">
             <div class="h-24 w-24 rounded-full bg-gray-700 border-2 border-gray-600 flex items-center justify-center overflow-hidden">
               ${avatarUrl
-                ? `<img src="${avatarUrl}" alt="Avatar" class="w-full h-full object-cover" />`
+                ? `<img src="${escapeHtml(avatarUrl)}" alt="Avatar" class="w-full h-full object-cover" />`
                 : `<span class="material-symbols-outlined text-4xl text-gray-400">person</span>`
               }
             </div>
@@ -283,6 +292,16 @@ export class SettingsPage {
     const { email } = this.settings;
     return `
       <div class="flex flex-col gap-6">
+        <div class="bg-blue-900/30 border border-blue-600/30 rounded-lg p-4">
+          <div class="flex items-start gap-3">
+            <span class="material-symbols-outlined text-blue-400">info</span>
+            <div class="text-sm text-gray-300">
+              <p class="font-semibold text-white mb-1">Ako to funguje</p>
+              <p>Odosielanie emailov v nasadenom deme beží cez serverovú funkciu, ktorá používa premenné prostredia na Netlify (<code>SMTP_HOST</code>, <code>SMTP_PORT</code>, <code>SMTP_USER</code>, <code>SMTP_PASS</code>). Údaje nižšie sa ukladajú len lokálne v prehliadači a sú určené pre pripravovanú automatizáciu (IMAP príjem). Heslá sem teda zadávaj iba ak vieš, čo robíš.</p>
+            </div>
+          </div>
+        </div>
+
         <!-- Enable Toggle -->
         <div class="flex items-center justify-between p-4 bg-gray-700/50 rounded-lg">
           <div class="flex items-center gap-3">
@@ -492,8 +511,8 @@ export class SettingsPage {
           <input
             type="${type}"
             name="${name}"
-            value="${value || ''}"
-            placeholder="${placeholder || label}"
+            value="${escapeHtml(value || '')}"
+            placeholder="${escapeHtml(placeholder || label)}"
             class="w-full bg-gray-900 border border-gray-600 rounded-lg px-4 py-2.5 ${icon ? 'pl-11' : ''} text-white placeholder-gray-500 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors"
           />
         </div>
@@ -512,7 +531,7 @@ export class SettingsPage {
           rows="4"
           placeholder="${placeholder || label}"
           class="w-full bg-gray-900 border border-gray-600 rounded-lg px-4 py-2.5 text-white placeholder-gray-500 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors resize-none"
-        >${value || ''}</textarea>
+        >${escapeHtml(value || '')}</textarea>
       </div>
     `;
   }

@@ -508,7 +508,7 @@ export const SettingsSchema = {
   /*
   ai: {
     provider: "gemini",
-    model: "gemini-2.0-flash",
+    model: "gemini-2.5-flash",
     apiKey: "***",
     maxRetries: 3,
     timeout: 30000,

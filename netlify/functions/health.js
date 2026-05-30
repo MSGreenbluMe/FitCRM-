@@ -5,6 +5,6 @@ export const handler = async () => {
       "content-type": "application/json; charset=utf-8",
       "cache-control": "no-store",
     },
-    body: JSON.stringify({ ok: true, service: "fitcrm", version: "0.2.0" }),
+    body: JSON.stringify({ ok: true, service: "fitcrm", version: "0.2.2" }),
   };
 };

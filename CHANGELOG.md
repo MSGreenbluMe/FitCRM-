@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.2.1
+
+- **Fix (deploy-blocking):** Netlify Functions failed to load because the repo root `package.json` declares `"type": "module"`, but `health.js`, `generate_plan.js`, and `send_email.js` were written in CommonJS (`exports.handler` / `require`). Under ESM these export nothing, so the functions would 500 on Netlify. Converted those three functions to ESM so the whole `netlify/functions/` tree is consistent ESM.
+- Added `npm run serve` / `npm run dev` / `npm run deploy` scripts.
+- Added a one-click "Deploy to Netlify" button to the README and clarified env-var setup.
+- Bumped `health` function version string to match `package.json`.
+
 ## 0.1.9
 
 - AI: global request queue (serialize `generatePlan` calls) to prevent parallel bursts.

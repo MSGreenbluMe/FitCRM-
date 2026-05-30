@@ -1,4 +1,4 @@
-const nodemailer = require("nodemailer");
+import nodemailer from "nodemailer";
 
 function json(statusCode, body) {
   return {
@@ -28,7 +28,7 @@ function safeParseJson(raw) {
   }
 }
 
-exports.handler = async (event) => {
+export const handler = async (event) => {
   if (event.httpMethod === "OPTIONS") {
     return json(200, { ok: true });
   }

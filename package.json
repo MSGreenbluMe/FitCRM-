@@ -1,8 +1,13 @@
 {
   "name": "fitcrm",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "private": true,
   "type": "module",
+  "scripts": {
+    "serve": "python3 -m http.server 8000",
+    "dev": "npx --yes netlify-cli dev",
+    "deploy": "npx --yes netlify-cli deploy --prod"
+  },
   "dependencies": {
     "nodemailer": "^6.9.8",
     "imap": "^0.8.19",

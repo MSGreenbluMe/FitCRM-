@@ -1,5 +1,14 @@
 import { store } from "../store.js";
 
+function escapeHtml(s) {
+  return String(s ?? "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+
 function navItem({ icon, label, path }) {
   return {
     icon,
@@ -77,12 +86,12 @@ export class Layout {
           <button data-action="open-settings" class="w-full flex items-center gap-3 p-2 rounded-lg hover:bg-surface-highlight transition-colors cursor-pointer">
             <div data-role="sidebar-avatar" class="h-10 w-10 rounded-full bg-surface-highlight border border-surface-highlight flex items-center justify-center overflow-hidden">
               ${this.getUserAvatar()
-                ? `<img src="${this.getUserAvatar()}" alt="Avatar" class="w-full h-full object-cover" />`
+                ? `<img src="${escapeHtml(this.getUserAvatar())}" alt="Avatar" class="w-full h-full object-cover" />`
                 : `<span class="material-symbols-outlined text-white">person</span>`
               }
             </div>
             <div class="flex flex-col overflow-hidden flex-1 text-left">
-              <p data-role="sidebar-name" class="text-sm font-bold text-white truncate">${this.getUserName()}</p>
+              <p data-role="sidebar-name" class="text-sm font-bold text-white truncate">${escapeHtml(this.getUserName())}</p>
               <p class="text-xs text-text-secondary truncate">Pro Account</p>
             </div>
             <span class="material-symbols-outlined text-gray-400 text-xl">settings</span>
@@ -107,12 +116,12 @@ export class Layout {
               <div class="h-8 w-px bg-surface-highlight mx-1"></div>
               <button data-action="open-settings-header" class="flex items-center gap-3 hover:opacity-80 transition-opacity cursor-pointer">
                 <div class="text-right hidden sm:block">
-                  <p data-role="header-name" class="text-sm font-bold text-white leading-tight">${this.getUserName()}</p>
+                  <p data-role="header-name" class="text-sm font-bold text-white leading-tight">${escapeHtml(this.getUserName())}</p>
                   <p class="text-xs text-text-secondary">Demo User</p>
                 </div>
                 <div data-role="header-avatar" class="bg-surface-highlight rounded-full size-10 border-2 border-surface-highlight flex items-center justify-center overflow-hidden">
                   ${this.getUserAvatar()
-                    ? `<img src="${this.getUserAvatar()}" alt="Avatar" class="w-full h-full object-cover" />`
+                    ? `<img src="${escapeHtml(this.getUserAvatar())}" alt="Avatar" class="w-full h-full object-cover" />`
                     : `<span class="material-symbols-outlined text-white">person</span>`
                   }
                 </div>
@@ -194,7 +203,7 @@ export class Layout {
     if (sidebarAvatar) {
       const avatar = this.getUserAvatar();
       sidebarAvatar.innerHTML = avatar
-        ? `<img src="${avatar}" alt="Avatar" class="w-full h-full object-cover" />`
+        ? `<img src="${escapeHtml(avatar)}" alt="Avatar" class="w-full h-full object-cover" />`
         : `<span class="material-symbols-outlined text-white">person</span>`;
     }
 
@@ -209,7 +218,7 @@ export class Layout {
     if (headerAvatar) {
       const avatar = this.getUserAvatar();
       headerAvatar.innerHTML = avatar
-        ? `<img src="${avatar}" alt="Avatar" class="w-full h-full object-cover" />`
+        ? `<img src="${escapeHtml(avatar)}" alt="Avatar" class="w-full h-full object-cover" />`
         : `<span class="material-symbols-outlined text-white">person</span>`;
     }
   }

@@ -1,4 +1,5 @@
 import { store } from "../store.js";
+import { t } from "../i18n.js";
 
 export class DashboardPage {
   constructor() {
@@ -74,19 +75,19 @@ export class DashboardPage {
     if (activeCli.length === 0) {
       // Fallback to demo data if no clients
       return [
-        { time: "10:00 AM", name: "No clients yet", label: "Demo", cta: "Add Client", href: "#/clients" },
+        { time: "10:00 AM", name: t('dash.noClientsYet'), label: t('dash.demo'), cta: t('dash.addClient'), href: "#/clients" },
       ];
     }
 
     const sessions = activeCli.map((client, idx) => {
       const times = ["09:00 AM", "11:00 AM", "02:00 PM", "04:00 PM"];
-      const labels = ["Strength", "HIIT", "Virtual", "Consult"];
+      const labels = [t('dash.sessionStrength'), t('dash.sessionHiit'), t('dash.sessionVirtual'), t('dash.sessionConsult')];
 
       return {
         time: times[idx] || "TBD",
         name: client.name,
-        label: labels[idx] || "Session",
-        cta: "View",
+        label: labels[idx] || t('dash.sessionGeneric'),
+        cta: t('dash.view'),
         href: "#/clients",
         disabled: false
       };
@@ -103,40 +104,40 @@ export class DashboardPage {
     this.el.innerHTML = `
       <div class="max-w-[1200px] mx-auto flex flex-col gap-8">
         <div>
-          <h1 class="text-white text-3xl lg:text-4xl font-extrabold leading-tight">Good day, Coach.<br /><span class="text-primary">You have ${stats.unread} unread messages.</span></h1>
+          <h1 class="text-white text-3xl lg:text-4xl font-extrabold leading-tight">${t('dash.greetingPrefix')}<br /><span class="text-primary">${t('dash.greetingUnread', { count: stats.unread })}</span></h1>
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           ${statCard({
-            label: "Active Clients",
+            label: t('dash.activeClients'),
             value: String(stats.activeClients),
             icon: "group",
             accent: "text-primary",
             isReal: true
           })}
           ${statCard({
-            label: "Sessions Today",
+            label: t('dash.sessionsToday'),
             value: String(stats.sessionsToday),
             icon: "fitness_center",
             accent: "text-white",
             isReal: false,
-            note: "Demo"
+            note: t('dash.demo')
           })}
           ${statCard({
-            label: "Pending Check-ins",
+            label: t('dash.pendingCheckins'),
             value: String(stats.pendingCheckins),
             icon: "pending_actions",
             accent: "text-yellow-400",
             isReal: stats.pendingCheckins !== 12,
-            note: stats.pendingCheckins === 12 ? "Demo" : ""
+            note: stats.pendingCheckins === 12 ? t('dash.demo') : ""
           })}
           ${statCard({
-            label: "Revenue MTD",
+            label: t('dash.revenueMtd'),
             value: stats.revenue,
             icon: "payments",
             accent: "text-primary",
             isReal: stats.activeClients > 0,
-            note: stats.activeClients === 0 ? "Demo" : ""
+            note: stats.activeClients === 0 ? t('dash.demo') : ""
           })}
         </div>
 
@@ -144,8 +145,8 @@ export class DashboardPage {
           <div class="xl:col-span-2 flex flex-col gap-6">
             <div class="bg-surface-highlight rounded-xl p-6 border border-transparent hover:border-primary/30 transition-colors">
               <div class="flex justify-between items-center mb-4">
-                <h3 class="text-white text-xl font-bold tracking-tight">Today's Schedule</h3>
-                <a class="text-sm text-primary font-bold hover:underline" href="#/clients">Manage Clients</a>
+                <h3 class="text-white text-xl font-bold tracking-tight">${t('dash.todaysSchedule')}</h3>
+                <a class="text-sm text-primary font-bold hover:underline" href="#/clients">${t('dash.manageClients')}</a>
               </div>
               ${sessions.length > 0 ? `
                 <div class="flex flex-col gap-3">
@@ -154,15 +155,15 @@ export class DashboardPage {
               ` : `
                 <div class="text-center py-8 text-gray-400">
                   <span class="material-symbols-outlined text-6xl mb-4 opacity-20">calendar_month</span>
-                  <p>No sessions scheduled yet</p>
-                  <a href="#/clients" class="text-primary hover:underline mt-2 inline-block">Add clients to schedule sessions</a>
+                  <p>${t('dash.noSessionsYet')}</p>
+                  <a href="#/clients" class="text-primary hover:underline mt-2 inline-block">${t('dash.addClientsToSchedule')}</a>
                 </div>
               `}
             </div>
 
             <div class="p-6 bg-surface-highlight rounded-xl">
               <div class="flex justify-between items-center mb-4">
-                <h4 class="text-white font-bold text-lg">Client Compliance Rate</h4>
+                <h4 class="text-white font-bold text-lg">${t('dash.clientComplianceRate')}</h4>
                 <span class="text-primary text-2xl font-bold">${stats.compliance}%</span>
               </div>
               <div class="h-4 w-full bg-background-dark rounded-full overflow-hidden">
@@ -171,29 +172,29 @@ export class DashboardPage {
                 </div>
               </div>
               <div class="flex justify-between text-xs text-text-secondary mt-2 font-medium">
-                <span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span>
+                <span>${t('dash.mon')}</span><span>${t('dash.tue')}</span><span>${t('dash.wed')}</span><span>${t('dash.thu')}</span><span>${t('dash.fri')}</span><span>${t('dash.sat')}</span><span>${t('dash.sun')}</span>
               </div>
               ${stats.compliance === 85 ? `
-                <p class="text-xs text-gray-500 mt-2 text-center">Demo data - track real compliance in client plans</p>
+                <p class="text-xs text-gray-500 mt-2 text-center">${t('dash.complianceDemoNote')}</p>
               ` : ''}
             </div>
           </div>
 
           <div class="flex flex-col gap-6">
             <div class="bg-surface-highlight rounded-xl p-5">
-              <h3 class="text-white text-base font-bold mb-4">Quick Actions</h3>
+              <h3 class="text-white text-base font-bold mb-4">${t('dash.quickActions')}</h3>
               <div class="grid grid-cols-2 gap-3">
-                ${actionButton({ icon: "mail", label: "Open Inbox", href: "#/mailbox" })}
-                ${actionButton({ icon: "group", label: "Clients", href: "#/clients" })}
-                ${actionButton({ icon: "assignment", label: "Plans", href: "#/training-plan" })}
-                ${actionButton({ icon: "restaurant", label: "Nutrition", href: "#/nutrition" })}
+                ${actionButton({ icon: "mail", label: t('dash.openInbox'), href: "#/mailbox" })}
+                ${actionButton({ icon: "group", label: t('dash.clients'), href: "#/clients" })}
+                ${actionButton({ icon: "assignment", label: t('dash.plans'), href: "#/training-plan" })}
+                ${actionButton({ icon: "restaurant", label: t('dash.nutrition'), href: "#/nutrition" })}
               </div>
             </div>
 
             <div class="flex-1 flex flex-col">
               <div class="flex justify-between items-center mb-3">
-                <h3 class="text-white text-lg font-bold">Inbox Preview</h3>
-                <span class="text-xs ${stats.unread > 0 ? 'text-primary' : 'text-text-secondary'}">${stats.unread} unread</span>
+                <h3 class="text-white text-lg font-bold">${t('dash.inboxPreview')}</h3>
+                <span class="text-xs ${stats.unread > 0 ? 'text-primary' : 'text-text-secondary'}">${t('dash.unreadCount', { count: stats.unread })}</span>
               </div>
               ${state.tickets.length > 0 ? `
                 <div class="flex flex-col gap-3">
@@ -202,11 +203,11 @@ export class DashboardPage {
                     .map((t) => previewRow(t))
                     .join("")}
                 </div>
-                <a class="w-full text-center text-xs text-text-secondary font-bold mt-4 hover:text-primary uppercase tracking-wider py-2" href="#/mailbox">Open Mailbox</a>
+                <a class="w-full text-center text-xs text-text-secondary font-bold mt-4 hover:text-primary uppercase tracking-wider py-2" href="#/mailbox">${t('dash.openMailbox')}</a>
               ` : `
                 <div class="text-center py-8 text-gray-400">
                   <span class="material-symbols-outlined text-6xl mb-4 opacity-20">inbox</span>
-                  <p>No messages yet</p>
+                  <p>${t('dash.noMessagesYet')}</p>
                 </div>
               `}
             </div>
@@ -241,7 +242,7 @@ function statCard({ label, value, icon, accent, isReal = true, note = '' }) {
     <div class="flex flex-col gap-2 rounded-xl p-5 bg-surface-highlight border border-transparent hover:border-primary/30 transition-colors group relative">
       ${!isReal || note ? `
         <div class="absolute top-2 right-2">
-          <span class="text-[10px] px-2 py-1 rounded-full bg-gray-700 text-gray-400">${note || 'Demo'}</span>
+          <span class="text-[10px] px-2 py-1 rounded-full bg-gray-700 text-gray-400">${note || t('dash.demo')}</span>
         </div>
       ` : ''}
       <div class="flex justify-between items-start">

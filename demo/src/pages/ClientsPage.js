@@ -1,4 +1,5 @@
 import { store } from "../store.js";
+import { t } from "../i18n.js";
 
 export class ClientsPage {
   constructor() {
@@ -34,19 +35,19 @@ export class ClientsPage {
             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
               <span class="material-symbols-outlined text-text-secondary">search</span>
             </div>
-            <input data-role="search" class="block w-full pl-10 pr-3 py-2.5 border-none rounded-lg bg-surface-highlight text-white placeholder-text-secondary focus:ring-1 focus:ring-primary text-sm" placeholder="Search clients..." type="text"/>
+            <input data-role="search" class="block w-full pl-10 pr-3 py-2.5 border-none rounded-lg bg-surface-highlight text-white placeholder-text-secondary focus:ring-1 focus:ring-primary text-sm" placeholder="${t('clients.searchPlaceholder')}" type="text"/>
           </div>
 
           <div class="flex gap-2 overflow-x-auto pb-2">
-            ${chip({ id: "all", label: "All Clients", active: this.filter === "all" })}
+            ${chip({ id: "all", label: t("clients.filterAll"), active: this.filter === "all" })}
             ${chip({
               id: "active",
-              label: `Active (${state.clients.filter((c) => c.status === "active").length})`,
+              label: t("clients.filterActive", { n: state.clients.filter((c) => c.status === "active").length }),
               active: this.filter === "active",
             })}
             ${chip({
               id: "pending",
-              label: `Pending (${state.clients.filter((c) => c.status === "pending").length})`,
+              label: t("clients.filterPending", { n: state.clients.filter((c) => c.status === "pending").length }),
               active: this.filter === "pending",
             })}
           </div>
@@ -152,7 +153,7 @@ function clientRow({ client, selected }) {
           <p class="text-white text-sm font-bold truncate">${escapeHtml(client.name)}</p>
           <span class="size-2 rounded-full ${dot}"></span>
         </div>
-        <p class="text-text-secondary text-xs truncate">Goal: ${escapeHtml(client.goal)} • Last seen ${escapeHtml(
+        <p class="text-text-secondary text-xs truncate">${t("clients.goalLabel")}: ${escapeHtml(client.goal)} • ${t("clients.lastSeen")} ${escapeHtml(
           client.lastSeen
         )}</p>
       </div>
@@ -172,43 +173,43 @@ function clientDetails(client) {
             <div class="flex items-center gap-3 mb-1">
               <h2 class="text-2xl font-bold text-white">${escapeHtml(client.name)}</h2>
               <span class="px-2 py-0.5 rounded text-xs font-bold bg-primary/20 text-primary border border-primary/30">${escapeHtml(
-                client.status
+                t(`clients.status_${client.status}`)
               )}</span>
             </div>
-            <p class="text-text-secondary text-sm mb-4">Plan: ${escapeHtml(client.plan)} • Goal: ${escapeHtml(
+            <p class="text-text-secondary text-sm mb-4">${t("clients.planLabel")}: ${escapeHtml(client.plan)} • ${t("clients.goalLabel")}: ${escapeHtml(
               client.goal
             )}</p>
             <div class="flex gap-6">
-              ${headerStat({ label: "Weight", value: `${client.weightLbs} lbs` })}
+              ${headerStat({ label: t("clients.weight"), value: `${client.weightLbs} lbs` })}
               <div class="w-px bg-surface-highlight"></div>
-              ${headerStat({ label: "Body Fat", value: `${client.bodyFatPct}%` })}
+              ${headerStat({ label: t("clients.bodyFat"), value: `${client.bodyFatPct}%` })}
               <div class="w-px bg-surface-highlight"></div>
-              ${headerStat({ label: "Email", value: client.email })}
+              ${headerStat({ label: t("clients.email"), value: client.email })}
             </div>
           </div>
         </div>
 
         <div class="flex gap-3">
-          <button data-action="open-mailbox" class="flex items-center justify-center size-10 rounded-lg bg-surface-highlight text-white hover:bg-surface-highlight/80 transition-colors" title="Open Mailbox">
+          <button data-action="open-mailbox" class="flex items-center justify-center size-10 rounded-lg bg-surface-highlight text-white hover:bg-surface-highlight/80 transition-colors" title="${t('clients.openMailbox')}">
             <span class="material-symbols-outlined">chat</span>
           </button>
           <button data-action="open-training" class="flex items-center justify-center gap-2 h-10 px-4 rounded-lg bg-primary text-background-dark text-sm font-bold hover:bg-opacity-90 transition-opacity">
             <span class="material-symbols-outlined text-[18px]">assignment</span>
-            Training Plan
+            ${t("clients.trainingPlan")}
           </button>
           <button data-action="open-nutrition" class="flex items-center justify-center gap-2 h-10 px-4 rounded-lg bg-surface-highlight text-white text-sm font-bold hover:bg-surface-highlight/80">
             <span class="material-symbols-outlined text-[18px]">restaurant</span>
-            Nutrition
+            ${t("clients.nutrition")}
           </button>
         </div>
       </div>
 
       <div class="flex gap-6 mt-8 border-b border-surface-highlight">
-        <a class="pb-3 text-sm font-bold text-primary border-b-2 border-primary" href="#/clients">Overview</a>
-        <a class="pb-3 text-sm font-medium text-text-secondary hover:text-white transition-colors" href="#/training-plan">Training Plan</a>
-        <a class="pb-3 text-sm font-medium text-text-secondary hover:text-white transition-colors" href="#/nutrition">Nutrition</a>
-        <a class="pb-3 text-sm font-medium text-text-secondary hover:text-white transition-colors" href="#/clients">Progress</a>
-        <a class="pb-3 text-sm font-medium text-text-secondary hover:text-white transition-colors" href="#/clients">History</a>
+        <a class="pb-3 text-sm font-bold text-primary border-b-2 border-primary" href="#/clients">${t("clients.tabOverview")}</a>
+        <a class="pb-3 text-sm font-medium text-text-secondary hover:text-white transition-colors" href="#/training-plan">${t("clients.trainingPlan")}</a>
+        <a class="pb-3 text-sm font-medium text-text-secondary hover:text-white transition-colors" href="#/nutrition">${t("clients.nutrition")}</a>
+        <a class="pb-3 text-sm font-medium text-text-secondary hover:text-white transition-colors" href="#/clients">${t("clients.tabProgress")}</a>
+        <a class="pb-3 text-sm font-medium text-text-secondary hover:text-white transition-colors" href="#/clients">${t("clients.tabHistory")}</a>
       </div>
     </div>
 
@@ -216,26 +217,26 @@ function clientDetails(client) {
       <div class="col-span-12 lg:col-span-4 flex flex-col gap-6">
         <div class="bg-surface-darker rounded-xl p-5 border border-surface-highlight">
           <div class="flex justify-between items-center mb-4">
-            <h3 class="text-white font-bold text-lg">Personal Details</h3>
-            <span class="text-primary text-sm font-medium">Edit</span>
+            <h3 class="text-white font-bold text-lg">${t("clients.personalDetails")}</h3>
+            <span class="text-primary text-sm font-medium">${t("clients.edit")}</span>
           </div>
           <div class="space-y-4">
-            ${detailRow({ icon: "mail", label: "Email", value: client.email })}
-            ${detailRow({ icon: "call", label: "Phone", value: client.phone })}
-            ${detailRow({ icon: "cake", label: "Age", value: `${client.age} years` })}
-            ${detailRow({ icon: "height", label: "Height", value: client.height })}
+            ${detailRow({ icon: "mail", label: t("clients.email"), value: client.email })}
+            ${detailRow({ icon: "call", label: t("clients.phone"), value: client.phone })}
+            ${detailRow({ icon: "cake", label: t("clients.age"), value: t("clients.ageValue", { n: client.age }) })}
+            ${detailRow({ icon: "height", label: t("clients.height"), value: client.height })}
           </div>
         </div>
 
         <div class="bg-surface-darker rounded-xl p-5 border border-surface-highlight">
           <div class="flex justify-between items-center mb-4">
-            <h3 class="text-white font-bold text-lg">Next Session</h3>
+            <h3 class="text-white font-bold text-lg">${t("clients.nextSession")}</h3>
             <button class="text-text-secondary hover:text-white"><span class="material-symbols-outlined">more_horiz</span></button>
           </div>
           <div class="bg-surface-highlight/30 rounded-lg p-4 border border-surface-highlight mb-3">
             <div class="flex justify-between items-start">
               <div>
-                <p class="text-primary font-bold text-sm mb-1">Tomorrow, 10:00 AM</p>
+                <p class="text-primary font-bold text-sm mb-1">${t("clients.tomorrowTime")}</p>
                 <p class="text-white font-medium">Lower Body Power</p>
                 <p class="text-text-secondary text-xs mt-1">Leg Press, Squats, Lunges</p>
               </div>
@@ -245,7 +246,7 @@ function clientDetails(client) {
             </div>
           </div>
           <button class="w-full py-2 rounded-lg border border-surface-highlight text-text-secondary hover:text-white hover:bg-surface-highlight text-sm font-medium transition-colors">
-            View Full Schedule
+            ${t("clients.viewFullSchedule")}
           </button>
         </div>
       </div>
@@ -254,13 +255,13 @@ function clientDetails(client) {
         <div class="bg-surface-darker rounded-xl p-6 border border-surface-highlight">
           <div class="flex justify-between items-center mb-6">
             <div>
-              <h3 class="text-white font-bold text-lg">Weight Progress</h3>
-              <p class="text-text-secondary text-sm">Last 6 months</p>
+              <h3 class="text-white font-bold text-lg">${t("clients.weightProgress")}</h3>
+              <p class="text-text-secondary text-sm">${t("clients.last6Months")}</p>
             </div>
             <div class="flex bg-surface-highlight rounded-lg p-0.5">
-              <button class="px-3 py-1 rounded-md bg-surface-darker text-white text-xs font-medium shadow-sm">Weight</button>
-              <button class="px-3 py-1 rounded-md text-text-secondary text-xs font-medium hover:text-white">Body Fat</button>
-              <button class="px-3 py-1 rounded-md text-text-secondary text-xs font-medium hover:text-white">Muscle</button>
+              <button class="px-3 py-1 rounded-md bg-surface-darker text-white text-xs font-medium shadow-sm">${t("clients.weight")}</button>
+              <button class="px-3 py-1 rounded-md text-text-secondary text-xs font-medium hover:text-white">${t("clients.bodyFat")}</button>
+              <button class="px-3 py-1 rounded-md text-text-secondary text-xs font-medium hover:text-white">${t("clients.muscle")}</button>
             </div>
           </div>
           <div class="w-full h-48 flex items-end justify-between gap-2 px-2">
@@ -283,23 +284,23 @@ function clientDetails(client) {
 
         <div class="bg-surface-darker rounded-xl border border-surface-highlight flex-1 overflow-hidden flex flex-col">
           <div class="p-5 border-b border-surface-highlight flex justify-between items-center">
-            <h3 class="text-white font-bold text-lg">Training History</h3>
-            <span class="text-primary text-sm font-medium">View All</span>
+            <h3 class="text-white font-bold text-lg">${t("clients.trainingHistory")}</h3>
+            <span class="text-primary text-sm font-medium">${t("clients.viewAll")}</span>
           </div>
           <div class="overflow-x-auto">
             <table class="w-full text-left border-collapse">
               <thead>
                 <tr class="text-text-secondary text-xs border-b border-surface-highlight">
-                  <th class="px-6 py-3 font-medium uppercase tracking-wider">Date</th>
-                  <th class="px-6 py-3 font-medium uppercase tracking-wider">Workout Name</th>
-                  <th class="px-6 py-3 font-medium uppercase tracking-wider">Duration</th>
-                  <th class="px-6 py-3 font-medium uppercase tracking-wider">Status</th>
+                  <th class="px-6 py-3 font-medium uppercase tracking-wider">${t("clients.colDate")}</th>
+                  <th class="px-6 py-3 font-medium uppercase tracking-wider">${t("clients.colWorkoutName")}</th>
+                  <th class="px-6 py-3 font-medium uppercase tracking-wider">${t("clients.colDuration")}</th>
+                  <th class="px-6 py-3 font-medium uppercase tracking-wider">${t("clients.colStatus")}</th>
                 </tr>
               </thead>
               <tbody class="text-sm">
-                ${historyRow({ date: "Jan 24, 2024", name: "Upper Body Hypertrophy", duration: "55 min", status: "Completed" })}
-                ${historyRow({ date: "Jan 22, 2024", name: "Cardio & Core", duration: "40 min", status: "Completed" })}
-                ${historyRow({ date: "Jan 20, 2024", name: "Leg Day", duration: "--", status: "Missed" })}
+                ${historyRow({ date: "Jan 24, 2024", name: "Upper Body Hypertrophy", duration: t("clients.minutes", { n: 55 }), status: "completed" })}
+                ${historyRow({ date: "Jan 22, 2024", name: "Cardio & Core", duration: t("clients.minutes", { n: 40 }), status: "completed" })}
+                ${historyRow({ date: "Jan 20, 2024", name: "Leg Day", duration: "--", status: "missed" })}
               </tbody>
             </table>
           </div>
@@ -333,7 +334,7 @@ function detailRow({ icon, label, value }) {
 }
 
 function historyRow({ date, name, duration, status }) {
-  const ok = status === "Completed";
+  const ok = status === "completed";
   const pill = ok
     ? "bg-green-900/40 text-green-400 border border-green-800"
     : "bg-red-900/40 text-red-400 border border-red-800";
@@ -346,7 +347,7 @@ function historyRow({ date, name, duration, status }) {
       <td class="px-6 py-4">
         <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium ${pill}">
           <span class="size-1.5 rounded-full ${ok ? "bg-green-400" : "bg-red-400"}"></span>
-          ${escapeHtml(status)}
+          ${escapeHtml(t(`clients.history_${status}`))}
         </span>
       </td>
     </tr>
@@ -360,7 +361,7 @@ function emptyState() {
         <div class="flex items-center justify-center mb-2">
           <span class="material-symbols-outlined text-4xl">group</span>
         </div>
-        <p class="text-sm">No client selected.</p>
+        <p class="text-sm">${t("clients.noClientSelected")}</p>
       </div>
     </div>
   `;

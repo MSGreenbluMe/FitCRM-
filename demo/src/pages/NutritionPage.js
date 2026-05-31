@@ -1,6 +1,7 @@
 import { store } from "../store.js";
 import { showToast } from "../ui/toast.js";
 import { sendEmail, generatePlan } from "../api.js";
+import { t } from "../i18n.js";
 
 const DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
@@ -77,11 +78,11 @@ export class NutritionPage {
       <main class="flex-1 flex flex-col min-w-0 overflow-hidden bg-background-dark relative">
         <header class="flex-shrink-0 border-b border-surface-highlight p-6 pb-2">
           <div class="flex flex-wrap gap-2 mb-4">
-            <a class="text-text-secondary text-sm font-medium hover:text-white" href="#/clients">Clients</a>
+            <a class="text-text-secondary text-sm font-medium hover:text-white" href="#/clients">${t('nutrition.breadcrumbClients')}</a>
             <span class="text-text-secondary text-sm">/</span>
             <span class="text-text-secondary text-sm font-medium">${escapeHtml(client.name)}</span>
             <span class="text-text-secondary text-sm">/</span>
-            <span class="text-primary text-sm font-bold">Nutrition Plan</span>
+            <span class="text-primary text-sm font-bold">${t('nutrition.breadcrumbNutritionPlan')}</span>
           </div>
 
           <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
@@ -95,7 +96,7 @@ export class NutritionPage {
                   <span class="px-2 py-0.5 rounded bg-surface-highlight text-text-secondary text-xs">${escapeHtml(
                     client.goal
                   )}</span>
-                  <span class="px-2 py-0.5 rounded bg-surface-highlight text-text-secondary text-xs">Demo</span>
+                  <span class="px-2 py-0.5 rounded bg-surface-highlight text-text-secondary text-xs">${t('nutrition.demoBadge')}</span>
                 </div>
               </div>
             </div>
@@ -103,11 +104,11 @@ export class NutritionPage {
             <div class="flex gap-3">
               <button data-action="ai-generate" ${this.aiInFlight ? "disabled" : ""} class="h-10 px-5 rounded-lg bg-surface-highlight text-white text-sm font-bold flex items-center gap-2 transition-colors border border-[#395c46] ${this.aiInFlight ? "opacity-60 cursor-not-allowed" : "hover:bg-[#2f5f3e]"}">
                 <span class="material-symbols-outlined text-[18px]">auto_awesome</span>
-                ${this.aiInFlight ? "Generating..." : "AI Generate"}
+                ${this.aiInFlight ? t('nutrition.aiGenerating') : t('nutrition.aiGenerate')}
               </button>
               <button data-action="send" class="h-10 px-6 rounded-lg bg-primary hover:bg-opacity-90 text-background-dark text-sm font-bold flex items-center gap-2 transition-colors shadow-[0_0_15px_rgba(19,236,91,0.3)]">
                 <span class="material-symbols-outlined text-[18px]">send</span>
-                Send to Client
+                ${t('nutrition.sendToClient')}
               </button>
             </div>
           </div>
@@ -115,7 +116,7 @@ export class NutritionPage {
 
         <div class="flex-shrink-0 px-6 pt-4 pb-2">
           <div class="flex items-center justify-between mb-2">
-            <span class="text-white font-bold">${escapeHtml(n?.weekLabel || "Week")}</span>
+            <span class="text-white font-bold">${escapeHtml(n?.weekLabel || t('nutrition.week'))}</span>
           </div>
 
           <div class="grid grid-cols-7 gap-2">
@@ -127,9 +128,9 @@ export class NutritionPage {
           ${
             n
               ? [
-                  mealSection({ mealType: "breakfast", title: "Breakfast", rec: "400-600 kcal", items: n.meals.breakfast }),
-                  mealSection({ mealType: "lunch", title: "Lunch", rec: "600-800 kcal", items: n.meals.lunch }),
-                  mealSection({ mealType: "dinner", title: "Dinner", rec: "500-700 kcal", items: n.meals.dinner }),
+                  mealSection({ mealType: "breakfast", title: t('nutrition.breakfast'), rec: "400-600 kcal", items: n.meals.breakfast }),
+                  mealSection({ mealType: "lunch", title: t('nutrition.lunch'), rec: "600-800 kcal", items: n.meals.lunch }),
+                  mealSection({ mealType: "dinner", title: t('nutrition.dinner'), rec: "500-700 kcal", items: n.meals.dinner }),
                 ].join("")
               : emptyNutritionState()
           }
@@ -137,9 +138,9 @@ export class NutritionPage {
           <div class="mt-2 p-4 rounded-xl bg-surface-dark border border-surface-highlight">
             <h3 class="text-white text-sm font-bold mb-2 flex items-center gap-2">
               <span class="material-symbols-outlined text-text-secondary text-lg">notes</span>
-              Daily Notes
+              ${t('nutrition.dailyNotes')}
             </h3>
-            <textarea data-role="notes" class="w-full bg-surface-darker border border-surface-highlight rounded-lg p-3 text-text-secondary focus:ring-1 focus:ring-primary focus:border-primary outline-none text-sm resize-none" placeholder="Add instructions..." rows="3">${escapeHtml(
+            <textarea data-role="notes" class="w-full bg-surface-darker border border-surface-highlight rounded-lg p-3 text-text-secondary focus:ring-1 focus:ring-primary focus:border-primary outline-none text-sm resize-none" placeholder="${t('nutrition.notesPlaceholder')}" rows="3">${escapeHtml(
               n?.notes || ""
             )}</textarea>
           </div>
@@ -148,7 +149,7 @@ export class NutritionPage {
 
       <aside class="w-96 bg-surface-darker border-l border-surface-highlight flex-shrink-0 flex flex-col h-full">
         <div class="p-5 border-b border-surface-highlight">
-          <h3 class="text-white text-lg font-bold mb-4">Quick Add</h3>
+          <h3 class="text-white text-lg font-bold mb-4">${t('nutrition.quickAdd')}</h3>
           <div class="flex flex-col gap-2">
             ${QUICK_ADD.map((i) => quickAddItem(i)).join("")}
           </div>
@@ -156,12 +157,12 @@ export class NutritionPage {
 
         <div class="p-5 flex-1 overflow-y-auto">
           <div class="flex items-center justify-between mb-4">
-            <h3 class="text-white font-bold">Daily Targets</h3>
-            <span class="text-xs text-primary bg-primary/10 px-2 py-1 rounded font-bold">In Progress</span>
+            <h3 class="text-white font-bold">${t('nutrition.dailyTargets')}</h3>
+            <span class="text-xs text-primary bg-primary/10 px-2 py-1 rounded font-bold">${t('nutrition.inProgress')}</span>
           </div>
 
           <div class="bg-surface-highlight rounded-xl p-5 mb-4 relative overflow-hidden">
-            <p class="text-text-secondary text-sm font-medium mb-1">Calories</p>
+            <p class="text-text-secondary text-sm font-medium mb-1">${t('nutrition.calories')}</p>
             <div class="flex items-end gap-2 mb-2">
               <span class="text-3xl font-bold text-white tracking-tight">${totals.kcal}</span>
               <span class="text-text-secondary text-sm mb-1.5">/ ${n?.targets?.kcal || 0} kcal</span>
@@ -174,10 +175,10 @@ export class NutritionPage {
           </div>
 
           <div class="grid grid-cols-2 gap-3 mb-6">
-            ${macroCard({ label: "Protein", value: `${totals.protein}g`, goal: `${n?.targets?.protein || 0}g`, pct: pct(totals.protein, n?.targets?.protein), bar: "bg-blue-400" })}
-            ${macroCard({ label: "Carbs", value: `${totals.carbs}g`, goal: `${n?.targets?.carbs || 0}g`, pct: pct(totals.carbs, n?.targets?.carbs), bar: "bg-orange-400" })}
-            ${macroCard({ label: "Fats", value: `${totals.fats}g`, goal: `${n?.targets?.fats || 0}g`, pct: pct(totals.fats, n?.targets?.fats), bar: "bg-yellow-400" })}
-            ${macroCard({ label: "Water", value: `1.2L`, goal: `${n?.targets?.waterLiters || 0}L`, pct: 40, bar: "bg-cyan-400" })}
+            ${macroCard({ label: t('nutrition.protein'), value: `${totals.protein}g`, goal: `${n?.targets?.protein || 0}g`, pct: pct(totals.protein, n?.targets?.protein), bar: "bg-blue-400" })}
+            ${macroCard({ label: t('nutrition.carbs'), value: `${totals.carbs}g`, goal: `${n?.targets?.carbs || 0}g`, pct: pct(totals.carbs, n?.targets?.carbs), bar: "bg-orange-400" })}
+            ${macroCard({ label: t('nutrition.fats'), value: `${totals.fats}g`, goal: `${n?.targets?.fats || 0}g`, pct: pct(totals.fats, n?.targets?.fats), bar: "bg-yellow-400" })}
+            ${macroCard({ label: t('nutrition.water'), value: `1.2L`, goal: `${n?.targets?.waterLiters || 0}L`, pct: 40, bar: "bg-cyan-400" })}
           </div>
         </div>
       </aside>
@@ -197,8 +198,8 @@ export class NutritionPage {
         if (now < this.aiCooldownUntil) {
           const secs = Math.max(1, Math.ceil((this.aiCooldownUntil - now) / 1000));
           showToast({
-            title: "Please wait",
-            message: `AI generation is cooling down (${secs}s).`,
+            title: t('nutrition.toastPleaseWaitTitle'),
+            message: t('nutrition.toastCoolingDown', { secs }),
             variant: "danger",
           });
           return;
@@ -208,7 +209,7 @@ export class NutritionPage {
         try {
           this.aiInFlight = true;
           this.render();
-          showToast({ title: "Generating", message: "Requesting AI nutrition plan..." });
+          showToast({ title: t('nutrition.toastGeneratingTitle'), message: t('nutrition.toastGeneratingMessage') });
 
           const res = await generatePlan({
             client,
@@ -230,12 +231,12 @@ export class NutritionPage {
               }
 
               showToast({
-                title: "Fallback plan",
+                title: t('nutrition.toastFallbackTitle'),
                 message: warn
-                  ? `AI unavailable (${truncate(warn)}). Applied a safe default nutrition plan.${
-                      isQuota ? " (Quota exceeded: cooling down ~10 min.)" : ""
+                  ? `${t('nutrition.toastFallbackWithReason', { reason: truncate(warn) })}${
+                      isQuota ? ` ${t('nutrition.toastQuotaSuffix')}` : ""
                     }`
-                  : `AI unavailable. Applied a safe default nutrition plan.${isQuota ? " (Quota exceeded: cooling down ~10 min.)" : ""}`,
+                  : `${t('nutrition.toastFallbackNoReason')}${isQuota ? ` ${t('nutrition.toastQuotaSuffix')}` : ""}`,
                 variant: "success",
               });
 
@@ -246,12 +247,12 @@ export class NutritionPage {
                 this.aiCooldownUntil = Math.max(this.aiCooldownUntil || 0, Date.now() + 10 * 60 * 1000);
               }
             } else {
-              showToast({ title: "Updated", message: "AI nutrition plan applied to this client." });
+              showToast({ title: t('nutrition.toastUpdatedTitle'), message: t('nutrition.toastUpdatedMessage') });
             }
           } else {
             showToast({
-              title: "AI response",
-              message: "Received text response (no structured plan).",
+              title: t('nutrition.toastAiResponseTitle'),
+              message: t('nutrition.toastAiResponseMessage'),
               variant: "danger",
             });
           }
@@ -261,8 +262,8 @@ export class NutritionPage {
           if (isQuota && retrySecs > 0 && String(e && e.message ? e.message : "").includes("cooldown")) {
             this.aiCooldownUntil = Math.max(this.aiCooldownUntil || 0, Date.now() + retrySecs * 1000);
             showToast({
-              title: "Please wait",
-              message: `AI generation is cooling down (${retrySecs}s).`,
+              title: t('nutrition.toastPleaseWaitTitle'),
+              message: t('nutrition.toastCoolingDown', { secs: retrySecs }),
               variant: "danger",
             });
             return;
@@ -273,9 +274,9 @@ export class NutritionPage {
           const fallback = buildLocalFallbackNutrition({ client, goal: client.goal });
           store.setNutritionPlan({ clientId: client.id, nutrition: fallback });
           showToast({
-            title: "Fallback plan",
-            message: `AI unavailable (${e && e.message ? e.message : "Unknown error"}). Applied a safe default nutrition plan.${
-              isQuota ? " (Quota exceeded: cooling down ~10 min.)" : ""
+            title: t('nutrition.toastFallbackTitle'),
+            message: `${t('nutrition.toastFallbackWithReason', { reason: e && e.message ? e.message : t('nutrition.unknownError') })}${
+              isQuota ? ` ${t('nutrition.toastQuotaSuffix')}` : ""
             }`,
             variant: "success",
           });
@@ -291,7 +292,7 @@ export class NutritionPage {
       btn.addEventListener("click", () => {
         const payload = JSON.parse(btn.dataset.payload);
         store.addMeal({ clientId: client.id, mealType: "breakfast", item: payload });
-        showToast({ title: "Added", message: `Added ${payload.name} to Breakfast.` });
+        showToast({ title: t('nutrition.toastAddedTitle'), message: t('nutrition.toastAddedItemToBreakfast', { item: payload.name }) });
       });
     });
 
@@ -302,15 +303,15 @@ export class NutritionPage {
           clientId: client.id,
           mealType,
           item: {
-            name: "New meal item",
-            desc: "Edit details later",
+            name: t('nutrition.newMealItemName'),
+            desc: t('nutrition.newMealItemDesc'),
             kcal: 250,
             protein: 15,
             carbs: 20,
             fats: 8,
           },
         });
-        showToast({ title: "Added", message: `Added placeholder item to ${mealType}.` });
+        showToast({ title: t('nutrition.toastAddedTitle'), message: t('nutrition.toastAddedPlaceholder', { mealType }) });
       });
     });
 
@@ -326,37 +327,37 @@ export class NutritionPage {
       sendBtn.addEventListener("click", async () => {
         if (!client?.email) {
           showToast({
-            title: "Missing email",
-            message: "Selected client has no email address in demo data.",
+            title: t('nutrition.toastMissingEmailTitle'),
+            message: t('nutrition.toastMissingEmailMessage'),
             variant: "danger",
           });
           return;
         }
 
         const summaryLines = [
-          `Client: ${client.name}`,
-          `Goal: ${client.goal}`,
+          t('nutrition.emailClientLine', { name: client.name }),
+          t('nutrition.emailGoalLine', { goal: client.goal }),
           "",
-          `Week: ${n?.weekLabel || ""}`,
-          `Totals: ${totals.kcal} kcal, P ${totals.protein}g / C ${totals.carbs}g / F ${totals.fats}g`,
+          t('nutrition.emailWeekLine', { week: n?.weekLabel || "" }),
+          t('nutrition.emailTotalsLine', { kcal: totals.kcal, protein: totals.protein, carbs: totals.carbs, fats: totals.fats }),
           "",
-          "Notes:",
-          String(n?.notes || "(none)"),
+          t('nutrition.emailNotesLabel'),
+          String(n?.notes || t('nutrition.emailNotesNone')),
         ];
 
         try {
           sendBtn.disabled = true;
           await sendEmail({
             to: String(client.email),
-            subject: `FitCRM Nutrition Plan – ${client.name}`,
+            subject: t('nutrition.emailSubject', { name: client.name }),
             text: summaryLines.join("\n"),
             fromName: "FitCRM",
           });
-          showToast({ title: "Sent", message: "Nutrition summary sent via email." });
+          showToast({ title: t('nutrition.toastSentTitle'), message: t('nutrition.toastSentMessage') });
         } catch (e) {
           showToast({
-            title: "Send failed",
-            message: e && e.message ? e.message : "Unknown error",
+            title: t('nutrition.toastSendFailedTitle'),
+            message: e && e.message ? e.message : t('nutrition.unknownError'),
             variant: "danger",
           });
         } finally {
@@ -385,7 +386,7 @@ function dayBtn({ day, active }) {
 
   return `
     <button data-action="set-day" data-day="${escapeAttr(day)}" class="flex flex-col items-center justify-center p-3 rounded-lg ${cls}">
-      <span class="text-xs font-bold">${escapeHtml(day)}</span>
+      <span class="text-xs font-bold">${t(`nutrition.day${day}`)}</span>
     </button>
   `;
 }
@@ -398,7 +399,7 @@ function mealSection({ mealType, title, rec, items }) {
           <span class="material-symbols-outlined text-primary text-xl">restaurant_menu</span>
           ${escapeHtml(title)}
         </h3>
-        <span class="text-text-secondary text-sm">Recommended: ${escapeHtml(rec)}</span>
+        <span class="text-text-secondary text-sm">${t('nutrition.recommended', { rec: escapeHtml(rec) })}</span>
       </div>
 
       ${items.map((it) => mealCard(it)).join("")}
@@ -407,7 +408,7 @@ function mealSection({ mealType, title, rec, items }) {
         mealType
       )}" class="w-full py-3 border-2 border-dashed border-surface-highlight rounded-xl text-text-secondary hover:text-primary hover:border-primary hover:bg-surface-highlight/40 transition-all flex items-center justify-center gap-2 font-medium">
         <span class="material-symbols-outlined">add</span>
-        Add Meal Item
+        ${t('nutrition.addMealItem')}
       </button>
     </div>
   `;
@@ -427,8 +428,8 @@ function mealCard(it) {
             <span class="text-[11px] font-bold text-primary bg-primary/10 px-1.5 py-0.5 rounded">${escapeHtml(
               it.kcal
             )} kcal</span>
-            <span class="text-[11px] text-text-secondary">${escapeHtml(it.protein)}g Protein</span>
-            <span class="text-[11px] text-text-secondary">${escapeHtml(it.carbs)}g Carbs</span>
+            <span class="text-[11px] text-text-secondary">${escapeHtml(it.protein)}g ${t('nutrition.protein')}</span>
+            <span class="text-[11px] text-text-secondary">${escapeHtml(it.carbs)}g ${t('nutrition.carbs')}</span>
           </div>
         </div>
       </div>
@@ -460,7 +461,7 @@ function macroCard({ label, value, goal, pct: pctValue, bar }) {
     <div class="bg-surface-dark p-4 rounded-xl border border-surface-highlight">
       <p class="text-text-secondary text-xs mb-1">${escapeHtml(label)}</p>
       <p class="text-white text-xl font-bold">${escapeHtml(value)}</p>
-      <p class="text-xs text-text-secondary mb-2">Goal: ${escapeHtml(goal)}</p>
+      <p class="text-xs text-text-secondary mb-2">${t('nutrition.goal', { goal: escapeHtml(goal) })}</p>
       <div class="w-full h-1.5 bg-surface-darker rounded-full">
         <div class="h-full ${bar} rounded-full" style="width: ${safePct}%"></div>
       </div>
@@ -494,8 +495,8 @@ function emptyNutritionState() {
       <div class="flex items-center gap-3">
         <span class="material-symbols-outlined text-primary">info</span>
         <div>
-          <p class="text-white font-bold">No nutrition data for this client</p>
-          <p class="text-text-secondary text-sm">Use Quick Add to start adding items (demo will auto-create a plan).</p>
+          <p class="text-white font-bold">${t('nutrition.emptyTitle')}</p>
+          <p class="text-text-secondary text-sm">${t('nutrition.emptyMessage')}</p>
         </div>
       </div>
     </div>

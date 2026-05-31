@@ -1,12 +1,13 @@
 import { store } from "../store.js";
 import { showToast } from "../ui/toast.js";
 import { sendEmail } from "../api.js";
+import { t } from "../i18n.js";
 
 const FOLDERS = [
-  { id: "inbox", label: "Inbox", statuses: ["new"] },
-  { id: "assigned", label: "Assigned", statuses: ["assigned"] },
-  { id: "done", label: "Done", statuses: ["done"] },
-  { id: "all", label: "All", statuses: ["new", "assigned", "done"] },
+  { id: "inbox", labelKey: "mailbox.folderInbox", statuses: ["new"] },
+  { id: "assigned", labelKey: "mailbox.folderAssigned", statuses: ["assigned"] },
+  { id: "done", labelKey: "mailbox.folderDone", statuses: ["done"] },
+  { id: "all", labelKey: "mailbox.folderAll", statuses: ["new", "assigned", "done"] },
 ];
 
 export class MailboxPage {
@@ -42,7 +43,7 @@ export class MailboxPage {
     this.el.innerHTML = `
       <div class="w-64 bg-surface-darker border-r border-surface-highlight flex flex-col shrink-0">
         <div class="p-4 border-b border-surface-highlight">
-          <h2 class="text-white font-bold text-lg">Folders</h2>
+          <h2 class="text-white font-bold text-lg">${t('mailbox.folders')}</h2>
         </div>
         <div class="p-2 flex flex-col gap-1">
           ${FOLDERS.map((f) => folderBtn({ folder: f, active: f.id === this.folder })).join("")}
@@ -52,14 +53,14 @@ export class MailboxPage {
       <div class="w-80 border-r border-surface-highlight bg-background-dark flex flex-col shrink-0">
         <div class="p-4 border-b border-surface-highlight flex flex-col gap-4">
           <div class="flex justify-between items-center">
-            <h2 class="text-xl font-bold text-white">Messages</h2>
-            <div class="text-text-secondary text-xs">Unread: <span class="text-primary font-bold">${unreadCount}</span></div>
+            <h2 class="text-xl font-bold text-white">${t('mailbox.messages')}</h2>
+            <div class="text-text-secondary text-xs">${t('mailbox.unread', { n: `<span class="text-primary font-bold">${unreadCount}</span>` })}</div>
           </div>
           <div class="relative group">
             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
               <span class="material-symbols-outlined text-text-secondary group-focus-within:text-white transition-colors">search</span>
             </div>
-            <input data-role="search" class="block w-full pl-10 pr-3 py-2 border-none rounded-lg bg-surface-highlight text-white placeholder-text-secondary focus:ring-1 focus:ring-primary focus:bg-[#2f5f3e] sm:text-sm transition-all" placeholder="Search tickets..." type="text"/>
+            <input data-role="search" class="block w-full pl-10 pr-3 py-2 border-none rounded-lg bg-surface-highlight text-white placeholder-text-secondary focus:ring-1 focus:ring-primary focus:bg-[#2f5f3e] sm:text-sm transition-all" placeholder="${t('mailbox.searchPlaceholder')}" type="text"/>
           </div>
         </div>
 
@@ -79,15 +80,15 @@ export class MailboxPage {
 
         <div class="p-4 border-t border-surface-highlight bg-background-dark">
           <div class="flex items-center gap-2 mb-3">
-            <button data-action="assign" class="px-3 py-2 rounded-lg bg-surface-highlight text-white text-xs font-bold hover:bg-[#2f5f3e]">Assign</button>
-            <button data-action="done" class="px-3 py-2 rounded-lg bg-surface-highlight text-white text-xs font-bold hover:bg-[#2f5f3e]">Done</button>
+            <button data-action="assign" class="px-3 py-2 rounded-lg bg-surface-highlight text-white text-xs font-bold hover:bg-[#2f5f3e]">${t('mailbox.assign')}</button>
+            <button data-action="done" class="px-3 py-2 rounded-lg bg-surface-highlight text-white text-xs font-bold hover:bg-[#2f5f3e]">${t('mailbox.done')}</button>
           </div>
 
           <div class="flex flex-col gap-2 bg-surface-dark rounded-xl p-2 border border-surface-highlight focus-within:border-primary/50 transition-colors">
-            <textarea data-role="composer" class="w-full bg-transparent border-none text-white placeholder-[#5d7d6a] text-sm focus:ring-0 resize-none h-20 px-2 py-1" placeholder="Type your message..."></textarea>
+            <textarea data-role="composer" class="w-full bg-transparent border-none text-white placeholder-[#5d7d6a] text-sm focus:ring-0 resize-none h-20 px-2 py-1" placeholder="${t('mailbox.composerPlaceholder')}"></textarea>
             <div class="flex justify-end items-center px-2 pb-1">
               <button data-action="send" class="bg-primary hover:bg-[#0fd650] text-background-dark font-bold text-sm px-4 py-2 rounded-lg flex items-center gap-2 transition-colors">
-                Send <span class="material-symbols-outlined text-sm">send</span>
+                ${t('mailbox.send')} <span class="material-symbols-outlined text-sm">send</span>
               </button>
             </div>
           </div>
@@ -131,14 +132,14 @@ export class MailboxPage {
     if (selected && assignBtn) {
       assignBtn.addEventListener("click", () => {
         store.updateTicketStatus(selected.id, "assigned");
-        showToast({ title: "Ticket updated", message: "Status set to Assigned." });
+        showToast({ title: t('mailbox.toastTicketUpdatedTitle'), message: t('mailbox.toastStatusAssigned') });
       });
     }
 
     if (selected && doneBtn) {
       doneBtn.addEventListener("click", () => {
         store.updateTicketStatus(selected.id, "done");
-        showToast({ title: "Ticket updated", message: "Status set to Done." });
+        showToast({ title: t('mailbox.toastTicketUpdatedTitle'), message: t('mailbox.toastStatusDone') });
       });
     }
 
@@ -156,8 +157,8 @@ export class MailboxPage {
         try {
           if (!selectedClient?.email) {
             showToast({
-              title: "Missing email",
-              message: "Selected client has no email address in demo data.",
+              title: t('mailbox.toastMissingEmailTitle'),
+              message: t('mailbox.toastMissingEmailMessage'),
               variant: "danger",
             });
             return;
@@ -170,11 +171,11 @@ export class MailboxPage {
             text,
             fromName: "FitCRM",
           });
-          showToast({ title: "Sent", message: "Email sent via Netlify Function." });
+          showToast({ title: t('mailbox.toastSentTitle'), message: t('mailbox.toastSentMessage') });
         } catch (e) {
           showToast({
-            title: "Send failed",
-            message: e && e.message ? e.message : "Unknown error",
+            title: t('mailbox.toastSendFailedTitle'),
+            message: e && e.message ? e.message : t('mailbox.toastUnknownError'),
             variant: "danger",
           });
         } finally {
@@ -215,7 +216,7 @@ function folderBtn({ folder, active }) {
   return `
     <button data-action="folder" data-folder-id="${escapeAttr(folder.id)}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg ${cls} transition-colors text-left">
       <span class="material-symbols-outlined">folder</span>
-      <span class="text-sm font-medium">${escapeHtml(folder.label)}</span>
+      <span class="text-sm font-medium">${escapeHtml(t(folder.labelKey))}</span>
     </button>
   `;
 }
@@ -282,7 +283,7 @@ function conversationHeader({ selected, client }) {
       <div class="flex items-center gap-2">
         <button data-action="open-client" data-client-id="${escapeAttr(
           client?.id || ""
-        )}" class="p-2 text-text-secondary hover:text-white hover:bg-surface-highlight rounded-lg transition-colors" title="Open Client">
+        )}" class="p-2 text-text-secondary hover:text-white hover:bg-surface-highlight rounded-lg transition-colors" title="${t('mailbox.openClient')}">
           <span class="material-symbols-outlined">open_in_new</span>
         </button>
       </div>
@@ -339,30 +340,30 @@ function clientSidebar(client) {
         <span class="material-symbols-outlined text-white text-4xl">person</span>
       </div>
       <h2 class="text-white text-xl font-bold">${escapeHtml(client.name)}</h2>
-      <p class="text-text-secondary text-sm">Age ${escapeHtml(client.age)} • ${escapeHtml(client.city)}</p>
+      <p class="text-text-secondary text-sm">${t('mailbox.age')} ${escapeHtml(client.age)} • ${escapeHtml(client.city)}</p>
       <div class="grid grid-cols-3 gap-2 w-full mt-6">
-        ${miniStat({ label: "Weight", value: `${client.weightLbs} lbs` })}
-        ${miniStat({ label: "Height", value: client.height })}
-        ${miniStat({ label: "Fat %", value: `${client.bodyFatPct}%` })}
+        ${miniStat({ label: t('mailbox.statWeight'), value: `${client.weightLbs} lbs` })}
+        ${miniStat({ label: t('mailbox.statHeight'), value: client.height })}
+        ${miniStat({ label: t('mailbox.statFatPct'), value: `${client.bodyFatPct}%` })}
       </div>
     </div>
 
     <div class="p-6 border-b border-surface-highlight">
       <div class="flex justify-between items-center mb-3">
-        <h3 class="text-white font-bold text-sm">Current Goal</h3>
+        <h3 class="text-white font-bold text-sm">${t('mailbox.currentGoal')}</h3>
         <span class="text-primary text-xs font-bold bg-primary/20 px-2 py-0.5 rounded">${escapeHtml(
           client.goal
         )}</span>
       </div>
-      <p class="text-xs text-text-secondary leading-relaxed">Plan: ${escapeHtml(client.plan)}</p>
+      <p class="text-xs text-text-secondary leading-relaxed">${t('mailbox.plan')} ${escapeHtml(client.plan)}</p>
     </div>
 
     <div class="p-6">
-      <h3 class="text-white font-bold text-sm mb-4">Quick Links</h3>
+      <h3 class="text-white font-bold text-sm mb-4">${t('mailbox.quickLinks')}</h3>
       <div class="flex flex-col gap-2">
-        <a class="w-full bg-surface-highlight text-white hover:bg-[#2f5f3e] py-2 rounded-lg text-sm font-medium transition-colors border border-[#395c46] text-center" href="#/clients">Client Profile</a>
-        <a class="w-full bg-surface-highlight text-white hover:bg-[#2f5f3e] py-2 rounded-lg text-sm font-medium transition-colors border border-[#395c46] text-center" href="#/training-plan">Training Plan</a>
-        <a class="w-full bg-surface-highlight text-white hover:bg-[#2f5f3e] py-2 rounded-lg text-sm font-medium transition-colors border border-[#395c46] text-center" href="#/nutrition">Nutrition</a>
+        <a class="w-full bg-surface-highlight text-white hover:bg-[#2f5f3e] py-2 rounded-lg text-sm font-medium transition-colors border border-[#395c46] text-center" href="#/clients">${t('mailbox.clientProfile')}</a>
+        <a class="w-full bg-surface-highlight text-white hover:bg-[#2f5f3e] py-2 rounded-lg text-sm font-medium transition-colors border border-[#395c46] text-center" href="#/training-plan">${t('mailbox.trainingPlan')}</a>
+        <a class="w-full bg-surface-highlight text-white hover:bg-[#2f5f3e] py-2 rounded-lg text-sm font-medium transition-colors border border-[#395c46] text-center" href="#/nutrition">${t('mailbox.nutrition')}</a>
       </div>
     </div>
   `;
@@ -383,7 +384,7 @@ function emptyTickets() {
       <div class="flex items-center justify-center mb-2">
         <span class="material-symbols-outlined text-3xl">inbox</span>
       </div>
-      <p class="text-sm">No tickets in this folder.</p>
+      <p class="text-sm">${t('mailbox.emptyTickets')}</p>
     </div>
   `;
 }
@@ -394,7 +395,7 @@ function emptyConversation() {
       <div class="flex items-center justify-center mb-2">
         <span class="material-symbols-outlined text-3xl">chat</span>
       </div>
-      <p class="text-sm">Select a message to view conversation.</p>
+      <p class="text-sm">${t('mailbox.emptyConversation')}</p>
     </div>
   `;
 }

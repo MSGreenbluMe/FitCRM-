@@ -1,5 +1,6 @@
 import { store } from "../store.js";
 import { showToast } from "../ui/toast.js";
+import { t } from "../i18n.js";
 
 function escapeHtml(s) {
   return String(s ?? "")
@@ -16,6 +17,8 @@ export class SettingsPage {
     this.unsub = null;
     this.activeTab = 'profile';
     this.settings = this.loadSettings();
+    // Remember the language at mount so we can reload the app when it changes.
+    this.initialLang = this.settings?.profile?.language || 'en';
   }
 
   loadSettings() {
@@ -36,7 +39,7 @@ export class SettingsPage {
         yearsExperience: '5',
         specialties: 'Weight Loss, Strength Training, Nutrition',
         timezone: 'Europe/Bratislava',
-        language: 'sk'
+        language: 'en'
       },
       email: {
         imapEnabled: false,
@@ -89,15 +92,21 @@ export class SettingsPage {
       }));
 
       showToast({
-        title: 'Úspech',
-        message: 'Nastavenia boli uložené',
+        title: t('settings.toastSuccessTitle'),
+        message: t('settings.toastSaved'),
         variant: 'success'
       });
+
+      // If the UI language changed, reload so every page re-renders translated.
+      const newLang = this.settings?.profile?.language || 'en';
+      if (newLang !== this.initialLang) {
+        setTimeout(() => window.location.reload(), 300);
+      }
     } catch (error) {
       console.error('Failed to save settings:', error);
       showToast({
-        title: 'Chyba',
-        message: 'Nepodarilo sa uložiť nastavenia',
+        title: t('settings.toastErrorTitle'),
+        message: t('settings.toastSaveFailed'),
         variant: 'danger'
       });
     }
@@ -110,8 +119,8 @@ export class SettingsPage {
     // Validate file type
     if (!file.type.startsWith('image/')) {
       showToast({
-        title: 'Chyba',
-        message: 'Vyber obrázok (JPG, PNG, atď.)',
+        title: t('settings.toastErrorTitle'),
+        message: t('settings.toastPickImage'),
         variant: 'danger'
       });
       return;
@@ -120,8 +129,8 @@ export class SettingsPage {
     // Validate file size (max 2MB)
     if (file.size > 2 * 1024 * 1024) {
       showToast({
-        title: 'Chyba',
-        message: 'Obrázok je príliš veľký (max 2MB)',
+        title: t('settings.toastErrorTitle'),
+        message: t('settings.toastImageTooLarge'),
         variant: 'danger'
       });
       return;
@@ -135,8 +144,8 @@ export class SettingsPage {
       this.attachEventListeners();
 
       showToast({
-        title: 'Úspech',
-        message: 'Profilová fotka nahraná',
+        title: t('settings.toastSuccessTitle'),
+        message: t('settings.toastAvatarUploaded'),
         variant: 'success'
       });
     };
@@ -164,23 +173,23 @@ export class SettingsPage {
         <!-- Header -->
         <div class="flex items-center justify-between">
           <div>
-            <h1 class="text-white text-3xl lg:text-4xl font-extrabold">Nastavenia</h1>
-            <p class="text-gray-400 mt-2">Spravuj svoj profil a konfiguráciu systému</p>
+            <h1 class="text-white text-3xl lg:text-4xl font-extrabold">${t('settings.title')}</h1>
+            <p class="text-gray-400 mt-2">${t('settings.subtitle')}</p>
           </div>
           <button id="save-settings-btn" class="flex items-center gap-2 px-6 py-3 bg-primary hover:bg-primary/90 text-white font-bold rounded-lg transition-colors">
             <span class="material-symbols-outlined">save</span>
-            Uložiť
+            ${t('settings.save')}
           </button>
         </div>
 
         <!-- Tabs -->
         <div class="border-b border-gray-700">
           <nav class="flex gap-6">
-            ${this.renderTab('profile', 'person', 'Profil')}
-            ${this.renderTab('email', 'mail', 'Email')}
-            ${this.renderTab('ai', 'psychology', 'AI Nastavenia')}
-            ${this.renderTab('automation', 'automation', 'Automatizácia')}
-            ${this.renderTab('business', 'business', 'Business')}
+            ${this.renderTab('profile', 'person', t('settings.tabProfile'))}
+            ${this.renderTab('email', 'mail', t('settings.tabEmail'))}
+            ${this.renderTab('ai', 'psychology', t('settings.tabAi'))}
+            ${this.renderTab('automation', 'automation', t('settings.tabAutomation'))}
+            ${this.renderTab('business', 'business', t('settings.tabBusiness'))}
           </nav>
         </div>
 
@@ -247,41 +256,41 @@ export class SettingsPage {
             </label>
           </div>
           <div>
-            <h3 class="text-white font-semibold mb-1">Profilová fotka</h3>
-            <p class="text-sm text-gray-400">JPG, PNG alebo GIF. Max 2MB.</p>
+            <h3 class="text-white font-semibold mb-1">${t('settings.profilePhoto')}</h3>
+            <p class="text-sm text-gray-400">${t('settings.photoHint')}</p>
           </div>
         </div>
 
         <div>
-          <h3 class="text-white text-xl font-bold mb-4">Osobné informácie</h3>
+          <h3 class="text-white text-xl font-bold mb-4">${t('settings.personalInfo')}</h3>
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            ${this.renderInput('profile.name', 'Meno a priezvisko', profile.name, 'text', 'person')}
-            ${this.renderInput('profile.email', 'Email', profile.email, 'email', 'mail')}
-            ${this.renderInput('profile.phone', 'Telefón', profile.phone, 'tel', 'phone')}
-            ${this.renderInput('profile.yearsExperience', 'Roky praxe', profile.yearsExperience, 'number', 'workspace_premium')}
+            ${this.renderInput('profile.name', t('settings.fieldName'), profile.name, 'text', 'person')}
+            ${this.renderInput('profile.email', t('settings.fieldEmail'), profile.email, 'email', 'mail')}
+            ${this.renderInput('profile.phone', t('settings.fieldPhone'), profile.phone, 'tel', 'phone')}
+            ${this.renderInput('profile.yearsExperience', t('settings.fieldYears'), profile.yearsExperience, 'number', 'workspace_premium')}
           </div>
         </div>
 
         <div>
-          <h3 class="text-white text-lg font-semibold mb-3">O mne</h3>
-          ${this.renderTextarea('profile.bio', 'Bio / Popis', profile.bio, 'Popíš svoju skúsenosť a špecializáciu...')}
+          <h3 class="text-white text-lg font-semibold mb-3">${t('settings.aboutMe')}</h3>
+          ${this.renderTextarea('profile.bio', t('settings.fieldBio'), profile.bio, t('settings.bioPlaceholder'))}
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          ${this.renderInput('profile.certifications', 'Certifikácie', profile.certifications, 'text', 'verified')}
-          ${this.renderInput('profile.specialties', 'Špecializácie', profile.specialties, 'text', 'fitness_center')}
+          ${this.renderInput('profile.certifications', t('settings.fieldCertifications'), profile.certifications, 'text', 'verified')}
+          ${this.renderInput('profile.specialties', t('settings.fieldSpecialties'), profile.specialties, 'text', 'fitness_center')}
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          ${this.renderSelect('profile.timezone', 'Časové pásmo', profile.timezone, [
+          ${this.renderSelect('profile.timezone', t('settings.fieldTimezone'), profile.timezone, [
             { value: 'Europe/Bratislava', label: 'Europe/Bratislava (CET)' },
             { value: 'Europe/Prague', label: 'Europe/Prague (CET)' },
             { value: 'UTC', label: 'UTC' }
           ], 'schedule')}
-          ${this.renderSelect('profile.language', 'Jazyk', profile.language, [
+          ${this.renderSelect('profile.language', t('settings.fieldLanguage'), profile.language, [
+            { value: 'en', label: 'English' },
             { value: 'sk', label: 'Slovenčina' },
-            { value: 'cs', label: 'Čeština' },
-            { value: 'en', label: 'English' }
+            { value: 'cs', label: 'Čeština' }
           ], 'language')}
         </div>
       </div>
@@ -296,8 +305,8 @@ export class SettingsPage {
           <div class="flex items-start gap-3">
             <span class="material-symbols-outlined text-blue-400">info</span>
             <div class="text-sm text-gray-300">
-              <p class="font-semibold text-white mb-1">Ako to funguje</p>
-              <p>Odosielanie emailov v nasadenom deme beží cez serverovú funkciu, ktorá používa premenné prostredia na Netlify (<code>SMTP_HOST</code>, <code>SMTP_PORT</code>, <code>SMTP_USER</code>, <code>SMTP_PASS</code>). Údaje nižšie sa ukladajú len lokálne v prehliadači a sú určené pre pripravovanú automatizáciu (IMAP príjem). Heslá sem teda zadávaj iba ak vieš, čo robíš.</p>
+              <p class="font-semibold text-white mb-1">${t('settings.emailHowTitle')}</p>
+              <p>${t('settings.emailHowBody')}</p>
             </div>
           </div>
         </div>
@@ -307,8 +316,8 @@ export class SettingsPage {
           <div class="flex items-center gap-3">
             <span class="material-symbols-outlined text-2xl text-primary">mail</span>
             <div>
-              <h4 class="text-white font-semibold">Povoliť email automatizáciu</h4>
-              <p class="text-sm text-gray-400">Automatické sťahovanie a spracovanie emailov</p>
+              <h4 class="text-white font-semibold">${t('settings.emailEnableTitle')}</h4>
+              <p class="text-sm text-gray-400">${t('settings.emailEnableDesc')}</p>
             </div>
           </div>
           ${this.renderToggle('email.imapEnabled', email.imapEnabled)}
@@ -318,26 +327,26 @@ export class SettingsPage {
           <div>
             <h3 class="text-white text-lg font-semibold mb-3 flex items-center gap-2">
               <span class="material-symbols-outlined">download</span>
-              IMAP Nastavenia (Príjem emailov)
+              ${t('settings.imapSettings')}
             </h3>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-              ${this.renderInput('email.imapHost', 'IMAP Server', email.imapHost, 'text', 'dns')}
-              ${this.renderInput('email.imapPort', 'Port', email.imapPort, 'number', 'router')}
-              ${this.renderInput('email.imapUser', 'Email / Používateľ', email.imapUser, 'email', 'person')}
-              ${this.renderInput('email.imapPassword', 'Heslo / App Password', email.imapPassword, 'password', 'key')}
+              ${this.renderInput('email.imapHost', t('settings.fieldImapServer'), email.imapHost, 'text', 'dns')}
+              ${this.renderInput('email.imapPort', t('settings.fieldPort'), email.imapPort, 'number', 'router')}
+              ${this.renderInput('email.imapUser', t('settings.fieldEmailUser'), email.imapUser, 'email', 'person')}
+              ${this.renderInput('email.imapPassword', t('settings.fieldPassword'), email.imapPassword, 'password', 'key')}
             </div>
           </div>
 
           <div>
             <h3 class="text-white text-lg font-semibold mb-3 flex items-center gap-2">
               <span class="material-symbols-outlined">upload</span>
-              SMTP Nastavenia (Posielanie emailov)
+              ${t('settings.smtpSettings')}
             </h3>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-              ${this.renderInput('email.smtpHost', 'SMTP Server', email.smtpHost, 'text', 'dns')}
-              ${this.renderInput('email.smtpPort', 'Port', email.smtpPort, 'number', 'router')}
-              ${this.renderInput('email.smtpUser', 'Email / Používateľ', email.smtpUser, 'email', 'person')}
-              ${this.renderInput('email.smtpPassword', 'Heslo / App Password', email.smtpPassword, 'password', 'key')}
+              ${this.renderInput('email.smtpHost', t('settings.fieldSmtpServer'), email.smtpHost, 'text', 'dns')}
+              ${this.renderInput('email.smtpPort', t('settings.fieldPort'), email.smtpPort, 'number', 'router')}
+              ${this.renderInput('email.smtpUser', t('settings.fieldEmailUser'), email.smtpUser, 'email', 'person')}
+              ${this.renderInput('email.smtpPassword', t('settings.fieldPassword'), email.smtpPassword, 'password', 'key')}
             </div>
           </div>
 
@@ -345,12 +354,12 @@ export class SettingsPage {
             <div class="flex items-start gap-3">
               <span class="material-symbols-outlined text-amber-400">help</span>
               <div class="text-sm text-gray-300">
-                <p class="font-semibold text-white mb-2">Gmail Setup:</p>
+                <p class="font-semibold text-white mb-2">${t('settings.gmailSetupTitle')}</p>
                 <ol class="list-decimal list-inside space-y-1">
-                  <li>Zapni 2-Factor Authentication</li>
-                  <li>Choď do Security → 2-Step Verification → App passwords</li>
-                  <li>Vytvor nový App password pre "Mail"</li>
-                  <li>Použi tento 16-znakový kód namiesto bežného hesla</li>
+                  <li>${t('settings.gmailStep1')}</li>
+                  <li>${t('settings.gmailStep2')}</li>
+                  <li>${t('settings.gmailStep3')}</li>
+                  <li>${t('settings.gmailStep4')}</li>
                 </ol>
               </div>
             </div>
@@ -358,7 +367,7 @@ export class SettingsPage {
         ` : `
           <div class="text-center py-8 text-gray-400">
             <span class="material-symbols-outlined text-6xl mb-4 opacity-20">mail_off</span>
-            <p>Email automatizácia je vypnutá</p>
+            <p>${t('settings.emailDisabled')}</p>
           </div>
         `}
       </div>
@@ -372,14 +381,14 @@ export class SettingsPage {
         <div>
           <h3 class="text-white text-xl font-bold mb-4 flex items-center gap-2">
             <span class="material-symbols-outlined">psychology</span>
-            AI Konfigurácia
+            ${t('settings.aiConfig')}
           </h3>
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            ${this.renderSelect('ai.provider', 'Provider', ai.provider, [
+            ${this.renderSelect('ai.provider', t('settings.fieldProvider'), ai.provider, [
               { value: 'gemini', label: 'Google Gemini' }
             ], 'cloud')}
-            ${this.renderSelect('ai.model', 'Model', ai.model, [
-              { value: 'gemini-2.5-flash', label: 'Gemini 2.5 Flash (odporúčaný)' },
+            ${this.renderSelect('ai.model', t('settings.fieldModel'), ai.model, [
+              { value: 'gemini-2.5-flash', label: t('settings.modelFlash') },
               { value: 'gemini-2.5-flash-lite', label: 'Gemini 2.5 Flash Lite' },
               { value: 'gemini-3-flash', label: 'Gemini 3 Flash' }
             ], 'model_training')}
@@ -387,16 +396,16 @@ export class SettingsPage {
         </div>
 
         <div>
-          <h3 class="text-white text-lg font-semibold mb-3">API Kľúč</h3>
-          ${this.renderInput('ai.geminiApiKey', 'Gemini API Key', ai.geminiApiKey, 'password', 'key', 'Získaj na https://aistudio.google.com/app/apikey')}
+          <h3 class="text-white text-lg font-semibold mb-3">${t('settings.apiKeyHeading')}</h3>
+          ${this.renderInput('ai.geminiApiKey', 'Gemini API Key', ai.geminiApiKey, 'password', 'key', t('settings.apiKeyPlaceholder'))}
         </div>
 
         <div>
-          <h3 class="text-white text-lg font-semibold mb-3">Pokročilé nastavenia</h3>
+          <h3 class="text-white text-lg font-semibold mb-3">${t('settings.advancedSettings')}</h3>
           <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-            ${this.renderInput('ai.maxRetries', 'Max. počet pokusov', ai.maxRetries, 'number', 'replay')}
-            ${this.renderInput('ai.timeout', 'Timeout (ms)', ai.timeout, 'number', 'timer')}
-            ${this.renderInput('ai.cacheDuration', 'Cache trvanie (s)', ai.cacheDuration, 'number', 'cached')}
+            ${this.renderInput('ai.maxRetries', t('settings.fieldMaxRetries'), ai.maxRetries, 'number', 'replay')}
+            ${this.renderInput('ai.timeout', t('settings.fieldTimeout'), ai.timeout, 'number', 'timer')}
+            ${this.renderInput('ai.cacheDuration', t('settings.fieldCacheDuration'), ai.cacheDuration, 'number', 'cached')}
           </div>
         </div>
 
@@ -404,8 +413,8 @@ export class SettingsPage {
           <div class="flex items-start gap-3">
             <span class="material-symbols-outlined text-green-400">lightbulb</span>
             <div class="text-sm text-gray-300">
-              <p class="font-semibold text-white mb-1">Tip:</p>
-              <p>Gemini 2.5 Flash je vyvážený model s dobrým pomerom cena/výkon (odporúčaný). Flash Lite je najrýchlejší a najlacnejší. Gemini 3 Flash je najnovší model s pokročilými schopnosťami.</p>
+              <p class="font-semibold text-white mb-1">${t('settings.aiTipTitle')}</p>
+              <p>${t('settings.aiTipBody')}</p>
             </div>
           </div>
         </div>
@@ -420,48 +429,48 @@ export class SettingsPage {
         <div>
           <h3 class="text-white text-xl font-bold mb-4 flex items-center gap-2">
             <span class="material-symbols-outlined">automation</span>
-            Automatizačné pravidlá
+            ${t('settings.automationRules')}
           </h3>
-          <p class="text-gray-400 text-sm mb-6">Nastav, čo sa má vykonávať automaticky</p>
+          <p class="text-gray-400 text-sm mb-6">${t('settings.automationSubtitle')}</p>
         </div>
 
         ${this.renderToggleOption(
           'automation.autoProcessEmails',
           automation.autoProcessEmails,
-          'Automaticky spracovať emaily',
-          'Rozpozná dotazníky a progress updaty, vytvorí klientov',
+          t('settings.autoProcessTitle'),
+          t('settings.autoProcessDesc'),
           'mail'
         )}
 
         ${this.renderToggleOption(
           'automation.autoRespondProgress',
           automation.autoRespondProgress,
-          'Automatická odpoveď na progress',
-          'Analyzuje pokrok a pošle personalizovaný feedback klientovi',
+          t('settings.autoRespondTitle'),
+          t('settings.autoRespondDesc'),
           'auto_awesome'
         )}
 
         ${this.renderToggleOption(
           'automation.autoGeneratePlans',
           automation.autoGeneratePlans,
-          'Automaticky generovať plány',
-          'Vygeneruje tréningové a nutričné plány po onboardingu (bez schválenia)',
+          t('settings.autoGenerateTitle'),
+          t('settings.autoGenerateDesc'),
           'fitness_center'
         )}
 
         ${this.renderToggleOption(
           'automation.requirePlanApproval',
           automation.requirePlanApproval,
-          'Vyžadovať schválenie plánov',
-          'Plány sa vytvoria ako draft a čakajú na tvoje schválenie',
+          t('settings.requireApprovalTitle'),
+          t('settings.requireApprovalDesc'),
           'approval'
         )}
 
         ${this.renderToggleOption(
           'automation.sendWeeklyReminders',
           automation.sendWeeklyReminders,
-          'Týždenné pripomienky check-inu',
-          'Pošle email klientom každý pondelok ráno',
+          t('settings.weeklyRemindersTitle'),
+          t('settings.weeklyRemindersDesc'),
           'notifications_active'
         )}
       </div>
@@ -475,11 +484,11 @@ export class SettingsPage {
         <div>
           <h3 class="text-white text-xl font-bold mb-4 flex items-center gap-2">
             <span class="material-symbols-outlined">business</span>
-            Business informácie
+            ${t('settings.businessInfo')}
           </h3>
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            ${this.renderInput('business.businessName', 'Názov biznisu', business.businessName, 'text', 'storefront')}
-            ${this.renderSelect('business.currency', 'Mena', business.currency, [
+            ${this.renderInput('business.businessName', t('settings.fieldBusinessName'), business.businessName, 'text', 'storefront')}
+            ${this.renderSelect('business.currency', t('settings.fieldCurrency'), business.currency, [
               { value: 'EUR', label: 'EUR (€)' },
               { value: 'USD', label: 'USD ($)' },
               { value: 'CZK', label: 'CZK (Kč)' }
@@ -488,12 +497,12 @@ export class SettingsPage {
         </div>
 
         <div>
-          <h3 class="text-white text-lg font-semibold mb-3">Cenník</h3>
+          <h3 class="text-white text-lg font-semibold mb-3">${t('settings.pricing')}</h3>
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            ${this.renderInput('business.sessionPrice', 'Cena za tréning', business.sessionPrice, 'number', 'payments', '€')}
-            ${this.renderInput('business.planPrice', 'Cena za tréningový plán', business.planPrice, 'number', 'payments', '€')}
-            ${this.renderInput('business.nutritionPrice', 'Cena za nutričný plán', business.nutritionPrice, 'number', 'payments', '€')}
-            ${this.renderInput('business.taxRate', 'Daňová sadzba (%)', business.taxRate, 'number', 'percent', '%')}
+            ${this.renderInput('business.sessionPrice', t('settings.fieldSessionPrice'), business.sessionPrice, 'number', 'payments', '€')}
+            ${this.renderInput('business.planPrice', t('settings.fieldPlanPrice'), business.planPrice, 'number', 'payments', '€')}
+            ${this.renderInput('business.nutritionPrice', t('settings.fieldNutritionPrice'), business.nutritionPrice, 'number', 'payments', '€')}
+            ${this.renderInput('business.taxRate', t('settings.fieldTaxRate'), business.taxRate, 'number', 'percent', '%')}
           </div>
         </div>
       </div>

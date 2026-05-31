@@ -33,12 +33,6 @@ function buildFallbackNutrition({ client, goal }) {
   };
 }
 
-function getRequiredEnv(name) {
-  const v = process.env[name];
-  if (!v) throw new Error(`Missing env var: ${name}`);
-  return v;
-}
-
 function safeParseJson(raw) {
   try {
     return { ok: true, value: JSON.parse(raw) };
@@ -126,7 +120,7 @@ function buildFallbackPlan({ client, goal }) {
   };
 }
 
-exports.handler = async (event) => {
+export const handler = async (event) => {
   if (event.httpMethod === "OPTIONS") {
     return json(200, { ok: true });
   }

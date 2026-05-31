@@ -6,8 +6,12 @@
  */
 
 import { getDatabase } from './db/database.js';
+import { requireApiToken } from './_shared/guard.js';
 
 export async function handler(event, context) {
+  const blocked = requireApiToken(event);
+  if (blocked) return blocked;
+
   const db = getDatabase();
   const { httpMethod, body } = event;
 
@@ -16,17 +20,21 @@ export async function handler(event, context) {
     if (httpMethod === 'GET') {
       const settings = await db.getSettings();
 
-      // Don't send sensitive data to frontend
+      // Don't send sensitive data to frontend (defensive against missing sections)
+      const email = settings.email || {};
+      const ai = settings.ai || {};
       const safeSettings = {
         ...settings,
         email: {
-          ...settings.email,
-          imapPassword: settings.email.imapPassword ? '••••••••' : '',
-          smtpPassword: settings.email.smtpPassword ? '••••••••' : ''
+          ...email,
+          imapPassword: email.imapPassword ? '••••••••' : '',
+          smtpPassword: email.smtpPassword ? '••••••••' : ''
         },
         ai: {
-          ...settings.ai,
-          apiKey: settings.ai.apiKey ? '••••••••' : ''
+          ...ai,
+          // Support both legacy `apiKey` and the frontend's `geminiApiKey`
+          apiKey: ai.apiKey ? '••••••••' : '',
+          geminiApiKey: ai.geminiApiKey ? '••••••••' : ''
         }
       };
 

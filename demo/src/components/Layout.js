@@ -1,4 +1,14 @@
 import { store } from "../store.js";
+import { t } from "../i18n.js";
+
+function escapeHtml(s) {
+  return String(s ?? "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
 
 function navItem({ icon, label, path }) {
   return {
@@ -9,11 +19,11 @@ function navItem({ icon, label, path }) {
 }
 
 const NAV_ITEMS = [
-  navItem({ icon: "dashboard", label: "Dashboard", path: "/dashboard" }),
-  navItem({ icon: "mail", label: "Mailbox", path: "/mailbox" }),
-  navItem({ icon: "group", label: "Clients", path: "/clients" }),
-  navItem({ icon: "assignment", label: "Plans", path: "/training-plan" }),
-  navItem({ icon: "restaurant", label: "Nutrition", path: "/nutrition" }),
+  navItem({ icon: "dashboard", label: "nav.dashboard", path: "/dashboard" }),
+  navItem({ icon: "mail", label: "nav.mailbox", path: "/mailbox" }),
+  navItem({ icon: "group", label: "nav.clients", path: "/clients" }),
+  navItem({ icon: "assignment", label: "nav.plans", path: "/training-plan" }),
+  navItem({ icon: "restaurant", label: "nav.nutrition", path: "/nutrition" }),
 ];
 
 export class Layout {
@@ -59,7 +69,7 @@ export class Layout {
             </div>
             <div class="flex flex-col">
               <h1 class="text-white text-lg font-bold leading-none">FitCRM</h1>
-              <p class="text-text-secondary text-xs font-normal">Demo</p>
+              <p class="text-text-secondary text-xs font-normal">${t("nav.demo")}</p>
             </div>
           </div>
 
@@ -68,7 +78,7 @@ export class Layout {
           <div class="mt-2">
             <button data-action="reset" class="w-full flex items-center justify-center gap-2 h-11 rounded-lg bg-surface-highlight hover:bg-[#2f5f3e] text-white text-sm font-bold transition-colors border border-[#395c46]">
               <span class="material-symbols-outlined text-[18px]">restart_alt</span>
-              Reset demo state
+              ${t("nav.resetDemo")}
             </button>
           </div>
         </div>
@@ -77,13 +87,13 @@ export class Layout {
           <button data-action="open-settings" class="w-full flex items-center gap-3 p-2 rounded-lg hover:bg-surface-highlight transition-colors cursor-pointer">
             <div data-role="sidebar-avatar" class="h-10 w-10 rounded-full bg-surface-highlight border border-surface-highlight flex items-center justify-center overflow-hidden">
               ${this.getUserAvatar()
-                ? `<img src="${this.getUserAvatar()}" alt="Avatar" class="w-full h-full object-cover" />`
+                ? `<img src="${escapeHtml(this.getUserAvatar())}" alt="Avatar" class="w-full h-full object-cover" />`
                 : `<span class="material-symbols-outlined text-white">person</span>`
               }
             </div>
             <div class="flex flex-col overflow-hidden flex-1 text-left">
-              <p data-role="sidebar-name" class="text-sm font-bold text-white truncate">${this.getUserName()}</p>
-              <p class="text-xs text-text-secondary truncate">Pro Account</p>
+              <p data-role="sidebar-name" class="text-sm font-bold text-white truncate">${escapeHtml(this.getUserName())}</p>
+              <p class="text-xs text-text-secondary truncate">${t("nav.proAccount")}</p>
             </div>
             <span class="material-symbols-outlined text-gray-400 text-xl">settings</span>
           </button>
@@ -98,21 +108,21 @@ export class Layout {
                 <div class="pl-3 text-text-secondary flex items-center justify-center">
                   <span class="material-symbols-outlined text-[20px]">search</span>
                 </div>
-                <input data-role="global-search" class="w-full bg-transparent border-none text-white placeholder-text-secondary text-sm px-3 focus:ring-0" placeholder="Search (demo only)" />
+                <input data-role="global-search" class="w-full bg-transparent border-none text-white placeholder-text-secondary text-sm px-3 focus:ring-0" placeholder="${t("nav.search")}" />
               </label>
             </div>
 
             <div class="flex items-center gap-4 ml-4">
-              <a class="text-text-secondary hover:text-white text-sm font-bold" href="../docs/FITCRM_PROJECT_SUMMARY.md" target="_blank" rel="noreferrer">Docs</a>
+              <a class="text-text-secondary hover:text-white text-sm font-bold" href="../docs/FITCRM_PROJECT_SUMMARY.md" target="_blank" rel="noreferrer">${t("nav.docs")}</a>
               <div class="h-8 w-px bg-surface-highlight mx-1"></div>
               <button data-action="open-settings-header" class="flex items-center gap-3 hover:opacity-80 transition-opacity cursor-pointer">
                 <div class="text-right hidden sm:block">
-                  <p data-role="header-name" class="text-sm font-bold text-white leading-tight">${this.getUserName()}</p>
-                  <p class="text-xs text-text-secondary">Demo User</p>
+                  <p data-role="header-name" class="text-sm font-bold text-white leading-tight">${escapeHtml(this.getUserName())}</p>
+                  <p class="text-xs text-text-secondary">${t("nav.demoUser")}</p>
                 </div>
                 <div data-role="header-avatar" class="bg-surface-highlight rounded-full size-10 border-2 border-surface-highlight flex items-center justify-center overflow-hidden">
                   ${this.getUserAvatar()
-                    ? `<img src="${this.getUserAvatar()}" alt="Avatar" class="w-full h-full object-cover" />`
+                    ? `<img src="${escapeHtml(this.getUserAvatar())}" alt="Avatar" class="w-full h-full object-cover" />`
                     : `<span class="material-symbols-outlined text-white">person</span>`
                   }
                 </div>
@@ -136,7 +146,7 @@ export class Layout {
       a.dataset.path = item.path;
       a.innerHTML = `
         <span class="material-symbols-outlined">${item.icon}</span>
-        <span class="text-sm font-medium">${item.label}</span>
+        <span class="text-sm font-medium">${t(item.label)}</span>
       `;
       a.addEventListener("click", (e) => {
         e.preventDefault();
@@ -194,7 +204,7 @@ export class Layout {
     if (sidebarAvatar) {
       const avatar = this.getUserAvatar();
       sidebarAvatar.innerHTML = avatar
-        ? `<img src="${avatar}" alt="Avatar" class="w-full h-full object-cover" />`
+        ? `<img src="${escapeHtml(avatar)}" alt="Avatar" class="w-full h-full object-cover" />`
         : `<span class="material-symbols-outlined text-white">person</span>`;
     }
 
@@ -209,7 +219,7 @@ export class Layout {
     if (headerAvatar) {
       const avatar = this.getUserAvatar();
       headerAvatar.innerHTML = avatar
-        ? `<img src="${avatar}" alt="Avatar" class="w-full h-full object-cover" />`
+        ? `<img src="${escapeHtml(avatar)}" alt="Avatar" class="w-full h-full object-cover" />`
         : `<span class="material-symbols-outlined text-white">person</span>`;
     }
   }

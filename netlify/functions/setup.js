@@ -9,8 +9,12 @@
  */
 
 import { getDatabase } from './db/database.js';
+import { requireApiToken } from './_shared/guard.js';
 
 export async function handler(event, context) {
+  const blocked = requireApiToken(event);
+  if (blocked) return blocked;
+
   const db = getDatabase();
   const query = event.queryStringParameters || {};
   const includeSample = query.sample === 'true';
@@ -412,8 +416,7 @@ FitCoach Pro`,
       statusCode: 500,
       body: JSON.stringify({
         ok: false,
-        error: error.message,
-        stack: error.stack
+        error: error.message
       })
     };
   }

@@ -1,6 +1,7 @@
 import { store } from "../store.js";
 import { showToast } from "../ui/toast.js";
 import { generatePlan } from "../api.js";
+import { t } from "../i18n.js";
 
 const EXERCISE_LIBRARY = [
   { id: "lib_bench", name: "Barbell Bench Press", sets: 4, reps: "8-10", rpe: 8 },
@@ -26,10 +27,10 @@ function isQuotaExhaustedMessage(s) {
 }
 
 const DAY_ORDER = [
-  { key: "mon", label: "Monday" },
-  { key: "tue", label: "Tuesday" },
-  { key: "wed", label: "Wednesday" },
-  { key: "thu", label: "Thursday" },
+  { key: "mon", label: t("training.monday") },
+  { key: "tue", label: t("training.tuesday") },
+  { key: "wed", label: t("training.wednesday") },
+  { key: "thu", label: t("training.thursday") },
 ];
 
 function buildLocalFallbackTraining({ client, goal }) {
@@ -105,11 +106,11 @@ export class TrainingPlanPage {
         <div class="p-4 border-b border-surface-highlight">
           <h3 class="text-white text-lg font-bold mb-3 flex items-center gap-2">
             <span class="material-symbols-outlined text-primary">library_books</span>
-            Exercise Library
+            ${t("training.exerciseLibrary")}
           </h3>
           <div class="relative mb-3">
             <span class="material-symbols-outlined absolute left-3 top-2.5 text-text-secondary text-[20px]">search</span>
-            <input data-role="search" class="w-full bg-surface-dark border-transparent focus:border-primary focus:ring-0 rounded-lg py-2 pl-10 pr-4 text-sm text-white placeholder:text-text-secondary transition-colors" placeholder="Search exercises..." type="text" />
+            <input data-role="search" class="w-full bg-surface-dark border-transparent focus:border-primary focus:ring-0 rounded-lg py-2 pl-10 pr-4 text-sm text-white placeholder:text-text-secondary transition-colors" placeholder="${escapeAttr(t("training.searchExercises"))}" type="text" />
           </div>
         </div>
 
@@ -129,7 +130,7 @@ export class TrainingPlanPage {
             </select>
             <button data-action="add-to-day" class="h-11 px-4 bg-primary text-background-dark font-bold rounded-lg shadow-lg flex justify-center items-center gap-2 hover:brightness-110 transition-all">
               <span class="material-symbols-outlined">add_circle</span>
-              Add
+              ${t("training.add")}
             </button>
           </div>
         </div>
@@ -138,9 +139,9 @@ export class TrainingPlanPage {
       <section class="flex-1 flex flex-col h-full overflow-hidden relative bg-background-dark">
         <div class="flex-none p-6 pb-2 border-b border-surface-highlight">
           <div class="flex flex-wrap gap-2 mb-4 items-center">
-            <a class="text-text-secondary hover:text-primary text-sm font-medium leading-normal" href="#/dashboard">Dashboard</a>
+            <a class="text-text-secondary hover:text-primary text-sm font-medium leading-normal" href="#/dashboard">${t("training.dashboard")}</a>
             <span class="text-text-secondary text-sm">/</span>
-            <a class="text-text-secondary hover:text-primary text-sm font-medium leading-normal" href="#/clients">Clients</a>
+            <a class="text-text-secondary hover:text-primary text-sm font-medium leading-normal" href="#/clients">${t("training.clients")}</a>
             <span class="text-text-secondary text-sm">/</span>
             <span class="text-white text-sm font-medium leading-normal">${escapeHtml(client.name)}</span>
           </div>
@@ -149,22 +150,22 @@ export class TrainingPlanPage {
             <div class="flex flex-col gap-1 w-full max-w-2xl">
               <div class="flex items-center gap-3">
                 <h1 class="text-white text-3xl font-black leading-tight tracking-tight">${escapeHtml(
-                  plan?.name || "Training Plan"
+                  plan?.name || t("training.trainingPlan")
                 )}</h1>
-                <span class="px-2 py-0.5 rounded bg-green-900/40 text-primary text-xs font-bold uppercase tracking-wider border border-primary/20">Active Draft</span>
+                <span class="px-2 py-0.5 rounded bg-green-900/40 text-primary text-xs font-bold uppercase tracking-wider border border-primary/20">${t("training.activeDraft")}</span>
               </div>
-              <p class="text-text-secondary text-sm">Designing for <span class="text-white font-bold">${escapeHtml(
+              <p class="text-text-secondary text-sm">${t("training.designingFor")} <span class="text-white font-bold">${escapeHtml(
                 client.name
-              )}</span> • Goal: ${escapeHtml(client.goal)}</p>
+              )}</span> • ${t("training.goal", { goal: escapeHtml(client.goal) })}</p>
             </div>
             <div class="flex items-center gap-3">
               <button data-action="ai-generate" ${this.aiInFlight ? "disabled" : ""} class="flex items-center gap-2 px-5 h-10 rounded-lg bg-surface-highlight text-white text-sm font-bold border border-[#395c46] ${aiBtnCls}">
                 <span class="material-symbols-outlined text-[18px]">auto_awesome</span>
-                ${this.aiInFlight ? "Generating..." : "AI Generate"}
+                ${this.aiInFlight ? t("training.generating") : t("training.aiGenerate")}
               </button>
               <button data-action="save" class="flex items-center gap-2 px-6 h-10 rounded-lg bg-primary text-black text-sm font-bold hover:brightness-110 transition-all shadow-[0_0_15px_rgba(19,236,91,0.3)]">
                 <span class="material-symbols-outlined text-[18px]">save</span>
-                Save Plan
+                ${t("training.savePlan")}
               </button>
             </div>
           </div>
@@ -212,14 +213,17 @@ export class TrainingPlanPage {
         const dayKey = this.addDayKey || "mon";
         store.addExerciseToDay({ clientId: client.id, dayKey, exercise: ex });
         const label = (DAY_ORDER.find((d) => d.key === dayKey) || { label: dayKey }).label;
-        showToast({ title: "Exercise added", message: `Added ${ex.name} to ${label}.` });
+        showToast({
+          title: t("training.toastExerciseAddedTitle"),
+          message: t("training.toastExerciseAddedMsg", { name: ex.name, day: label }),
+        });
       });
     }
 
     const saveBtn = this.el.querySelector('[data-action="save"]');
     if (saveBtn) {
       saveBtn.addEventListener("click", () => {
-        showToast({ title: "Saved", message: "Demo save (stored in localStorage)." });
+        showToast({ title: t("training.toastSavedTitle"), message: t("training.toastSavedMsg") });
       });
     }
 
@@ -230,8 +234,8 @@ export class TrainingPlanPage {
         if (now < this.aiCooldownUntil) {
           const secs = Math.max(1, Math.ceil((this.aiCooldownUntil - now) / 1000));
           showToast({
-            title: "Please wait",
-            message: `AI generation is cooling down (${secs}s).`,
+            title: t("training.toastPleaseWaitTitle"),
+            message: t("training.toastCoolingDown", { secs }),
             variant: "danger",
           });
           return;
@@ -240,7 +244,7 @@ export class TrainingPlanPage {
         try {
           this.aiInFlight = true;
           this.render();
-          showToast({ title: "Generating", message: "Requesting AI plan from Gemini..." });
+          showToast({ title: t("training.toastGeneratingTitle"), message: t("training.toastRequestingAi") });
 
           const res = await generatePlan({
             client,
@@ -261,13 +265,12 @@ export class TrainingPlanPage {
                 console.error('[FitCRM] Warning:', warn);
               }
 
+              const quotaSuffix = isQuota ? ` ${t("training.toastQuotaSuffix")}` : "";
               showToast({
-                title: "Fallback plan",
+                title: t("training.toastFallbackTitle"),
                 message: warn
-                  ? `AI unavailable (${truncate(warn)}). Applied a safe default plan.${
-                      isQuota ? " (Quota exceeded: cooling down ~10 min.)" : ""
-                    }`
-                  : `AI unavailable. Applied a safe default plan.${isQuota ? " (Quota exceeded: cooling down ~10 min.)" : ""}`,
+                  ? `${t("training.toastAiUnavailableReason", { reason: truncate(warn) })}${quotaSuffix}`
+                  : `${t("training.toastAiUnavailable")}${quotaSuffix}`,
                 variant: "success",
               });
 
@@ -278,12 +281,12 @@ export class TrainingPlanPage {
                 this.aiCooldownUntil = Math.max(this.aiCooldownUntil || 0, Date.now() + 10 * 60 * 1000);
               }
             } else {
-              showToast({ title: "Updated", message: "AI plan applied to this client." });
+              showToast({ title: t("training.toastUpdatedTitle"), message: t("training.toastAiApplied") });
             }
           } else {
             showToast({
-              title: "AI response",
-              message: "Received text response (no structured plan).",
+              title: t("training.toastAiResponseTitle"),
+              message: t("training.toastAiNoPlan"),
               variant: "danger",
             });
           }
@@ -293,8 +296,8 @@ export class TrainingPlanPage {
           if (isQuota && retrySecs > 0 && String(e && e.message ? e.message : "").includes("cooldown")) {
             this.aiCooldownUntil = Math.max(this.aiCooldownUntil || 0, Date.now() + retrySecs * 1000);
             showToast({
-              title: "Please wait",
-              message: `AI generation is cooling down (${retrySecs}s).`,
+              title: t("training.toastPleaseWaitTitle"),
+              message: t("training.toastCoolingDown", { secs: retrySecs }),
               variant: "danger",
             });
             return;
@@ -304,10 +307,11 @@ export class TrainingPlanPage {
           }
           const fallback = buildLocalFallbackTraining({ client, goal: client.goal });
           store.setTrainingPlan({ clientId: client.id, plan: fallback });
+          const reason = e && e.message ? e.message : t("training.unknownError");
           showToast({
-            title: "Fallback plan",
-            message: `AI unavailable (${e && e.message ? e.message : "Unknown error"}). Applied a safe default plan.${
-              isQuota ? " (Quota exceeded: cooling down ~10 min.)" : ""
+            title: t("training.toastFallbackTitle"),
+            message: `${t("training.toastAiUnavailableReason", { reason })}${
+              isQuota ? ` ${t("training.toastQuotaSuffix")}` : ""
             }`,
             variant: "success",
           });
@@ -332,7 +336,7 @@ export class TrainingPlanPage {
       btn.addEventListener("click", () => {
         const { clientId: cId, dayKey, exId } = btn.dataset;
         store.removeExercise({ clientId: cId, dayKey, exerciseId: exId });
-        showToast({ title: "Removed", message: "Exercise removed from day." });
+        showToast({ title: t("training.toastRemovedTitle"), message: t("training.toastRemovedMsg") });
       });
     });
 
@@ -377,7 +381,7 @@ function libraryItem({ ex, active }) {
         </div>
         <div class="flex-1 min-w-0">
           <h4 class="text-sm font-bold text-white truncate">${escapeHtml(ex.name)}</h4>
-          <p class="text-xs text-text-secondary">Sets ${ex.sets} • Reps ${escapeHtml(ex.reps)} • RPE ${ex.rpe}</p>
+          <p class="text-xs text-text-secondary">${t("training.sets")} ${ex.sets} • ${t("training.reps")} ${escapeHtml(ex.reps)} • ${t("training.rpe")} ${ex.rpe}</p>
         </div>
       </div>
     </div>
@@ -386,7 +390,7 @@ function libraryItem({ ex, active }) {
 
 function dayColumn({ clientId, dayKey, label, plan }) {
   const day = plan?.days?.[dayKey];
-  const title = day?.title || "Workout";
+  const title = day?.title || t("training.workout");
   const items = day?.items || [];
 
   const isRest = Boolean(day?.isRest);
@@ -409,12 +413,12 @@ function dayColumn({ clientId, dayKey, label, plan }) {
           )}" data-is-rest="${escapeAttr(String(!isRest))}" class="h-7 px-2 rounded border border-border-dark text-[11px] font-bold ${
             isRest ? "text-text-secondary hover:text-primary" : "text-primary hover:brightness-110"
           } bg-black/20">
-            ${isRest ? "Set Training" : "Set Rest"}
+            ${isRest ? t("training.setTraining") : t("training.setRest")}
           </button>
         </div>
         <div class="text-xs text-text-secondary flex justify-between">
-          <span>${items.length} Exercises</span>
-          <span>Est. ${Math.max(0, items.length * 12)} min</span>
+          <span>${t("training.exerciseCount", { n: items.length })}</span>
+          <span>${t("training.estMinutes", { n: Math.max(0, items.length * 12) })}</span>
         </div>
       </div>
 
@@ -438,9 +442,9 @@ function exerciseCard({ clientId, dayKey, ex }) {
         </button>
       </div>
       <div class="grid grid-cols-3 gap-2 mb-2">
-        ${numberField({ clientId, dayKey, exId: ex.id, field: "sets", label: "Sets", value: ex.sets })}
-        ${textField({ clientId, dayKey, exId: ex.id, field: "reps", label: "Reps", value: ex.reps })}
-        ${numberField({ clientId, dayKey, exId: ex.id, field: "rpe", label: "RPE", value: ex.rpe })}
+        ${numberField({ clientId, dayKey, exId: ex.id, field: "sets", label: t("training.sets"), value: ex.sets })}
+        ${textField({ clientId, dayKey, exId: ex.id, field: "reps", label: t("training.reps"), value: ex.reps })}
+        ${numberField({ clientId, dayKey, exId: ex.id, field: "rpe", label: t("training.rpe"), value: ex.rpe })}
       </div>
     </div>
   `;
@@ -480,7 +484,7 @@ function addDropZone() {
   return `
     <div class="border-2 border-dashed border-border-dark rounded-lg p-4 flex flex-col items-center justify-center text-text-secondary min-h-[90px] transition-colors hover:border-primary hover:text-primary hover:bg-primary/5 cursor-not-allowed">
       <span class="material-symbols-outlined mb-1">add</span>
-      <span class="text-xs font-medium">Drag & drop (not implemented)</span>
+      <span class="text-xs font-medium">${t("training.dragDrop")}</span>
     </div>
   `;
 }
@@ -491,8 +495,8 @@ function restState() {
       <div class="mb-3">
         <span class="material-symbols-outlined text-5xl text-text-secondary">self_improvement</span>
       </div>
-      <h4 class="text-white font-bold text-lg mb-2">Rest Day</h4>
-      <p class="text-sm text-text-secondary">Light stretching or mobility recommended.</p>
+      <h4 class="text-white font-bold text-lg mb-2">${t("training.restDay")}</h4>
+      <p class="text-sm text-text-secondary">${t("training.lightStretching")}</p>
     </div>
   `;
 }

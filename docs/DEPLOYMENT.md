@@ -51,6 +51,18 @@ SMTP (demo approach):
 
 For Gmail, use an **App Password** (recommended for demo) and store it in `SMTP_PASS`.
 
+Backend (data/automation) endpoints — optional:
+
+- `FITCRM_API_TOKEN` – enables `clients`, `settings`, `setup`, `submit_progress`
+  and `check_emails`. These are **disabled by default** (return `503`) so a fresh
+  deploy never exposes an open, unauthenticated CRUD API. The static demo UI does
+  not use them, so leave this **unset** unless you are building on the backend.
+  When set, callers must send a matching `x-api-token: <token>` header.
+
+> Security note: `generate_plan` and `send_email` are public (the static UI calls
+> them with no login). Once you set `GEMINI_API_KEY` / `SMTP_*`, anyone with the
+> URL can use them. See `SECURITY.md` for the full audit and hardening options.
+
 ### Test endpoints
 
 Health:
